@@ -160,22 +160,22 @@ services:
 
   # Application Services
   api-gateway:
-    image: pramithamj/auction-website/api-gateway:${IMAGE_TAG:-latest}
+    image: pramithamj/auction-website-ms-api-gateway:${IMAGE_TAG:-latest}
     build:
       context: ./services/api-gateway
       dockerfile: Dockerfile
     container_name: auction-api-gateway
     ports:
-      - "3001:3001"
+      - "${API_GATEWAY_PORT:-3001}:3001"
     environment:
-      - PORT=3001
+      - PORT=${API_GATEWAY_PORT:-3001}
       - NODE_ENV=development
       - AUTH_SERVICE_URL=http://auth:3101
       - BID_SERVICE_URL=http://bid:3102
       - LISTINGS_SERVICE_URL=http://listings:3103
       - PAYMENTS_SERVICE_URL=http://payments:3104
       - PROFILE_SERVICE_URL=http://profile:3105
-      - CORS_ORIGIN=http://localhost:3000,http://localhost:3001
+      - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost:3000,http://localhost:3001}
     depends_on:
       nats-streaming:
         condition: service_started
@@ -199,7 +199,7 @@ services:
       - common-build:/app/node_modules/@jjmauction/common
 
   auth:
-    image: pramithamj/auction-website/auth:${IMAGE_TAG:-latest}
+    image: pramithamj/auction-website-ms-auth:${IMAGE_TAG:-latest}
     build:
       context: ./services/auth
       dockerfile: Dockerfile
@@ -228,7 +228,7 @@ services:
       - common-build:/app/node_modules/@jjmauction/common
 
   bid:
-    image: pramithamj/auction-website/bid:${IMAGE_TAG:-latest}
+    image: pramithamj/auction-website-ms-bid:${IMAGE_TAG:-latest}
     build:
       context: ./services/bid
       dockerfile: Dockerfile
@@ -257,7 +257,7 @@ services:
       - common-build:/app/node_modules/@jjmauction/common
 
   listings:
-    image: pramithamj/auction-website/listing:${IMAGE_TAG:-latest}
+    image: pramithamj/auction-website-ms-listing:${IMAGE_TAG:-latest}
     build:
       context: ./services/listings
       dockerfile: Dockerfile
@@ -290,7 +290,7 @@ services:
       - common-build:/app/node_modules/@jjmauction/common
 
   payments:
-    image: pramithamj/auction-website/payment:${IMAGE_TAG:-latest}
+    image: pramithamj/auction-website-ms-payment:${IMAGE_TAG:-latest}
     build:
       context: ./services/payments
       dockerfile: Dockerfile
@@ -320,7 +320,7 @@ services:
       - common-build:/app/node_modules/@jjmauction/common
 
   profile:
-    image: pramithamj/auction-website/profile:${IMAGE_TAG:-latest}
+    image: pramithamj/auction-website-ms-profile:${IMAGE_TAG:-latest}
     build:
       context: ./services/profile
       dockerfile: Dockerfile
@@ -349,7 +349,7 @@ services:
       - common-build:/app/node_modules/@jjmauction/common
 
   email:
-    image: pramithamj/auction-website/email:${IMAGE_TAG:-latest}
+    image: pramithamj/auction-website-ms-email:${IMAGE_TAG:-latest}
     build:
       context: ./services/email
       dockerfile: Dockerfile
@@ -377,7 +377,7 @@ services:
       - common-build:/app/node_modules/@jjmauction/common
 
   expiration:
-    image: pramithamj/auction-website/expiration:${IMAGE_TAG:-latest}
+    image: pramithamj/auction-website-ms-expiration:${IMAGE_TAG:-latest}
     build:
       context: ./services/expiration
       dockerfile: Dockerfile
@@ -407,17 +407,18 @@ services:
       - common-build:/app/node_modules/@jjmauction/common
 
   frontend:
-    image: pramithamj/auction-website/frontend:${IMAGE_TAG:-latest}
+    image: pramithamj/auction-website-ms-frontend:${IMAGE_TAG:-latest}
     build:
       context: ./services/frontend
       dockerfile: Dockerfile.dev
     container_name: auction-frontend
     ports:
-      - "3000:3000"
+      - "${FRONTEND_PORT:-3000}:3000"
     environment:
       - NODE_ENV=development
-      - NEXT_PUBLIC_API_URL=http://localhost:3001
-      - SERVER_API_URL=http://api-gateway:3001
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+      - NEXT_PUBLIC_API_GATEWAY_PORT=${NEXT_PUBLIC_API_GATEWAY_PORT:-3001}
+      - SERVER_API_URL=${SERVER_API_URL:-http://api-gateway:3001}
       - WATCHPACK_POLLING=true
     depends_on:
       api-gateway:

@@ -38,15 +38,15 @@ push_service() {
     echo -e "${YELLOW}Pushing ${service_name}...${NC}"
     
     # Check if images exist
-    if ! docker image inspect "${DOCKER_USERNAME}/auction-website/${service_name}:${FULL_TAG}" > /dev/null 2>&1; then
-        echo -e "${RED}❌ Image not found: ${DOCKER_USERNAME}/auction-website/${service_name}:${FULL_TAG}${NC}"
+    if ! docker image inspect "${DOCKER_USERNAME}/auction-website-ms-${service_name}:${FULL_TAG}" > /dev/null 2>&1; then
+        echo -e "${RED}❌ Image not found: ${DOCKER_USERNAME}/auction-website-ms-${service_name}:${FULL_TAG}${NC}"
         echo -e "${YELLOW}💡 Run ./scripts/build-all.sh first${NC}"
         return 1
     fi
     
     # Push both tags
-    docker push "${DOCKER_USERNAME}/auction-website/${service_name}:${FULL_TAG}"
-    docker push "${DOCKER_USERNAME}/auction-website/${service_name}:latest"
+    docker push "${DOCKER_USERNAME}/auction-website-ms-${service_name}:${FULL_TAG}"
+    docker push "${DOCKER_USERNAME}/auction-website-ms-${service_name}:latest"
     
     echo -e "${GREEN}✅ ${service_name} pushed successfully${NC}"
 }
@@ -64,8 +64,8 @@ echo ""
 echo -e "${BLUE}📋 Pushed Images:${NC}"
 
 for service in "${services[@]}"; do
-    echo -e "  ${GREEN}✓${NC} ${DOCKER_USERNAME}/auction-website/${service}:${FULL_TAG}"
-    echo -e "  ${GREEN}✓${NC} ${DOCKER_USERNAME}/auction-website/${service}:latest"
+    echo -e "  ${GREEN}✓${NC} ${DOCKER_USERNAME}/auction-website-ms-${service}:${FULL_TAG}"
+    echo -e "  ${GREEN}✓${NC} ${DOCKER_USERNAME}/auction-website-ms-${service}:latest"
 done
 
 echo ""
