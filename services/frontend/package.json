@@ -1,0 +1,84 @@
+{
+  "name": "frontend-service",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "test": "jest",
+    "coverage": "cross-env NODE_ENV=test jest --coverage",
+    "build:base-css": "tailwindcss build ./styles/tailwind.base.css -o ./styles/base.css"
+  },
+  "dependencies": {
+    "@emotion/css": "^11.13.5",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@jjmauction/common": "file:common",
+    "@tailwindcss/forms": "^0.3.4",
+    "autoprefixer": "^10.4.0",
+    "axios": "^0.27.2",
+    "babel-plugin-macros": "^3.1.0",
+    "formik": "^2.2.9",
+    "next": "12.3.4",
+    "postcss": "^8.4.21",
+    "react": "17.0.2",
+    "react-datepicker": "^4.8.0",
+    "react-dom": "17.0.2",
+    "react-dropzone": "^14.2.3",
+    "react-stripe-checkout": "^2.6.3",
+    "react-toastify": "^9.1.1",
+    "socket.io": "^4.6.1",
+    "socket.io-client": "^4.6.1",
+    "tailwindcss": "^2.2.19",
+    "twin.macro": "^2.8.2",
+    "yup": "^0.32.11"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.12.10",
+    "@emotion/babel-preset-css-prop": "^11.12.0",
+    "@testing-library/dom": "^7.29.6",
+    "@testing-library/jest-dom": "^5.11.9",
+    "@testing-library/react": "^11.2.5",
+    "@testing-library/user-event": "^12.8.1",
+    "@trivago/prettier-plugin-sort-imports": "^1.4.1",
+    "@types/jest": "^26.0.20",
+    "@types/node": "^14.14.31",
+    "@types/react": "^17.0.2",
+    "autoprefixer": "^10.1.0",
+    "babel-jest": "^26.6.3",
+    "cross-env": "^7.0.3",
+    "eslint": "^8.0.0",
+    "eslint-config-next": "^15.4.6",
+    "eslint-plugin-prettier": "^5.5.4",
+    "jest": "^26.6.3",
+    "jest-dom": "^4.0.0",
+    "postcss": "^8.2.1",
+    "tailwindcss": "^2.0.2",
+    "ts-jest": "^26.4.4",
+    "typescript": "^4.1.3"
+  },
+  "jest": {
+    "moduleNameMapper": {
+      "\\.(css|less)$": "<rootDir>/__mocks__/styleMock.js"
+    },
+    "transform": {
+      "^.+\\.(ts|tsx)$": "ts-jest"
+    },
+    "testMatch": [
+      "**/__tests__/*.(ts|tsx)"
+    ],
+    "setupFilesAfterEnv": [
+      "<rootDir>/jest.setup.ts"
+    ],
+    "testPathIgnorePatterns": [
+      "./.next/",
+      "./node_modules/"
+    ],
+    "globals": {
+      "ts-jest": {
+        "tsConfig": "tsconfig.jest.json"
+      }
+    }
+  }
+}

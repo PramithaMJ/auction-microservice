@@ -1,0 +1,113 @@
+services:
+  # NATS Streaming Server
+  nats-streaming:
+    image: nats-streaming:0.24.6
+    container_name: auction-nats
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+    command: [
+      "-p", "4222",
+      "-m", "8222",
+      "-hbi", "5s",
+      "-hbt", "5s",
+      "-hbf", "2",
+      "-SD",
+      "-cid", "auction"
+    ]
+    networks:
+      - auction-network
+
+  # Redis for expiration service
+  redis:
+    image: redis:7-alpine
+    container_name: auction-redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data
+    networks:
+      - auction-network
+
+  # MySQL for auth service
+  auth-mysql:
+    image: mysql:8.0
+    container_name: auction-auth-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: auth
+    ports:
+      - "3306:3306"
+    volumes:
+      - auth-mysql-data:/var/lib/mysql
+    networks:
+      - auction-network
+
+  # MySQL for bid service
+  bid-mysql:
+    image: mysql:8.0
+    container_name: auction-bid-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: bid
+    ports:
+      - "3307:3306"
+    volumes:
+      - bid-mysql-data:/var/lib/mysql
+    networks:
+      - auction-network
+
+  # MySQL for listings service
+  listings-mysql:
+    image: mysql:8.0
+    container_name: auction-listings-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: listings
+    ports:
+      - "3308:3306"
+    volumes:
+      - listings-mysql-data:/var/lib/mysql
+    networks:
+      - auction-network
+
+  # MySQL for payments service
+  payments-mysql:
+    image: mysql:8.0
+    container_name: auction-payments-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: payments
+    ports:
+      - "3309:3306"
+    volumes:
+      - payments-mysql-data:/var/lib/mysql
+    networks:
+      - auction-network
+
+  # MySQL for profile service
+  profile-mysql:
+    image: mysql:8.0
+    container_name: auction-profile-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: profile
+    ports:
+      - "3310:3306"
+    volumes:
+      - profile-mysql-data:/var/lib/mysql
+    networks:
+      - auction-network
+
+volumes:
+  redis-data:
+  auth-mysql-data:
+  bid-mysql-data:
+  listings-mysql-data:
+  payments-mysql-data:
+  profile-mysql-data:
+
+networks:
+  auction-network:
+    driver: bridge

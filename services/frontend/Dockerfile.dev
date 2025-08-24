@@ -1,0 +1,40 @@
+# Multi-stage build for better dependency management
+FROM node:18-alpine AS common-builder
+
+WORKDIR /app/common
+
+# Copy common package files
+COPY common/package*.json ./
+RUN npm install
+
+# Copy common source and build
+COPY common/src ./src
+COPY common/tsconfig.json ./
+RUN npm run build
+
+# Main application stage
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Copy built common package from previous stage
+COPY --from=common-builder /app/common ./common
+
+# Install main app dependencies
+RUN npm install
+
+# Copy application source
+COPY src ./src
+COPY public ./public
+COPY next.config.js ./
+COPY .babelrc ./
+COPY tsconfig.json ./
+
+# Expose port
+EXPOSE 3000
+
+# Start development server
+CMD ["npm", "run", "dev"]
