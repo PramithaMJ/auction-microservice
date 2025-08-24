@@ -20,9 +20,10 @@ const buildClient = (context) => {
         withCredentials: true
       })
     } else {
-      // Production - use relative URLs (ingress will handle routing)
+      // EC2 or production deployment - construct API Gateway URL using current hostname
+      const apiGatewayUrl = `${window.location.protocol}//${window.location.hostname}:3001`;
       return axios.create({
-        baseURL: '/',
+        baseURL: apiGatewayUrl,
         withCredentials: true
       })
     }
