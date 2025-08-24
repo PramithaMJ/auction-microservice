@@ -1,6 +1,17 @@
 # Auction Website - Docker Setup
 
-This guide shows you how to run the entire Auction Website using Docker Compose instead of the hybrid script.
+This g💡 **No more hardcoded IPs!** The application now automatically configures URLs based on your environment settings.
+
+### 📦 Docker Repository Migration (Important!)
+
+**New Repository Naming Convention:** We've updated from `auction-website/service` to `auction-website-ms-service` format to fix CI/CD deployment issues.
+
+If you have existing images or encounter push errors, run:
+```bash
+./migrate-docker-repos.sh
+```
+
+See [DOCKER-MIGRATION.md](./DOCKER-MIGRATION.md) for complete details.ide shows you how to run the entire Auction Website using Docker Compose instead of the hybrid script.
 
 ## 🚀 Quick Start
 
