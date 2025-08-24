@@ -1,0 +1,183 @@
+name: Production CI Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  DOCKER_REGISTRY: docker.io
+  DOCKER_USERNAME: pramithamj
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: Run Tests
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: '**/package-lock.json'
+
+    - name: Install dependencies
+      run: |
+        # Install common dependencies
+        cd common && npm ci && cd ..
+        
+        # Install service dependencies
+        for service in services/*/; do
+          if [ -f "$service/package.json" ]; then
+            echo "Installing dependencies for $service"
+            cd "$service" && npm ci && cd ../..
+          fi
+        done
+
+    - name: Run tests
+      run: |
+        # Run common tests
+        cd common && npm test && cd ..
+        
+        # Run service tests
+        for service in services/*/; do
+          if [ -f "$service/package.json" ] && [ -d "$service/tests" ]; then
+            echo "Running tests for $service"
+            cd "$service" && npm test && cd ../..
+          fi
+        done
+
+  security:
+    runs-on: ubuntu-latest
+    name: Security Scan
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        scan-ref: '.'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+
+    - name: Upload Trivy scan results to GitHub Security tab
+      uses: github/codeql-action/upload-sarif@v2
+      if: always()
+      with:
+        sarif_file: 'trivy-results.sarif'
+
+  build-and-push:
+    needs: [test, security]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
+    
+    strategy:
+      matrix:
+        service:
+          - { name: "common", context: "./common", dockerfile: "./common/Dockerfile" }
+          - { name: "auth", context: "./services/auth", dockerfile: "./services/auth/Dockerfile" }
+          - { name: "bid", context: "./services/bid", dockerfile: "./services/bid/Dockerfile" }
+          - { name: "listing", context: "./services/listings", dockerfile: "./services/listings/Dockerfile" }
+          - { name: "payment", context: "./services/payments", dockerfile: "./services/payments/Dockerfile" }
+          - { name: "profile", context: "./services/profile", dockerfile: "./services/profile/Dockerfile" }
+          - { name: "email", context: "./services/email", dockerfile: "./services/email/Dockerfile" }
+          - { name: "expiration", context: "./services/expiration", dockerfile: "./services/expiration/Dockerfile" }
+          - { name: "api-gateway", context: "./services/api-gateway", dockerfile: "./services/api-gateway/Dockerfile" }
+          - { name: "frontend", context: "./services/frontend", dockerfile: "./services/frontend/Dockerfile.dev" }
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Extract metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.DOCKER_USERNAME }}/auction-website/${{ matrix.service.name }}
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+          type=raw,value=latest,enable={{is_default_branch}}
+          type=raw,value=v1.0.{{run_number}},enable={{is_default_branch}}
+          type=raw,value=v1.0.{{run_number}}-{{sha}},enable={{is_default_branch}}
+
+    - name: Build and push ${{ matrix.service.name }}
+      uses: docker/build-push-action@v5
+      with:
+        context: ${{ matrix.service.context }}
+        file: ${{ matrix.service.dockerfile }}
+        push: true
+        platforms: linux/amd64,linux/arm64
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+  deploy-staging:
+    needs: [build-and-push]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    environment: staging
+    
+    steps:
+    - name: Deploy to staging
+      run: |
+        echo "🚀 Deploying to staging environment"
+        echo "Version: v1.0.${{ github.run_number }}"
+        # Add your staging deployment commands here
+        # kubectl apply -f k8s/ --namespace=staging
+        # helm upgrade auction-website ./charts --namespace=staging
+
+  deploy-production:
+    needs: [build-and-push]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    environment: production
+    
+    steps:
+    - name: Deploy to production
+      run: |
+        echo "🚀 Deploying to production environment"
+        echo "Version: ${{ github.ref_name }}"
+        # Add your production deployment commands here
+        # kubectl apply -f k8s/ --namespace=production
+        # helm upgrade auction-website ./charts --namespace=production
+
+  notify:
+    needs: [test, security, build-and-push]
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+    - name: Notification
+      run: |
+        if [[ "${{ needs.test.result }}" == "success" && "${{ needs.security.result }}" == "success" && "${{ needs.build-and-push.result }}" == "success" ]]; then
+          echo "✅ CI/CD Pipeline completed successfully!"
+          echo "🐳 All Docker images have been built and pushed to Docker Hub"
+          echo "📦 Version: v1.0.${{ github.run_number }}"
+        else
+          echo "❌ CI/CD Pipeline failed!"
+          echo "🔍 Check the logs for more details"
+        fi
