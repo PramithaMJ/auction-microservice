@@ -113,7 +113,7 @@ jobs:
       id: meta
       uses: docker/metadata-action@v5
       with:
-        images: ${{ env.DOCKER_USERNAME }}/auction-website/${{ matrix.service.name }}
+        images: ${{ env.DOCKER_USERNAME }}/auction-website-ms-${{ matrix.service.name }}
         tags: |
           type=ref,event=branch
           type=ref,event=pr

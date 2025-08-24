@@ -38,8 +38,8 @@ pull_images() {
     services=("common" "auth" "bid" "listing" "payment" "profile" "email" "expiration" "api-gateway" "frontend")
     
     for service in "${services[@]}"; do
-        echo -e "  Pulling pramithamj/auction-website/${service}:${VERSION}"
-        if ! docker pull "pramithamj/auction-website/${service}:${VERSION}" 2>/dev/null; then
+        echo -e "  Pulling pramithamj/auction-website-ms-${service}:${VERSION}"
+        if ! docker pull "pramithamj/auction-website-ms-${service}:${VERSION}" 2>/dev/null; then
             echo -e "${YELLOW}⚠️  Failed to pull ${service}:${VERSION}, will try to build locally${NC}"
         fi
     done

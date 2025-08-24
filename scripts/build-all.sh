@@ -41,8 +41,8 @@ build_service() {
     fi
     
     docker build \
-        -t "${DOCKER_USERNAME}/auction-website/${service_name}:${FULL_TAG}" \
-        -t "${DOCKER_USERNAME}/auction-website/${service_name}:latest" \
+        -t "${DOCKER_USERNAME}/auction-website-ms-${service_name}:${FULL_TAG}" \
+        -t "${DOCKER_USERNAME}/auction-website-ms-${service_name}:latest" \
         -f "${dockerfile_path}" \
         "${context_path}"
     
@@ -85,15 +85,15 @@ echo -e "${BLUE}📋 Built Images:${NC}"
 services_list=("common" "auth" "bid" "listing" "payment" "profile" "email" "expiration" "api-gateway" "frontend")
 
 for service in "${services_list[@]}"; do
-    echo -e "  ${GREEN}✓${NC} ${DOCKER_USERNAME}/auction-website/${service}:${FULL_TAG}"
-    echo -e "  ${GREEN}✓${NC} ${DOCKER_USERNAME}/auction-website/${service}:latest"
+    echo -e "  ${GREEN}✓${NC} ${DOCKER_USERNAME}/auction-website-ms-${service}:${FULL_TAG}"
+    echo -e "  ${GREEN}✓${NC} ${DOCKER_USERNAME}/auction-website-ms-${service}:latest"
 done
 
 echo ""
 echo -e "${YELLOW}💡 To push to Docker Hub:${NC}"
 for service in "${services_list[@]}"; do
-    echo -e "  docker push ${DOCKER_USERNAME}/auction-website/${service}:${FULL_TAG}"
-    echo -e "  docker push ${DOCKER_USERNAME}/auction-website/${service}:latest"
+    echo -e "  docker push ${DOCKER_USERNAME}/auction-website-ms-${service}:${FULL_TAG}"
+    echo -e "  docker push ${DOCKER_USERNAME}/auction-website-ms-${service}:latest"
 done
 
 echo ""

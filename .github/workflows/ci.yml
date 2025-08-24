@@ -54,8 +54,8 @@ jobs:
         push: true
         platforms: linux/amd64,linux/arm64
         tags: |
-          ${{ env.DOCKER_USERNAME }}/auction-website/common:latest
-          ${{ env.DOCKER_USERNAME }}/auction-website/common:${{ steps.meta.outputs.VERSION }}
+          ${{ env.DOCKER_USERNAME }}/auction-website-ms-common:latest
+          ${{ env.DOCKER_USERNAME }}/auction-website-ms-common:${{ steps.meta.outputs.VERSION }}
           ${{ env.DOCKER_USERNAME }}/auction-website/common:${{ steps.meta.outputs.FULL_TAG }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
