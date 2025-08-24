@@ -56,7 +56,7 @@ jobs:
         tags: |
           ${{ env.DOCKER_USERNAME }}/auction-website-ms-common:latest
           ${{ env.DOCKER_USERNAME }}/auction-website-ms-common:${{ steps.meta.outputs.VERSION }}
-          ${{ env.DOCKER_USERNAME }}/auction-website/common:${{ steps.meta.outputs.FULL_TAG }}
+          ${{ env.DOCKER_USERNAME }}/auction-website-ms-common:${{ steps.meta.outputs.FULL_TAG }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
@@ -68,9 +68,9 @@ jobs:
         push: true
         platforms: linux/amd64,linux/arm64
         tags: |
-          ${{ env.DOCKER_USERNAME }}/auction-website/auth:latest
-          ${{ env.DOCKER_USERNAME }}/auction-website/auth:${{ steps.meta.outputs.VERSION }}
-          ${{ env.DOCKER_USERNAME }}/auction-website/auth:${{ steps.meta.outputs.FULL_TAG }}
+          ${{ env.DOCKER_USERNAME }}/auction-website-auth:latest
+          ${{ env.DOCKER_USERNAME }}/auction-website-auth:${{ steps.meta.outputs.VERSION }}
+          ${{ env.DOCKER_USERNAME }}/auction-website-auth:${{ steps.meta.outputs.FULL_TAG }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
@@ -82,9 +82,9 @@ jobs:
         push: true
         platforms: linux/amd64,linux/arm64
         tags: |
-          ${{ env.DOCKER_USERNAME }}/auction-website/bid:latest
-          ${{ env.DOCKER_USERNAME }}/auction-website/bid:${{ steps.meta.outputs.VERSION }}
-          ${{ env.DOCKER_USERNAME }}/auction-website/bid:${{ steps.meta.outputs.FULL_TAG }}
+          ${{ env.DOCKER_USERNAME }}/auction-website-bid:latest
+          ${{ env.DOCKER_USERNAME }}/auction-website-bid:${{ steps.meta.outputs.VERSION }}
+          ${{ env.DOCKER_USERNAME }}/auction-website-bid:${{ steps.meta.outputs.FULL_TAG }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
@@ -96,9 +96,9 @@ jobs:
         push: true
         platforms: linux/amd64,linux/arm64
         tags: |
-          ${{ env.DOCKER_USERNAME }}/auction-website/listing:latest
-          ${{ env.DOCKER_USERNAME }}/auction-website/listing:${{ steps.meta.outputs.VERSION }}
-          ${{ env.DOCKER_USERNAME }}/auction-website/listing:${{ steps.meta.outputs.FULL_TAG }}
+          ${{ env.DOCKER_USERNAME }}/auction-website-listing:latest
+          ${{ env.DOCKER_USERNAME }}/auction-website-listing:${{ steps.meta.outputs.VERSION }}
+          ${{ env.DOCKER_USERNAME }}/auction-website-listing:${{ steps.meta.outputs.FULL_TAG }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
@@ -110,9 +110,9 @@ jobs:
         push: true
         platforms: linux/amd64,linux/arm64
         tags: |
-          ${{ env.DOCKER_USERNAME }}/auction-website/payment:latest
-          ${{ env.DOCKER_USERNAME }}/auction-website/payment:${{ steps.meta.outputs.VERSION }}
-          ${{ env.DOCKER_USERNAME }}/auction-website/payment:${{ steps.meta.outputs.FULL_TAG }}
+          ${{ env.DOCKER_USERNAME }}/auction-website-payment:latest
+          ${{ env.DOCKER_USERNAME }}/auction-website-payment:${{ steps.meta.outputs.VERSION }}
+          ${{ env.DOCKER_USERNAME }}/auction-website-payment:${{ steps.meta.outputs.FULL_TAG }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
@@ -124,9 +124,9 @@ jobs:
         push: true
         platforms: linux/amd64,linux/arm64
         tags: |
-          ${{ env.DOCKER_USERNAME }}/auction-website/profile:latest
-          ${{ env.DOCKER_USERNAME }}/auction-website/profile:${{ steps.meta.outputs.VERSION }}
-          ${{ env.DOCKER_USERNAME }}/auction-website/profile:${{ steps.meta.outputs.FULL_TAG }}
+          ${{ env.DOCKER_USERNAME }}/auction-website-profile:latest
+          ${{ env.DOCKER_USERNAME }}/auction-website-profile:${{ steps.meta.outputs.VERSION }}
+          ${{ env.DOCKER_USERNAME }}/auction-website-profile:${{ steps.meta.outputs.FULL_TAG }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
@@ -138,9 +138,9 @@ jobs:
         push: true
         platforms: linux/amd64,linux/arm64
         tags: |
-          ${{ env.DOCKER_USERNAME }}/auction-website/email:latest
-          ${{ env.DOCKER_USERNAME }}/auction-website/email:${{ steps.meta.outputs.VERSION }}
-          ${{ env.DOCKER_USERNAME }}/auction-website/email:${{ steps.meta.outputs.FULL_TAG }}
+          ${{ env.DOCKER_USERNAME }}/auction-website-email:latest
+          ${{ env.DOCKER_USERNAME }}/auction-website-email:${{ steps.meta.outputs.VERSION }}
+          ${{ env.DOCKER_USERNAME }}/auction-website-email:${{ steps.meta.outputs.FULL_TAG }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
@@ -152,9 +152,9 @@ jobs:
         push: true
         platforms: linux/amd64,linux/arm64
         tags: |
-          ${{ env.DOCKER_USERNAME }}/auction-website/expiration:latest
-          ${{ env.DOCKER_USERNAME }}/auction-website/expiration:${{ steps.meta.outputs.VERSION }}
-          ${{ env.DOCKER_USERNAME }}/auction-website/expiration:${{ steps.meta.outputs.FULL_TAG }}
+          ${{ env.DOCKER_USERNAME }}/auction-website-expiration:latest
+          ${{ env.DOCKER_USERNAME }}/auction-website-expiration:${{ steps.meta.outputs.VERSION }}
+          ${{ env.DOCKER_USERNAME }}/auction-website-expiration:${{ steps.meta.outputs.FULL_TAG }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
@@ -166,9 +166,9 @@ jobs:
         push: true
         platforms: linux/amd64,linux/arm64
         tags: |
-          ${{ env.DOCKER_USERNAME }}/auction-website/api-gateway:latest
-          ${{ env.DOCKER_USERNAME }}/auction-website/api-gateway:${{ steps.meta.outputs.VERSION }}
-          ${{ env.DOCKER_USERNAME }}/auction-website/api-gateway:${{ steps.meta.outputs.FULL_TAG }}
+          ${{ env.DOCKER_USERNAME }}/auction-website-api-gateway:latest
+          ${{ env.DOCKER_USERNAME }}/auction-website-api-gateway:${{ steps.meta.outputs.VERSION }}
+          ${{ env.DOCKER_USERNAME }}/auction-website-api-gateway:${{ steps.meta.outputs.FULL_TAG }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
@@ -180,9 +180,9 @@ jobs:
         push: true
         platforms: linux/amd64,linux/arm64
         tags: |
-          ${{ env.DOCKER_USERNAME }}/auction-website/frontend:latest
-          ${{ env.DOCKER_USERNAME }}/auction-website/frontend:${{ steps.meta.outputs.VERSION }}
-          ${{ env.DOCKER_USERNAME }}/auction-website/frontend:${{ steps.meta.outputs.FULL_TAG }}
+          ${{ env.DOCKER_USERNAME }}/auction-website-frontend:latest
+          ${{ env.DOCKER_USERNAME }}/auction-website-frontend:${{ steps.meta.outputs.VERSION }}
+          ${{ env.DOCKER_USERNAME }}/auction-website-frontend:${{ steps.meta.outputs.FULL_TAG }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
@@ -195,12 +195,12 @@ jobs:
         echo "💾 Commit: ${{ steps.meta.outputs.SHORT_SHA }}"
         echo ""
         echo "🐳 Docker Images pushed:"
-        echo "  - auth: ${{ env.DOCKER_USERNAME }}/auction-website/auth:${{ steps.meta.outputs.VERSION }}"
-        echo "  - bid: ${{ env.DOCKER_USERNAME }}/auction-website/bid:${{ steps.meta.outputs.VERSION }}"
-        echo "  - listings: ${{ env.DOCKER_USERNAME }}/auction-website/listing:${{ steps.meta.outputs.VERSION }}"
-        echo "  - payments: ${{ env.DOCKER_USERNAME }}/auction-website/payment:${{ steps.meta.outputs.VERSION }}"
-        echo "  - profile: ${{ env.DOCKER_USERNAME }}/auction-website/profile:${{ steps.meta.outputs.VERSION }}"
-        echo "  - email: ${{ env.DOCKER_USERNAME }}/auction-website/email:${{ steps.meta.outputs.VERSION }}"
-        echo "  - expiration: ${{ env.DOCKER_USERNAME }}/auction-website/expiration:${{ steps.meta.outputs.VERSION }}"
-        echo "  - api-gateway: ${{ env.DOCKER_USERNAME }}/auction-website/api-gateway:${{ steps.meta.outputs.VERSION }}"
-        echo "  - frontend: ${{ env.DOCKER_USERNAME }}/auction-website/frontend:${{ steps.meta.outputs.VERSION }}"
+        echo "  - auth: ${{ env.DOCKER_USERNAME }}/auction-website-auth:${{ steps.meta.outputs.VERSION }}"
+        echo "  - bid: ${{ env.DOCKER_USERNAME }}/auction-website-bid:${{ steps.meta.outputs.VERSION }}"
+        echo "  - listings: ${{ env.DOCKER_USERNAME }}/auction-website-listing:${{ steps.meta.outputs.VERSION }}"
+        echo "  - payments: ${{ env.DOCKER_USERNAME }}/auction-website-payment:${{ steps.meta.outputs.VERSION }}"
+        echo "  - profile: ${{ env.DOCKER_USERNAME }}/auction-website-profile:${{ steps.meta.outputs.VERSION }}"
+        echo "  - email: ${{ env.DOCKER_USERNAME }}/auction-website-email:${{ steps.meta.outputs.VERSION }}"
+        echo "  - expiration: ${{ env.DOCKER_USERNAME }}/auction-website-expiration:${{ steps.meta.outputs.VERSION }}"
+        echo "  - api-gateway: ${{ env.DOCKER_USERNAME }}/auction-website-api-gateway:${{ steps.meta.outputs.VERSION }}"
+        echo "  - frontend: ${{ env.DOCKER_USERNAME }}/auction-website-frontend:${{ steps.meta.outputs.VERSION }}"
