@@ -10,17 +10,35 @@ This guide shows you how to run the entire Auction Website using Docker Compose 
 - At least 8GB RAM available for Docker
 
 ### 1. Environment Configuration
-```bash
-# Copy the environment template
-cp .env.docker .env
 
-# Edit the .env file with your actual configuration
-# Important: Update these values:
-# - JWT_KEY (use a strong random string)
-# - AWS credentials (for image uploads)
-# - Stripe key (for payments)
-# - Email settings (for notifications)
+**🎯 Easy Setup with Configuration Script (Recommended):**
+```bash
+# Run the automated configuration script
+./configure-env.sh
+
+# Choose your environment:
+# 1) Local Development 
+# 2) EC2/Production Server
+# 3) Custom Configuration
 ```
+
+**📋 Manual Setup:**
+```bash
+# For local development
+cp .env.local.example .env
+
+# For production/EC2
+cp .env.production.example .env
+
+# Edit the .env file with your configuration
+# Important: Update these values:
+# - Server IP (for EC2 deployment)
+# - JWT_KEY (use a strong random string)  
+# - Database passwords
+# - Email credentials
+```
+
+💡 **No more hardcoded IPs!** The application now automatically configures URLs based on your environment settings.
 
 ### 2. Start All Services
 ```bash
