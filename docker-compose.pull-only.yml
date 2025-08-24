@@ -145,25 +145,9 @@ services:
       retries: 5
       start_period: 30s
 
-  # Common Package Builder
-  common:
-    image: auction-website-common:latest
-    build:
-      context: ./common
-      dockerfile: Dockerfile
-    container_name: auction-common
-    command: ["sh", "-c", "tsc && echo 'Common build completed' && exit 0"]
-    volumes:
-      - common-build:/app/build
-    networks:
-      - auction-network
-
-  # Application Services
+  # Application Services (Pull Only - No Build)
   api-gateway:
     image: pramithamj/auction-website/api-gateway:${IMAGE_TAG:-latest}
-    build:
-      context: ./services/api-gateway
-      dockerfile: Dockerfile
     container_name: auction-api-gateway
     ports:
       - "3001:3001"
@@ -189,20 +173,14 @@ services:
         condition: service_started
       profile:
         condition: service_started
-      common:
-        condition: service_completed_successfully
     networks:
       - auction-network
     restart: unless-stopped
     volumes:
       - ./logs:/app/logs
-      - common-build:/app/node_modules/@jjmauction/common
 
   auth:
     image: pramithamj/auction-website/auth:${IMAGE_TAG:-latest}
-    build:
-      context: ./services/auth
-      dockerfile: Dockerfile
     container_name: auction-auth
     ports:
       - "3101:3101"
@@ -219,19 +197,12 @@ services:
         condition: service_healthy
       nats-streaming:
         condition: service_started
-      common:
-        condition: service_completed_successfully
     networks:
       - auction-network
     restart: unless-stopped
-    volumes:
-      - common-build:/app/node_modules/@jjmauction/common
 
   bid:
     image: pramithamj/auction-website/bid:${IMAGE_TAG:-latest}
-    build:
-      context: ./services/bid
-      dockerfile: Dockerfile
     container_name: auction-bid
     ports:
       - "3102:3102"
@@ -248,19 +219,12 @@ services:
         condition: service_healthy
       nats-streaming:
         condition: service_started
-      common:
-        condition: service_completed_successfully
     networks:
       - auction-network
     restart: unless-stopped
-    volumes:
-      - common-build:/app/node_modules/@jjmauction/common
 
   listings:
     image: pramithamj/auction-website/listing:${IMAGE_TAG:-latest}
-    build:
-      context: ./services/listings
-      dockerfile: Dockerfile
     container_name: auction-listings
     ports:
       - "3103:3103"
@@ -281,19 +245,12 @@ services:
         condition: service_healthy
       nats-streaming:
         condition: service_started
-      common:
-        condition: service_completed_successfully
     networks:
       - auction-network
     restart: unless-stopped
-    volumes:
-      - common-build:/app/node_modules/@jjmauction/common
 
   payments:
     image: pramithamj/auction-website/payment:${IMAGE_TAG:-latest}
-    build:
-      context: ./services/payments
-      dockerfile: Dockerfile
     container_name: auction-payments
     ports:
       - "3104:3104"
@@ -311,19 +268,12 @@ services:
         condition: service_healthy
       nats-streaming:
         condition: service_started
-      common:
-        condition: service_completed_successfully
     networks:
       - auction-network
     restart: unless-stopped
-    volumes:
-      - common-build:/app/node_modules/@jjmauction/common
 
   profile:
     image: pramithamj/auction-website/profile:${IMAGE_TAG:-latest}
-    build:
-      context: ./services/profile
-      dockerfile: Dockerfile
     container_name: auction-profile
     ports:
       - "3105:3105"
@@ -340,19 +290,12 @@ services:
         condition: service_healthy
       nats-streaming:
         condition: service_started
-      common:
-        condition: service_completed_successfully
     networks:
       - auction-network
     restart: unless-stopped
-    volumes:
-      - common-build:/app/node_modules/@jjmauction/common
 
   email:
     image: pramithamj/auction-website/email:${IMAGE_TAG:-latest}
-    build:
-      context: ./services/email
-      dockerfile: Dockerfile
     container_name: auction-email
     ports:
       - "3106:3106"
@@ -368,19 +311,12 @@ services:
     depends_on:
       nats-streaming:
         condition: service_started
-      common:
-        condition: service_completed_successfully
     networks:
       - auction-network
     restart: unless-stopped
-    volumes:
-      - common-build:/app/node_modules/@jjmauction/common
 
   expiration:
     image: pramithamj/auction-website/expiration:${IMAGE_TAG:-latest}
-    build:
-      context: ./services/expiration
-      dockerfile: Dockerfile
     container_name: auction-expiration
     ports:
       - "3107:3107"
@@ -398,19 +334,12 @@ services:
         condition: service_healthy
       nats-streaming:
         condition: service_started
-      common:
-        condition: service_completed_successfully
     networks:
       - auction-network
     restart: unless-stopped
-    volumes:
-      - common-build:/app/node_modules/@jjmauction/common
 
   frontend:
     image: pramithamj/auction-website/frontend:${IMAGE_TAG:-latest}
-    build:
-      context: ./services/frontend
-      dockerfile: Dockerfile.dev
     container_name: auction-frontend
     ports:
       - "3000:3000"
@@ -425,10 +354,6 @@ services:
     networks:
       - auction-network
     restart: unless-stopped
-    volumes:
-      - ./services/frontend:/app
-      - /app/node_modules
-      - /app/.next
 
 volumes:
   redis-data:
@@ -437,7 +362,6 @@ volumes:
   listings-mysql-data:
   payments-mysql-data:
   profile-mysql-data:
-  common-build:
 
 networks:
   auction-network:

@@ -16,3 +16,5 @@ services/*/.env
 services/*/.env.local
 services/*/.env.production
 services/*/.env.development
+
+.DS_Store

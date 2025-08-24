@@ -1,0 +1,206 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  DOCKER_REGISTRY: docker.io
+  DOCKER_USERNAME: pramithamj
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Generate version tags
+      id: meta
+      run: |
+        # Get short commit SHA
+        SHORT_SHA=$(git rev-parse --short HEAD)
+        
+        # Get current date
+        DATE=$(date +%Y%m%d)
+        
+        # Generate version tag
+        VERSION="v1.0.${GITHUB_RUN_NUMBER}"
+        
+        echo "SHORT_SHA=${SHORT_SHA}" >> $GITHUB_OUTPUT
+        echo "DATE=${DATE}" >> $GITHUB_OUTPUT
+        echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
+        echo "FULL_TAG=${VERSION}-${SHORT_SHA}" >> $GITHUB_OUTPUT
+
+    - name: Build and push Common package
+      uses: docker/build-push-action@v5
+      with:
+        context: ./common
+        file: ./common/Dockerfile
+        push: true
+        platforms: linux/amd64,linux/arm64
+        tags: |
+          ${{ env.DOCKER_USERNAME }}/auction-website/common:latest
+          ${{ env.DOCKER_USERNAME }}/auction-website/common:${{ steps.meta.outputs.VERSION }}
+          ${{ env.DOCKER_USERNAME }}/auction-website/common:${{ steps.meta.outputs.FULL_TAG }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+    - name: Build and push Auth service
+      uses: docker/build-push-action@v5
+      with:
+        context: ./services/auth
+        file: ./services/auth/Dockerfile
+        push: true
+        platforms: linux/amd64,linux/arm64
+        tags: |
+          ${{ env.DOCKER_USERNAME }}/auction-website/auth:latest
+          ${{ env.DOCKER_USERNAME }}/auction-website/auth:${{ steps.meta.outputs.VERSION }}
+          ${{ env.DOCKER_USERNAME }}/auction-website/auth:${{ steps.meta.outputs.FULL_TAG }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+    - name: Build and push Bid service
+      uses: docker/build-push-action@v5
+      with:
+        context: ./services/bid
+        file: ./services/bid/Dockerfile
+        push: true
+        platforms: linux/amd64,linux/arm64
+        tags: |
+          ${{ env.DOCKER_USERNAME }}/auction-website/bid:latest
+          ${{ env.DOCKER_USERNAME }}/auction-website/bid:${{ steps.meta.outputs.VERSION }}
+          ${{ env.DOCKER_USERNAME }}/auction-website/bid:${{ steps.meta.outputs.FULL_TAG }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+    - name: Build and push Listings service
+      uses: docker/build-push-action@v5
+      with:
+        context: ./services/listings
+        file: ./services/listings/Dockerfile
+        push: true
+        platforms: linux/amd64,linux/arm64
+        tags: |
+          ${{ env.DOCKER_USERNAME }}/auction-website/listing:latest
+          ${{ env.DOCKER_USERNAME }}/auction-website/listing:${{ steps.meta.outputs.VERSION }}
+          ${{ env.DOCKER_USERNAME }}/auction-website/listing:${{ steps.meta.outputs.FULL_TAG }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+    - name: Build and push Payments service
+      uses: docker/build-push-action@v5
+      with:
+        context: ./services/payments
+        file: ./services/payments/Dockerfile
+        push: true
+        platforms: linux/amd64,linux/arm64
+        tags: |
+          ${{ env.DOCKER_USERNAME }}/auction-website/payment:latest
+          ${{ env.DOCKER_USERNAME }}/auction-website/payment:${{ steps.meta.outputs.VERSION }}
+          ${{ env.DOCKER_USERNAME }}/auction-website/payment:${{ steps.meta.outputs.FULL_TAG }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+    - name: Build and push Profile service
+      uses: docker/build-push-action@v5
+      with:
+        context: ./services/profile
+        file: ./services/profile/Dockerfile
+        push: true
+        platforms: linux/amd64,linux/arm64
+        tags: |
+          ${{ env.DOCKER_USERNAME }}/auction-website/profile:latest
+          ${{ env.DOCKER_USERNAME }}/auction-website/profile:${{ steps.meta.outputs.VERSION }}
+          ${{ env.DOCKER_USERNAME }}/auction-website/profile:${{ steps.meta.outputs.FULL_TAG }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+    - name: Build and push Email service
+      uses: docker/build-push-action@v5
+      with:
+        context: ./services/email
+        file: ./services/email/Dockerfile
+        push: true
+        platforms: linux/amd64,linux/arm64
+        tags: |
+          ${{ env.DOCKER_USERNAME }}/auction-website/email:latest
+          ${{ env.DOCKER_USERNAME }}/auction-website/email:${{ steps.meta.outputs.VERSION }}
+          ${{ env.DOCKER_USERNAME }}/auction-website/email:${{ steps.meta.outputs.FULL_TAG }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+    - name: Build and push Expiration service
+      uses: docker/build-push-action@v5
+      with:
+        context: ./services/expiration
+        file: ./services/expiration/Dockerfile
+        push: true
+        platforms: linux/amd64,linux/arm64
+        tags: |
+          ${{ env.DOCKER_USERNAME }}/auction-website/expiration:latest
+          ${{ env.DOCKER_USERNAME }}/auction-website/expiration:${{ steps.meta.outputs.VERSION }}
+          ${{ env.DOCKER_USERNAME }}/auction-website/expiration:${{ steps.meta.outputs.FULL_TAG }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+    - name: Build and push API Gateway
+      uses: docker/build-push-action@v5
+      with:
+        context: ./services/api-gateway
+        file: ./services/api-gateway/Dockerfile
+        push: true
+        platforms: linux/amd64,linux/arm64
+        tags: |
+          ${{ env.DOCKER_USERNAME }}/auction-website/api-gateway:latest
+          ${{ env.DOCKER_USERNAME }}/auction-website/api-gateway:${{ steps.meta.outputs.VERSION }}
+          ${{ env.DOCKER_USERNAME }}/auction-website/api-gateway:${{ steps.meta.outputs.FULL_TAG }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+    - name: Build and push Frontend
+      uses: docker/build-push-action@v5
+      with:
+        context: ./services/frontend
+        file: ./services/frontend/Dockerfile.dev
+        push: true
+        platforms: linux/amd64,linux/arm64
+        tags: |
+          ${{ env.DOCKER_USERNAME }}/auction-website/frontend:latest
+          ${{ env.DOCKER_USERNAME }}/auction-website/frontend:${{ steps.meta.outputs.VERSION }}
+          ${{ env.DOCKER_USERNAME }}/auction-website/frontend:${{ steps.meta.outputs.FULL_TAG }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+    - name: Summary
+      run: |
+        echo "🎉 Build and Push Completed!"
+        echo "📦 Version: ${{ steps.meta.outputs.VERSION }}"
+        echo "🔖 Full Tag: ${{ steps.meta.outputs.FULL_TAG }}"
+        echo "📅 Date: ${{ steps.meta.outputs.DATE }}"
+        echo "💾 Commit: ${{ steps.meta.outputs.SHORT_SHA }}"
+        echo ""
+        echo "🐳 Docker Images pushed:"
+        echo "  - auth: ${{ env.DOCKER_USERNAME }}/auction-website/auth:${{ steps.meta.outputs.VERSION }}"
+        echo "  - bid: ${{ env.DOCKER_USERNAME }}/auction-website/bid:${{ steps.meta.outputs.VERSION }}"
+        echo "  - listings: ${{ env.DOCKER_USERNAME }}/auction-website/listing:${{ steps.meta.outputs.VERSION }}"
+        echo "  - payments: ${{ env.DOCKER_USERNAME }}/auction-website/payment:${{ steps.meta.outputs.VERSION }}"
+        echo "  - profile: ${{ env.DOCKER_USERNAME }}/auction-website/profile:${{ steps.meta.outputs.VERSION }}"
+        echo "  - email: ${{ env.DOCKER_USERNAME }}/auction-website/email:${{ steps.meta.outputs.VERSION }}"
+        echo "  - expiration: ${{ env.DOCKER_USERNAME }}/auction-website/expiration:${{ steps.meta.outputs.VERSION }}"
+        echo "  - api-gateway: ${{ env.DOCKER_USERNAME }}/auction-website/api-gateway:${{ steps.meta.outputs.VERSION }}"
+        echo "  - frontend: ${{ env.DOCKER_USERNAME }}/auction-website/frontend:${{ steps.meta.outputs.VERSION }}"
