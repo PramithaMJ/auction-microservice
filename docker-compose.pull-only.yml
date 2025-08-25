@@ -159,7 +159,7 @@ services:
       - LISTINGS_SERVICE_URL=http://listings:3103
       - PAYMENTS_SERVICE_URL=http://payments:3104
       - PROFILE_SERVICE_URL=http://profile:3105
-      - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost:3000,http://localhost:3001}
+      - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost:3000,http://localhost:3001,http://34.205.47.149:3000,http://34.205.47.149:3001,http://34.205.47.149}
     depends_on:
       nats-streaming:
         condition: service_started
