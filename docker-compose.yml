@@ -427,6 +427,8 @@ services:
     depends_on:
       api-gateway:
         condition: service_started
+      common:
+        condition: service_completed_successfully
     networks:
       - auction-network
     restart: unless-stopped
@@ -434,6 +436,7 @@ services:
       - ./services/frontend:/app
       - /app/node_modules
       - /app/.next
+      # Mount the common build directly to the correct location
       - common-build:/app/node_modules/@jjmauction/common
 
 volumes:
