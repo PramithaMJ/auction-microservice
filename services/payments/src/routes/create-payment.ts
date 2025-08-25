@@ -9,7 +9,8 @@ import express, { Request, Response } from 'express';
 import { body } from 'express-validator';
 
 import { PaymentCreatedPublisher } from '../events/publishers/payment-created-publisher';
-import { Listing, Payment } from '../models';
+import { EmailCreatedPublisher } from '../events/publishers/email-created-publisher';
+import { Listing, Payment, User } from '../models';
 import { natsWrapper } from '../nats-wrapper';
 import { stripe } from '../stripe';
 
@@ -27,6 +28,13 @@ router.post(
 
     if (!listing) {
       throw new NotFoundError();
+    }
+
+    // Fetch the winner's email from the User table
+    let winnerEmail = undefined;
+    if (listing.winnerId) {
+      const winner = await User.findOne({ where: { id: listing.winnerId } });
+      winnerEmail = winner?.email;
     }
 
     if (listing.status !== ListingStatus.AwaitingPayment) {
@@ -56,6 +64,15 @@ router.post(
       id: listing.id!,
       version: payment.version!,
     });
+
+    // Send email notification to the winner
+    if (winnerEmail) {
+      await new EmailCreatedPublisher(natsWrapper.client).publish({
+        email: winnerEmail,
+        subject: `Payment received for auction: ${listing.id}`,
+        text: `Your payment for the auction (ID: ${listing.id}) was successful. Thank you!`
+      });
+    }
 
     res.status(201).send({ id: payment.id });
   }

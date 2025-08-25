@@ -1,4 +1,4 @@
-import { Listing, Payment, db } from '../src/models';
+import { Listing, Payment, User, db } from '../src/models';
 
 jest.mock('../src/nats-wrapper');
 
@@ -20,6 +20,11 @@ beforeEach(async () => {
   });
 
   await Payment.destroy({
+    where: {},
+    truncate: true,
+  });
+
+  await User.destroy({
     where: {},
     truncate: true,
   });

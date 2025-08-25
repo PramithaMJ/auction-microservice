@@ -8,6 +8,7 @@ import {
 import express, { Request, Response } from 'express';
 
 import { BidCreatedPublisher } from '../events/publishers/bid-created-publisher';
+import { EmailCreatedPublisher } from '../events/publishers/email-created-publisher';
 import { Bid, Listing, User, db } from '../models';
 import { natsWrapper } from '../nats-wrapper';
 
@@ -27,6 +28,9 @@ router.post(
       if (!listing) {
         throw new NotFoundError();
       }
+
+      // Fetch the listing owner
+      const owner = await User.findOne({ where: { id: listing.userId } });
 
       if (listing.status !== ListingStatus.Active) {
         throw new BadRequestError(
@@ -72,6 +76,15 @@ router.post(
         userId: req.currentUser!.id,
         version: bid.version!,
       });
+
+      // Send email notification to the listing owner
+      if (owner && owner.email) {
+        await new EmailCreatedPublisher(natsWrapper.client).publish({
+          email: owner.email,
+          subject: `New bid placed on your item: ${listing.title}`,
+          text: `A new bid of $${(amount / 100).toFixed(2)} has been placed on your item "${listing.title}".`
+        });
+      }
 
       res.status(201).send(bid);
     });

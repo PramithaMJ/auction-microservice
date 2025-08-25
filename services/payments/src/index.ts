@@ -1,4 +1,5 @@
 import { app } from './app';
+import { UserCreatedListener } from './events/listeners/user-created-listener';
 import { db } from './models';
 import { natsWrapper } from './nats-wrapper';
 
@@ -43,6 +44,9 @@ import { natsWrapper } from './nats-wrapper';
 
     process.on('SIGINT', () => natsWrapper.client.close());
     process.on('SIGTERM', () => natsWrapper.client.close());
+
+    // Start listening for events
+    await new UserCreatedListener(natsWrapper.client).listen();
 
     await db.authenticate();
     await db.sync();
