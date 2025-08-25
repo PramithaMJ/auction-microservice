@@ -250,6 +250,8 @@ services:
         condition: service_started
       common:
         condition: service_completed_successfully
+      listings:
+        condition: service_started
     networks:
       - auction-network
     restart: unless-stopped
