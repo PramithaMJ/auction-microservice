@@ -169,13 +169,13 @@ services:
       - "${API_GATEWAY_PORT:-3001}:3001"
     environment:
       - PORT=${API_GATEWAY_PORT:-3001}
-      - NODE_ENV=development
+      - NODE_ENV=${NODE_ENV:-development}
       - AUTH_SERVICE_URL=http://auth:3101
       - BID_SERVICE_URL=http://bid:3102
       - LISTINGS_SERVICE_URL=http://listings:3103
       - PAYMENTS_SERVICE_URL=http://payments:3104
       - PROFILE_SERVICE_URL=http://profile:3105
-      - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost:3000,http://localhost:3001}
+      - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost:3000,http://localhost:3001,http://98.87.131.233:3000,http://98.87.131.233:3001,http://98.87.131.233}
     depends_on:
       nats-streaming:
         condition: service_started
@@ -415,10 +415,11 @@ services:
     ports:
       - "${FRONTEND_PORT:-3000}:3000"
     environment:
-      - NODE_ENV=development
+      - NODE_ENV=${NODE_ENV:-development}
       - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
       - NEXT_PUBLIC_API_GATEWAY_PORT=${NEXT_PUBLIC_API_GATEWAY_PORT:-3001}
       - SERVER_API_URL=${SERVER_API_URL:-http://api-gateway:3001}
+      - NEXT_PUBLIC_SERVER_IP=${SERVER_IP:-98.87.131.233}
       - WATCHPACK_POLLING=true
     depends_on:
       api-gateway:
