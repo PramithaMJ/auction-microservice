@@ -19,7 +19,7 @@ export const syncExistingData = async (): Promise<void> => {
     console.log(' Syncing existing listings from listings service...');
 
     const listingsServiceUrl =
-      process.env.LISTINGS_SERVICE_URL || 'http://localhost:3103';
+      process.env.LISTINGS_SERVICE_URL || 'http://listings:3103';
     const response = await axios.get(`${listingsServiceUrl}/api/listings`);
     const listings: ListingData[] = response.data;
 
