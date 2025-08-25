@@ -153,13 +153,13 @@ services:
       - "3001:3001"
     environment:
       - PORT=3001
-      - NODE_ENV=development
+      - NODE_ENV=${NODE_ENV:-development}
       - AUTH_SERVICE_URL=http://auth:3101
       - BID_SERVICE_URL=http://bid:3102
       - LISTINGS_SERVICE_URL=http://listings:3103
       - PAYMENTS_SERVICE_URL=http://payments:3104
       - PROFILE_SERVICE_URL=http://profile:3105
-      - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost:3000,http://localhost:3001,http://34.205.47.149:3000,http://34.205.47.149:3001,http://34.205.47.149}
+      - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost:3000,http://localhost:3001,http://${SERVER_IP:-localhost}:3000,http://${SERVER_IP:-localhost}:3001,http://${SERVER_IP:-localhost}}
     depends_on:
       nats-streaming:
         condition: service_started
@@ -342,12 +342,13 @@ services:
     image: pramithamj/auction-website-frontend:${IMAGE_TAG:-latest}
     container_name: auction-frontend
     ports:
-      - "3000:3000"
+      - "${FRONTEND_PORT:-3000}:3000"
     environment:
-      - NODE_ENV=development
-      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+      - NODE_ENV=${NODE_ENV:-production}
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:3001}
       - NEXT_PUBLIC_API_GATEWAY_PORT=${NEXT_PUBLIC_API_GATEWAY_PORT:-3001}
       - SERVER_API_URL=${SERVER_API_URL:-http://api-gateway:3001}
+      - NEXT_PUBLIC_SERVER_IP=${SERVER_IP:-localhost}
       - WATCHPACK_POLLING=true
     depends_on:
       api-gateway:
