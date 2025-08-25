@@ -89,9 +89,9 @@ const Listing = ({ listingData }) => {
     const room = listing && listing.slug;
     if (!room) return;
 
-    // Connect to socket.io through the listings service directly
-    // In a production environment, this would go through a proper WebSocket proxy
-    const socket = io('http://localhost:3103/socket', {
+    // Use environment variable or fallback for socket URL
+    const socketUrl = process.env.NEXT_PUBLIC_LISTINGS_SOCKET_URL || 'http://listings:3103/socket';
+    const socket = io(socketUrl, {
       secure: false,
       query: { r_var: room },
     });
