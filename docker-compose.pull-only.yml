@@ -147,7 +147,7 @@ services:
 
   # Application Services (Pull Only - No Build)
   api-gateway:
-    image: pramithamj/auction-website-ms-api-gateway:${IMAGE_TAG:-latest}
+    image: pramithamj/auction-website-api-gateway:${IMAGE_TAG:-latest}
     container_name: auction-api-gateway
     ports:
       - "3001:3001"
@@ -180,7 +180,7 @@ services:
       - ./logs:/app/logs
 
   auth:
-    image: pramithamj/auction-website-ms-auth:${IMAGE_TAG:-latest}
+    image: pramithamj/auction-website-auth:${IMAGE_TAG:-latest}
     container_name: auction-auth
     ports:
       - "3101:3101"
@@ -202,7 +202,7 @@ services:
     restart: unless-stopped
 
   bid:
-    image: pramithamj/auction-website-ms-bid:${IMAGE_TAG:-latest}
+    image: pramithamj/auction-website-bid:${IMAGE_TAG:-latest}
     container_name: auction-bid
     ports:
       - "3102:3102"
@@ -224,7 +224,7 @@ services:
     restart: unless-stopped
 
   listings:
-    image: pramithamj/auction-website-ms-listing:${IMAGE_TAG:-latest}
+    image: pramithamj/auction-website-listing:${IMAGE_TAG:-latest}
     container_name: auction-listings
     ports:
       - "3103:3103"
@@ -250,7 +250,7 @@ services:
     restart: unless-stopped
 
   payments:
-    image: pramithamj/auction-website-ms-payment:${IMAGE_TAG:-latest}
+    image: pramithamj/auction-website-payment:${IMAGE_TAG:-latest}
     container_name: auction-payments
     ports:
       - "3104:3104"
@@ -273,7 +273,7 @@ services:
     restart: unless-stopped
 
   profile:
-    image: pramithamj/auction-website-ms-profile:${IMAGE_TAG:-latest}
+    image: pramithamj/auction-website-profile:${IMAGE_TAG:-latest}
     container_name: auction-profile
     ports:
       - "3105:3105"
@@ -295,7 +295,7 @@ services:
     restart: unless-stopped
 
   email:
-    image: pramithamj/auction-website-ms-email:${IMAGE_TAG:-latest}
+    image: pramithamj/auction-website-email:${IMAGE_TAG:-latest}
     container_name: auction-email
     ports:
       - "3106:3106"
@@ -316,7 +316,7 @@ services:
     restart: unless-stopped
 
   expiration:
-    image: pramithamj/auction-website-ms-expiration:${IMAGE_TAG:-latest}
+    image: pramithamj/auction-website-expiration:${IMAGE_TAG:-latest}
     container_name: auction-expiration
     ports:
       - "3107:3107"
@@ -339,7 +339,7 @@ services:
     restart: unless-stopped
 
   frontend:
-    image: pramithamj/auction-website-ms-frontend:${IMAGE_TAG:-latest}
+    image: pramithamj/auction-website-frontend:${IMAGE_TAG:-latest}
     container_name: auction-frontend
     ports:
       - "3000:3000"
