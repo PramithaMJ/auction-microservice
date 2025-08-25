@@ -434,6 +434,7 @@ services:
       - ./services/frontend:/app
       - /app/node_modules
       - /app/.next
+      - common-build:/app/node_modules/@jjmauction/common
 
 volumes:
   redis-data:
