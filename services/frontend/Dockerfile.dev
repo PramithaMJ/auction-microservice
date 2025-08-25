@@ -25,7 +25,6 @@ COPY --from=common-builder /app/common ./common
 
 # Install main app dependencies
 RUN npm install
-RUN npm install ../../common
 
 # Copy application source
 COPY src ./src
