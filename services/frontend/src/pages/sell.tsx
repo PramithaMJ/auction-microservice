@@ -40,8 +40,8 @@ const validationSchema = Yup.object({
   expiresAt: Yup.date()
     .required('Required')
     .min(
-      new Date(Date.now() + 86400000),
-      'Auctions must last atleast 24 hours'
+      new Date(Date.now() + 30 * 60 * 1000),
+      'Auctions must last at least 30 minutes'
     ),
 });
 
@@ -233,6 +233,7 @@ const Sell = (): JSX.Element => {
                         value={props.values.expiresAt}
                         onChange={props.setFieldValue}
                         className="block max-w-lg w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500  sm:max-w-4xl sm:text-sm border-gray-300 rounded-md"
+                        minDate={new Date(Date.now() + 30 * 60 * 1000)} // set minimum selectable date to 30 minutes from now
                       />
                       <ErrorMessage
                         component={StyledErrorMessage}
