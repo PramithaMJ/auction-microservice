@@ -14,7 +14,7 @@
     "@emotion/css": "^11.13.5",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
-    "@jjmauction/common": "file:./common",
+    "@jjmauction/common": "^1.0.21",
     "@tailwindcss/forms": "^0.3.4",
     "autoprefixer": "^10.4.0",
     "axios": "^0.27.2",
