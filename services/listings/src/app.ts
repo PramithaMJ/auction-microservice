@@ -63,7 +63,7 @@ app.post('/nats/circuit-breaker/reset', (req, res) => {
   }
 });
 
-app.all('*', () => {
+app.all('*', (req, res) => {
   throw new NotFoundError();
 });
 
