@@ -15,30 +15,22 @@ RUN apk add --no-cache \
 # Copy the common package source and build it
 COPY ./common ./common
 WORKDIR /app/common
-RUN npm install && npm run build
+RUN npm install && npm run build && npm pack --pack-destination /app
 
 # Switch back to app directory and copy profile service files
 WORKDIR /app
 COPY ./services/profile/package.json ./
 COPY ./services/profile/package-lock.json* ./
 
-# Install profile service dependencies (avoid package-lock.json issues)
-RUN npm cache clean --force
-RUN rm -f package-lock.json
-RUN npm install --no-package-lock --force
+# Install profile service dependencies + common tarball
+RUN npm install --no-package-lock --force ./jjmauction-common-*.tgz
 
-# Create the necessary directory structure for common package
-RUN mkdir -p node_modules/@jjmauction/common
-
-# Copy the built common package to node_modules
-RUN cp -r /app/common/build/* node_modules/@jjmauction/common/
-RUN cp /app/common/package.json node_modules/@jjmauction/common/
-
-# Install typescript for building
-RUN npm install -g typescript ts-node
-
-# Copy profile service source code
-COPY ./services/profile/ ./
+# Copy the source code and configuration files (exclude node_modules explicitly)
+COPY ./services/profile/src ./src
+COPY ./services/profile/config ./config
+COPY ./services/profile/tests ./tests
+COPY ./services/profile/tsconfig.json ./tsconfig.json
+COPY ./services/profile/tsconfig.prod.json ./tsconfig.prod.json
 
 # Expose port
 EXPOSE 3105
