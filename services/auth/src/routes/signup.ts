@@ -62,7 +62,7 @@ router.post(
 
     // Start User Registration Saga instead of publishing events directly
     try {
-      const sagaOrchestratorUrl = process.env.SAGA_ORCHESTRATOR_URL || 'http://localhost:3107';
+      const sagaOrchestratorUrl = process.env.SAGA_ORCHESTRATOR_URL || 'http://localhost:3108';
       
       console.log(`🚀 Starting User Registration Saga for user: ${user.email}`);
       

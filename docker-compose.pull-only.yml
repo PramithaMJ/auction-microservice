@@ -159,6 +159,8 @@ services:
       - LISTINGS_SERVICE_URL=http://listings:3103
       - PAYMENTS_SERVICE_URL=http://payments:3104
       - PROFILE_SERVICE_URL=http://profile:3105
+      - EMAIL_SERVICE_URL=http://email:3106
+      - SAGA_ORCHESTRATOR_URL=http://saga-orchestrator:3108
       - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost:3000,http://localhost:3001,http://${SERVER_IP:-localhost}:3000,http://${SERVER_IP:-localhost}:3001,http://${SERVER_IP:-localhost}}
     depends_on:
       nats-streaming:
@@ -172,6 +174,10 @@ services:
       payments:
         condition: service_started
       profile:
+        condition: service_started
+      email:
+        condition: service_started
+      saga-orchestrator:
         condition: service_started
     networks:
       - auction-network
@@ -192,6 +198,7 @@ services:
       - NATS_URL=nats://nats-streaming:4222
       - NATS_CLUSTER_ID=auction
       - NATS_CLIENT_ID=auth-service
+      - SAGA_ORCHESTRATOR_URL=http://saga-orchestrator:3108
     depends_on:
       auth-mysql:
         condition: service_healthy
@@ -309,6 +316,29 @@ services:
       - EMAIL=your_email@gmail.com
       - EMAIL_PASSWORD=your_app_specific_password
     depends_on:
+      nats-streaming:
+        condition: service_started
+    networks:
+      - auction-network
+    restart: unless-stopped
+
+  saga-orchestrator:
+    image: pramithamj/auction-website-saga-orchestrator:${IMAGE_TAG:-latest}
+    container_name: auction-saga-orchestrator
+    ports:
+      - "3108:3108"
+    environment:
+      - PORT=3108
+      - NODE_ENV=development
+      - JWT_KEY=qLYn6wQ9vy8HS0LwuEsNyWgG3oYc8Mk1yRLotUXgrR/uEbEN9I6mdjnLAcjWiVuR
+      - NATS_URL=nats://nats-streaming:4222
+      - NATS_CLUSTER_ID=auction
+      - NATS_CLIENT_ID=saga-orchestrator-service
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      redis:
+        condition: service_healthy
       nats-streaming:
         condition: service_started
     networks:

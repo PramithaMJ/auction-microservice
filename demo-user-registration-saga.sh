@@ -59,10 +59,10 @@ else
 fi
 
 # Check Saga Orchestrator
-if curl -s http://localhost:3107/health > /dev/null; then
-    print_success "Saga Orchestrator (3107) is running"
+if curl -s http://localhost:3108/health > /dev/null; then
+    print_success "Saga Orchestrator (3108) is running"
 else
-    print_error "Saga Orchestrator (3107) is not running"
+    print_error "Saga Orchestrator (3108) is not running"
     echo "Please start the saga orchestrator service first"
     exit 1
 fi

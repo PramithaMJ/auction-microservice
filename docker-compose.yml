@@ -175,6 +175,8 @@ services:
       - LISTINGS_SERVICE_URL=http://listings:3103
       - PAYMENTS_SERVICE_URL=http://payments:3104
       - PROFILE_SERVICE_URL=http://profile:3105
+      - EMAIL_SERVICE_URL=http://email:3106
+      - SAGA_ORCHESTRATOR_URL=http://saga-orchestrator:3108
       - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost:3000,http://localhost:3001,http://98.87.131.233:3000,http://98.87.131.233:3001,http://98.87.131.233}
     depends_on:
       nats-streaming:
@@ -188,6 +190,10 @@ services:
       payments:
         condition: service_started
       profile:
+        condition: service_started
+      email:
+        condition: service_started
+      saga-orchestrator:
         condition: service_started
       common:
         condition: service_completed_successfully
@@ -214,6 +220,7 @@ services:
       - NATS_URL=nats://nats-streaming:4222
       - NATS_CLUSTER_ID=auction
       - NATS_CLIENT_ID=auth-service
+      - SAGA_ORCHESTRATOR_URL=http://saga-orchestrator:3108
     depends_on:
       auth-mysql:
         condition: service_healthy
@@ -369,6 +376,36 @@ services:
       - EMAIL_PASSWORD=nejqsceaqopfsjry
 
     depends_on:
+      nats-streaming:
+        condition: service_started
+      common:
+        condition: service_completed_successfully
+    networks:
+      - auction-network
+    restart: unless-stopped
+    volumes:
+      - common-build:/app/node_modules/@jjmauction/common
+
+  saga-orchestrator:
+    image: pramithamj/auction-website-ms-saga-orchestrator:${IMAGE_TAG:-latest}
+    build:
+      context: ./services/saga-orchestrator
+      dockerfile: Dockerfile
+    container_name: auction-saga-orchestrator
+    ports:
+      - "3108:3108"
+    environment:
+      - PORT=3108
+      - NODE_ENV=development
+      - JWT_KEY=qLYn6wQ9vy8HS0LwuEsNyWgG3oYc8Mk1yRLotUXgrR/uEbEN9I6mdjnLAcjWiVuR
+      - NATS_URL=nats://nats-streaming:4222
+      - NATS_CLUSTER_ID=auction
+      - NATS_CLIENT_ID=saga-orchestrator-service
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      redis:
+        condition: service_healthy
       nats-streaming:
         condition: service_started
       common:

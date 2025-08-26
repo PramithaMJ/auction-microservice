@@ -60,7 +60,7 @@ import { WelcomeEmailSentListener } from './events/listeners/welcome-email-sent-
     new WelcomeEmailSentListener(natsWrapper.client, sagaOrchestrator).listen();
 
     // Start HTTP server
-    const port = process.env.PORT || 3107;
+    const port = process.env.PORT || 3108;
     app.listen(port, () => {
       console.log(`✅ Saga Orchestrator Service listening on port ${port}!`);
       console.log('📋 Available endpoints:');
