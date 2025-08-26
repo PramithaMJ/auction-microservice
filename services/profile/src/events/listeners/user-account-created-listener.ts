@@ -26,7 +26,7 @@ export class UserAccountCreatedListener extends Listener<UserAccountCreatedEvent
         about: '',
       });
 
-      console.log(`✅ Profile created for user ${userId} in saga ${sagaId}`);
+      console.log(` Profile created for user ${userId} in saga ${sagaId}`);
 
       // Publish ProfileCreated event for the saga
       try {
@@ -39,16 +39,16 @@ export class UserAccountCreatedListener extends Listener<UserAccountCreatedEvent
           timestamp: new Date().toISOString()
         }, { retries: 2 });
 
-        console.log(`📤 Published ProfileCreated event for saga: ${sagaId}`);
+        console.log(` Published ProfileCreated event for saga: ${sagaId}`);
       } catch (publishError) {
-        console.error(`❌ Failed to publish ProfileCreated event for saga ${sagaId}:`, publishError);
+        console.error(` Failed to publish ProfileCreated event for saga ${sagaId}:`, publishError);
         // Don't ack the message so it can be retried
         return;
       }
 
       msg.ack();
     } catch (error) {
-      console.error(`❌ Failed to create profile for saga ${sagaId}:`, error);
+      console.error(` Failed to create profile for saga ${sagaId}:`, error);
       // Don't ack the message so it can be retried
     }
   }

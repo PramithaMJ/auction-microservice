@@ -26,7 +26,7 @@ export abstract class PublisherWithCircuitBreaker<T extends Event> {
         await this.standardPublish(data);
       }
     } catch (error) {
-      console.error(`📤❌ Failed to publish event to ${this.subject}:`, error);
+      console.error(` Failed to publish event to ${this.subject}:`, error);
       
       if (options.fallback !== false) {
         // Log the failed event for potential replay
@@ -48,7 +48,7 @@ export abstract class PublisherWithCircuitBreaker<T extends Event> {
         if (err) {
           reject(err);
         } else {
-          console.log('📤 Event published to subject', this.subject);
+          console.log(' Event published to subject', this.subject);
           resolve();
         }
       });

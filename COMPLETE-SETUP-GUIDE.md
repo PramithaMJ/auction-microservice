@@ -76,7 +76,7 @@ docker-compose up -d
 ./scripts/deploy.sh v1.0.100
 ```
 
-## 📦 Image Versioning
+##  Image Versioning
 
 Every commit to `main` creates these tags:
 - `latest` - Always the newest
@@ -108,7 +108,7 @@ Example: `pramithamj/auction-website/auth:v1.0.123-abc1234`
 - Redis: `localhost:6379`
 - NATS: `localhost:4222`
 
-## 🔍 Monitoring & Debugging
+##  Monitoring & Debugging
 
 ### View Logs
 ```bash
@@ -204,7 +204,7 @@ export IMAGE_TAG=v1.0.123
 export IMAGE_TAG=v1.0.100
 ```
 
-## 🎯 Next Steps
+##  Next Steps
 
 1. **Set up staging/production environments**
 2. **Configure monitoring** (Prometheus, Grafana)

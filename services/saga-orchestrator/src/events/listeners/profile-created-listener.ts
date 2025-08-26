@@ -21,7 +21,7 @@ export class ProfileCreatedListener extends Listener<ProfileCreatedEvent> {
       await this.sagaOrchestrator.handleProfileCreated(data);
       msg.ack();
     } catch (error) {
-      console.error('❌ Failed to process ProfileCreated event:', error);
+      console.error(' Failed to process ProfileCreated event:', error);
       // Don't ack the message so it can be retried
     }
   }

@@ -17,7 +17,7 @@ echo ""
 
 # Check if .env exists
 if [ ! -f .env ]; then
-    echo -e "${RED}❌ .env file not found!${NC}"
+    echo -e "${RED} .env file not found!${NC}"
     echo "Run ./configure-env.sh to create your environment configuration"
     exit 1
 fi
@@ -37,7 +37,7 @@ test_config() {
     
     if [ -z "$value" ]; then
         if [ "$required" = "true" ]; then
-            echo -e "${RED}❌ $name is not set (required)${NC}"
+            echo -e "${RED} $name is not set (required)${NC}"
             return 1
         else
             echo -e "${YELLOW}⚠️  $name is not set (optional)${NC}"
@@ -91,7 +91,7 @@ echo "Testing Docker Compose configuration..."
 if docker-compose config > /dev/null 2>&1; then
     echo -e "${GREEN} Docker Compose configuration is valid${NC}"
 else
-    echo -e "${RED}❌ Docker Compose configuration has errors${NC}"
+    echo -e "${RED} Docker Compose configuration has errors${NC}"
     echo "Run: docker-compose config"
     exit 1
 fi

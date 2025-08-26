@@ -23,17 +23,17 @@ class SagaStateManager {
       this.client = createClient({ url });
       
       this.client.on('error', (err: any) => {
-        console.error('❌ Redis Client Error:', err);
+        console.error(' Redis Client Error:', err);
       });
 
       this.client.on('connect', () => {
-        console.log('✅ Connected to Redis for saga state management');
+        console.log(' Connected to Redis for saga state management');
         this.connected = true;
       });
 
       await this.client.connect();
     } catch (error) {
-      console.error('❌ Failed to connect to Redis:', error);
+      console.error(' Failed to connect to Redis:', error);
       throw error;
     }
   }
@@ -53,7 +53,7 @@ class SagaStateManager {
       await this.client.setEx(key, 3600, value); // Expire after 1 hour
       console.log(`💾 Saved saga state for ${sagaState.sagaId}: ${sagaState.state}`);
     } catch (error) {
-      console.error(`❌ Failed to save saga state for ${sagaState.sagaId}:`, error);
+      console.error(` Failed to save saga state for ${sagaState.sagaId}:`, error);
       throw error;
     }
   }
@@ -73,7 +73,7 @@ class SagaStateManager {
       
       return JSON.parse(value) as SagaState;
     } catch (error) {
-      console.error(`❌ Failed to get saga state for ${sagaId}:`, error);
+      console.error(` Failed to get saga state for ${sagaId}:`, error);
       throw error;
     }
   }
@@ -89,7 +89,7 @@ class SagaStateManager {
       await this.client.del(key);
       console.log(`🗑️ Deleted saga state for ${sagaId}`);
     } catch (error) {
-      console.error(`❌ Failed to delete saga state for ${sagaId}:`, error);
+      console.error(` Failed to delete saga state for ${sagaId}:`, error);
       throw error;
     }
   }
@@ -112,7 +112,7 @@ class SagaStateManager {
 
       return sagas;
     } catch (error) {
-      console.error('❌ Failed to get all active sagas:', error);
+      console.error(' Failed to get all active sagas:', error);
       throw error;
     }
   }

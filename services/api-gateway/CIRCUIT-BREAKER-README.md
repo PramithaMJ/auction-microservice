@@ -66,7 +66,7 @@ Client → API Gateway → Circuit Breaker → Service (Failed)
 
 ### Circuit Open (Protection Mode)
 ```
-Client → API Gateway → Circuit Breaker (OPEN) → ❌ Blocked
+Client → API Gateway → Circuit Breaker (OPEN) →  Blocked
                      ← Fallback Response
 ```
 
@@ -126,7 +126,7 @@ curl http://localhost:3001/health
 - Fast-fail responses instead of hanging requests
 - No waiting for timeouts on known failed services
 
-### 🎯 **Better User Experience**
+###  **Better User Experience**
 - Clear error messages with helpful suggestions
 - Graceful degradation of features
 
@@ -146,7 +146,7 @@ The circuit breaker provides detailed logging:
 
 ```
  Proxying GET /api/auth/currentuser → auth (Circuit: CLOSED)
-❌ Circuit breaker failure recorded for auth: 5/5
+ Circuit breaker failure recorded for auth: 5/5
 🚫 Circuit breaker for auth is now OPEN. Next attempt at 2025-08-26T...
 🚫 Circuit breaker blocked request to auth: Service auth is temporarily unavailable
  Circuit breaker for auth transitioning to HALF_OPEN

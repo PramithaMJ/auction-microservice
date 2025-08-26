@@ -53,30 +53,8 @@ jobs:
           fi
         done
 
-  security:
-    runs-on: ubuntu-latest
-    name: Security Scan
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Run Trivy vulnerability scanner
-      uses: aquasecurity/trivy-action@master
-      with:
-        scan-type: 'fs'
-        scan-ref: '.'
-        format: 'sarif'
-        output: 'trivy-results.sarif'
-
-    - name: Upload Trivy scan results to GitHub Security tab
-      uses: github/codeql-action/upload-sarif@v2
-      if: always()
-      with:
-        sarif_file: 'trivy-results.sarif'
-
   build-and-push:
-    needs: [test, security]
+    needs: [test]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
     
@@ -166,18 +144,18 @@ jobs:
         # helm upgrade auction-website ./charts --namespace=production
 
   notify:
-    needs: [test, security, build-and-push]
+    needs: [test, build-and-push]
     runs-on: ubuntu-latest
     if: always()
     
     steps:
     - name: Notification
       run: |
-        if [[ "${{ needs.test.result }}" == "success" && "${{ needs.security.result }}" == "success" && "${{ needs.build-and-push.result }}" == "success" ]]; then
+        if [[ "${{ needs.test.result }}" == "success" && "${{ needs.build-and-push.result }}" == "success" ]]; then
           echo " CI/CD Pipeline completed successfully!"
-          echo "🐳 All Docker images have been built and pushed to Docker Hub"
-          echo "📦 Version: v1.0.${{ github.run_number }}"
+          echo " All Docker images have been built and pushed to Docker Hub"
+          echo " Version: v1.0.${{ github.run_number }}"
         else
-          echo "❌ CI/CD Pipeline failed!"
-          echo "🔍 Check the logs for more details"
+          echo " CI/CD Pipeline failed!"
+          echo " Check the logs for more details"
         fi

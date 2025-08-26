@@ -15,7 +15,7 @@ class NatsWrapper {
 
     return new Promise((resolve, reject) => {
       this.client.on('connect', () => {
-        console.log('✅ Saga Orchestrator connected to NATS');
+        console.log(' Saga Orchestrator connected to NATS');
         resolve();
       });
 

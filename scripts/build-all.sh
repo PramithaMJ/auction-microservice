@@ -18,7 +18,7 @@ SHORT_SHA=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")
 DATE=$(date +%Y%m%d)
 FULL_TAG="${VERSION}-${SHORT_SHA}"
 
-echo -e "${BLUE}📦 Version: ${VERSION}${NC}"
+echo -e "${BLUE} Version: ${VERSION}${NC}"
 echo -e "${BLUE}🔖 Full Tag: ${FULL_TAG}${NC}"
 echo -e "${BLUE}📅 Date: ${DATE}${NC}"
 echo -e "${BLUE}💾 Commit: ${SHORT_SHA}${NC}"
@@ -36,7 +36,7 @@ build_service() {
     echo -e "${YELLOW}Building ${service_name}...${NC}"
     
     if [ ! -f "${dockerfile_path}" ]; then
-        echo -e "${RED}❌ Dockerfile not found: ${dockerfile_path}${NC}"
+        echo -e "${RED} Dockerfile not found: ${dockerfile_path}${NC}"
         return 1
     fi
     

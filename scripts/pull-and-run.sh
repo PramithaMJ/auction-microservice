@@ -13,8 +13,8 @@ NC='\033[0m' # No Color
 # Get version from command line or use default
 VERSION=${1:-latest}
 
-echo -e "${BLUE}🐳 Docker Compose - Pull & Run Only${NC}"
-echo -e "${BLUE}📦 Version: ${VERSION}${NC}"
+echo -e "${BLUE} Docker Compose - Pull & Run Only${NC}"
+echo -e "${BLUE} Version: ${VERSION}${NC}"
 echo ""
 
 # Set environment variable for docker-compose
@@ -23,7 +23,7 @@ export IMAGE_TAG=$VERSION
 # Function to check if Docker is running
 check_docker() {
     if ! docker info > /dev/null 2>&1; then
-        echo -e "${RED}❌ Docker is not running. Please start Docker and try again.${NC}"
+        echo -e "${RED} Docker is not running. Please start Docker and try again.${NC}"
         exit 1
     fi
 }
@@ -37,7 +37,7 @@ pull_images() {
     for service in "${services[@]}"; do
         echo -e "  Pulling pramithamj/auction-website/${service}:${VERSION}"
         docker pull "pramithamj/auction-website/${service}:${VERSION}" || {
-            echo -e "${RED}❌ Failed to pull ${service}:${VERSION}${NC}"
+            echo -e "${RED} Failed to pull ${service}:${VERSION}${NC}"
             echo -e "${YELLOW}💡 Make sure the image exists on Docker Hub${NC}"
             exit 1
         }
@@ -108,7 +108,7 @@ main() {
     
     echo ""
     echo -e "${GREEN}🎉 Deployment completed successfully!${NC}"
-    echo -e "${BLUE}📦 Running version: ${VERSION}${NC}"
+    echo -e "${BLUE} Running version: ${VERSION}${NC}"
 }
 
 # Handle interruption

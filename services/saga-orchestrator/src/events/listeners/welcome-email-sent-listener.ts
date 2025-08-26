@@ -21,7 +21,7 @@ export class WelcomeEmailSentListener extends Listener<WelcomeEmailSentEvent> {
       await this.sagaOrchestrator.handleWelcomeEmailSent(data);
       msg.ack();
     } catch (error) {
-      console.error('❌ Failed to process WelcomeEmailSent event:', error);
+      console.error(' Failed to process WelcomeEmailSent event:', error);
       // Don't ack the message so it can be retried
     }
   }

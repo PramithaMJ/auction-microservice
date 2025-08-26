@@ -189,12 +189,12 @@ jobs:
     - name: Summary
       run: |
         echo "🎉 Build and Push Completed!"
-        echo "📦 Version: ${{ steps.meta.outputs.VERSION }}"
+        echo " Version: ${{ steps.meta.outputs.VERSION }}"
         echo "🔖 Full Tag: ${{ steps.meta.outputs.FULL_TAG }}"
         echo "📅 Date: ${{ steps.meta.outputs.DATE }}"
         echo "💾 Commit: ${{ steps.meta.outputs.SHORT_SHA }}"
         echo ""
-        echo "🐳 Docker Images pushed:"
+        echo " Docker Images pushed:"
         echo "  - auth: ${{ env.DOCKER_USERNAME }}/auction-website-auth:${{ steps.meta.outputs.VERSION }}"
         echo "  - bid: ${{ env.DOCKER_USERNAME }}/auction-website-bid:${{ steps.meta.outputs.VERSION }}"
         echo "  - listings: ${{ env.DOCKER_USERNAME }}/auction-website-listing:${{ steps.meta.outputs.VERSION }}"

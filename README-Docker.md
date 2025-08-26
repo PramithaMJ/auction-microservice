@@ -2,7 +2,7 @@
 
 This g💡 **No more hardcoded IPs!** The application now automatically configures URLs based on your environment settings.
 
-### 📦 Docker Repository Migration (Important!)
+###  Docker Repository Migration (Important!)
 
 **New Repository Naming Convention:** We've updated from `auction-website/service` to `auction-website-ms-service` format to fix CI/CD deployment issues.
 
@@ -22,7 +22,7 @@ See [DOCKER-MIGRATION.md](./DOCKER-MIGRATION.md) for complete details.ide shows 
 
 ### 1. Environment Configuration
 
-**🎯 Easy Setup with Configuration Script (Recommended):**
+** Easy Setup with Configuration Script (Recommended):**
 ```bash
 # Run the automated configuration script
 ./configure-env.sh

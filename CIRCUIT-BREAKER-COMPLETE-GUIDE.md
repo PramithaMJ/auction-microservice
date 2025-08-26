@@ -167,12 +167,12 @@ curl http://localhost:3101/nats/health  # Should show healthy
 
 ### API Gateway Circuit Breaker
 - **CLOSED**:  Normal operation (all requests pass through)
-- **OPEN**: ❌ Service is down (requests blocked, fallback responses)
+- **OPEN**:  Service is down (requests blocked, fallback responses)
 - **HALF_OPEN**:  Testing recovery (limited requests allowed)
 
 ### NATS Circuit Breaker
 - **CLOSED**:  NATS healthy (events publish normally)
-- **OPEN**: ❌ NATS down (event publishing blocked)
+- **OPEN**:  NATS down (event publishing blocked)
 - **HALF_OPEN**:  Testing NATS recovery (test publishes)
 
 ## 🔥 Benefits for Your Auction Platform
@@ -187,7 +187,7 @@ curl http://localhost:3101/nats/health  # Should show healthy
 - Reduced resource consumption on failed services
 - Better response times under load
 
-### 🎯 **Better User Experience**
+###  **Better User Experience**
 - Informative error messages with suggestions
 - Graceful degradation of features
 - System remains partially functional during outages
@@ -244,7 +244,7 @@ new NatsWrapper({
 ### API Gateway Circuit Breaker Logs
 ```
  Proxying GET /api/auth/currentuser → auth (Circuit: CLOSED)
-❌ Circuit breaker failure recorded for auth: 5/5
+ Circuit breaker failure recorded for auth: 5/5
 🚫 Circuit breaker for auth is now OPEN. Next attempt at 2025-08-26T...
 🚫 Circuit breaker blocked request to auth: Service temporarily unavailable
  Circuit breaker for auth transitioning to HALF_OPEN
@@ -254,8 +254,8 @@ new NatsWrapper({
 ### NATS Circuit Breaker Logs
 ```
  Connected to NATS
-📤 Event published to subject: user:created
-❌ NATS circuit breaker failure recorded: 3/3
+ Event published to subject: user:created
+ NATS circuit breaker failure recorded: 3/3
 🚫 NATS circuit breaker is now OPEN. Next attempt at 2025-08-26T...
  Attempting automatic NATS reconnection...
  NATS circuit breaker transitioning to CLOSED (service recovered)

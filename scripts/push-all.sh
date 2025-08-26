@@ -24,7 +24,7 @@ VERSION="v1.0.local"
 SHORT_SHA=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")
 FULL_TAG="${VERSION}-${SHORT_SHA}"
 
-echo -e "${BLUE}📦 Version: ${VERSION}${NC}"
+echo -e "${BLUE} Version: ${VERSION}${NC}"
 echo -e "${BLUE}🔖 Full Tag: ${FULL_TAG}${NC}"
 echo ""
 
@@ -39,7 +39,7 @@ push_service() {
     
     # Check if images exist
     if ! docker image inspect "${DOCKER_USERNAME}/auction-website-ms-${service_name}:${FULL_TAG}" > /dev/null 2>&1; then
-        echo -e "${RED}❌ Image not found: ${DOCKER_USERNAME}/auction-website-ms-${service_name}:${FULL_TAG}${NC}"
+        echo -e "${RED} Image not found: ${DOCKER_USERNAME}/auction-website-ms-${service_name}:${FULL_TAG}${NC}"
         echo -e "${YELLOW}💡 Run ./scripts/build-all.sh first${NC}"
         return 1
     fi

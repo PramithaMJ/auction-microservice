@@ -17,7 +17,7 @@ NC='\033[0m' # No Color
 VERSION=${1:-latest}
 
 echo -e "${BLUE}🚀 Deploying Auction Website${NC}"
-echo -e "${BLUE}📦 Version: ${VERSION}${NC}"
+echo -e "${BLUE} Version: ${VERSION}${NC}"
 echo ""
 
 # Set environment variable
@@ -26,7 +26,7 @@ export IMAGE_TAG=$VERSION
 # Function to check if Docker is running
 check_docker() {
     if ! docker info > /dev/null 2>&1; then
-        echo -e "${RED}❌ Docker is not running. Please start Docker and try again.${NC}"
+        echo -e "${RED} Docker is not running. Please start Docker and try again.${NC}"
         exit 1
     fi
 }
@@ -132,7 +132,7 @@ main() {
     
     echo ""
     echo -e "${GREEN}🎉 Deployment completed successfully!${NC}"
-    echo -e "${BLUE}📦 Running version: ${VERSION}${NC}"
+    echo -e "${BLUE} Running version: ${VERSION}${NC}"
 }
 
 # Handle interruption

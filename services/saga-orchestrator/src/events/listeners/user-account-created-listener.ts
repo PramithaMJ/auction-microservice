@@ -21,7 +21,7 @@ export class UserAccountCreatedListener extends Listener<UserAccountCreatedEvent
       await this.sagaOrchestrator.handleAccountCreated(data);
       msg.ack();
     } catch (error) {
-      console.error('❌ Failed to process UserAccountCreated event:', error);
+      console.error(' Failed to process UserAccountCreated event:', error);
       // Don't ack the message so it can be retried
     }
   }

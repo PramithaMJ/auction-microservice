@@ -62,7 +62,7 @@ import { WelcomeEmailSentListener } from './events/listeners/welcome-email-sent-
     // Start HTTP server
     const port = process.env.PORT || 3108;
     app.listen(port, () => {
-      console.log(`✅ Saga Orchestrator Service listening on port ${port}!`);
+      console.log(` Saga Orchestrator Service listening on port ${port}!`);
       console.log('📋 Available endpoints:');
       console.log(`   GET    /health - Service health check`);
       console.log(`   POST   /api/sagas/user-registration/start - Start user registration saga`);
@@ -70,11 +70,11 @@ import { WelcomeEmailSentListener } from './events/listeners/welcome-email-sent-
       console.log(`   GET    /api/sagas/user-registration - Get all active sagas`);
       console.log(`   GET    /api/sagas/metrics - Get saga metrics`);
       console.log('');
-      console.log('🎯 User Registration Saga Orchestrator is ready!');
+      console.log(' User Registration Saga Orchestrator is ready!');
     });
 
   } catch (err) {
-    console.error('❌ Failed to start Saga Orchestrator Service:', err);
+    console.error(' Failed to start Saga Orchestrator Service:', err);
     process.exit(1);
   }
 })();

@@ -57,11 +57,11 @@ export class UserRegistrationSagaOrchestrator {
         timestamp
       });
 
-      console.log(`✅ User Registration Saga ${sagaId} started successfully`);
+      console.log(` User Registration Saga ${sagaId} started successfully`);
       return sagaId;
 
     } catch (error) {
-      console.error(`❌ Failed to start User Registration Saga ${sagaId}:`, error);
+      console.error(` Failed to start User Registration Saga ${sagaId}:`, error);
       await this.handleSagaFailure(sagaId, 'SAGA_START', error, false);
       throw error;
     }
@@ -76,7 +76,7 @@ export class UserRegistrationSagaOrchestrator {
     try {
       const sagaState = await sagaStateManager.getSagaState(sagaId);
       if (!sagaState) {
-        console.error(`❌ Saga state not found for ${sagaId}`);
+        console.error(` Saga state not found for ${sagaId}`);
         return;
       }
 
@@ -89,10 +89,10 @@ export class UserRegistrationSagaOrchestrator {
       // Now trigger profile creation
       await this.triggerProfileCreation(sagaId, userId);
 
-      console.log(`✅ Account creation handled for saga: ${sagaId}`);
+      console.log(` Account creation handled for saga: ${sagaId}`);
 
     } catch (error) {
-      console.error(`❌ Failed to handle account created for saga ${sagaId}:`, error);
+      console.error(` Failed to handle account created for saga ${sagaId}:`, error);
       await this.handleSagaFailure(sagaId, 'ACCOUNT_CREATED', error, true);
     }
   }
@@ -106,7 +106,7 @@ export class UserRegistrationSagaOrchestrator {
     try {
       const sagaState = await sagaStateManager.getSagaState(sagaId);
       if (!sagaState) {
-        console.error(`❌ Saga state not found for ${sagaId}`);
+        console.error(` Saga state not found for ${sagaId}`);
         return;
       }
 
@@ -118,10 +118,10 @@ export class UserRegistrationSagaOrchestrator {
       // Now trigger welcome email
       await this.triggerWelcomeEmail(sagaId, userId, sagaState.userEmail, sagaState.userName);
 
-      console.log(`✅ Profile creation handled for saga: ${sagaId}`);
+      console.log(` Profile creation handled for saga: ${sagaId}`);
 
     } catch (error) {
-      console.error(`❌ Failed to handle profile created for saga ${sagaId}:`, error);
+      console.error(` Failed to handle profile created for saga ${sagaId}:`, error);
       await this.handleSagaFailure(sagaId, 'PROFILE_CREATED', error, true);
     }
   }
@@ -135,7 +135,7 @@ export class UserRegistrationSagaOrchestrator {
     try {
       const sagaState = await sagaStateManager.getSagaState(sagaId);
       if (!sagaState) {
-        console.error(`❌ Saga state not found for ${sagaId}`);
+        console.error(` Saga state not found for ${sagaId}`);
         return;
       }
 
@@ -147,10 +147,10 @@ export class UserRegistrationSagaOrchestrator {
       // Complete the saga
       await this.completeSaga(sagaId, sagaState.completedSteps);
 
-      console.log(`✅ Welcome email handled for saga: ${sagaId}`);
+      console.log(` Welcome email handled for saga: ${sagaId}`);
 
     } catch (error) {
-      console.error(`❌ Failed to handle welcome email for saga ${sagaId}:`, error);
+      console.error(` Failed to handle welcome email for saga ${sagaId}:`, error);
       await this.handleSagaFailure(sagaId, 'EMAIL_SENT', error, true);
     }
   }
@@ -160,7 +160,7 @@ export class UserRegistrationSagaOrchestrator {
     try {
       const sagaState = await sagaStateManager.getSagaState(sagaId);
       if (!sagaState) {
-        console.error(`❌ Saga state not found for ${sagaId}`);
+        console.error(` Saga state not found for ${sagaId}`);
         return;
       }
 
@@ -184,7 +184,7 @@ export class UserRegistrationSagaOrchestrator {
       console.log(`🎉 User Registration Saga ${sagaId} completed successfully`);
 
     } catch (error) {
-      console.error(`❌ Failed to complete saga ${sagaId}:`, error);
+      console.error(` Failed to complete saga ${sagaId}:`, error);
       throw error;
     }
   }
@@ -194,7 +194,7 @@ export class UserRegistrationSagaOrchestrator {
     try {
       const sagaState = await sagaStateManager.getSagaState(sagaId);
       if (!sagaState) {
-        console.error(`❌ Saga state not found for ${sagaId} during failure handling`);
+        console.error(` Saga state not found for ${sagaId} during failure handling`);
         return;
       }
 
@@ -222,7 +222,7 @@ export class UserRegistrationSagaOrchestrator {
       console.log(`💥 User Registration Saga ${sagaId} failed at step: ${failedStep}`);
 
     } catch (compensationError) {
-      console.error(`❌ Failed to handle saga failure for ${sagaId}:`, compensationError);
+      console.error(` Failed to handle saga failure for ${sagaId}:`, compensationError);
     }
   }
 
@@ -254,10 +254,10 @@ export class UserRegistrationSagaOrchestrator {
         }
       }
 
-      console.log(`✅ Compensations completed for saga: ${sagaId}`);
+      console.log(` Compensations completed for saga: ${sagaId}`);
 
     } catch (error) {
-      console.error(`❌ Failed to complete compensations for saga ${sagaId}:`, error);
+      console.error(` Failed to complete compensations for saga ${sagaId}:`, error);
     }
   }
 
@@ -290,7 +290,7 @@ export class UserRegistrationSagaOrchestrator {
       );
 
     } catch (error) {
-      console.error(`❌ Failed to compensate profile creation for saga ${sagaId}:`, error);
+      console.error(` Failed to compensate profile creation for saga ${sagaId}:`, error);
     }
   }
 
@@ -309,7 +309,7 @@ export class UserRegistrationSagaOrchestrator {
       );
 
     } catch (error) {
-      console.error(`❌ Failed to compensate account creation for saga ${sagaId}:`, error);
+      console.error(` Failed to compensate account creation for saga ${sagaId}:`, error);
     }
   }
 
@@ -323,7 +323,7 @@ export class UserRegistrationSagaOrchestrator {
           if (err) {
             reject(err);
           } else {
-            console.log(`📤 Published UserRegistrationSagaStarted event for saga: ${data.sagaId}`);
+            console.log(` Published UserRegistrationSagaStarted event for saga: ${data.sagaId}`);
             resolve();
           }
         }
@@ -340,7 +340,7 @@ export class UserRegistrationSagaOrchestrator {
           if (err) {
             reject(err);
           } else {
-            console.log(`📤 Published UserRegistrationSagaCompleted event for saga: ${data.sagaId}`);
+            console.log(` Published UserRegistrationSagaCompleted event for saga: ${data.sagaId}`);
             resolve();
           }
         }
@@ -357,7 +357,7 @@ export class UserRegistrationSagaOrchestrator {
           if (err) {
             reject(err);
           } else {
-            console.log(`📤 Published UserRegistrationSagaFailed event for saga: ${data.sagaId}`);
+            console.log(` Published UserRegistrationSagaFailed event for saga: ${data.sagaId}`);
             resolve();
           }
         }

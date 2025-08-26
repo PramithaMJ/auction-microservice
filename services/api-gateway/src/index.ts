@@ -217,7 +217,7 @@ class ApiGateway {
       res.status(response.status).json(response.data);
       
     } catch (error: any) {
-      console.error(`❌ Proxy Error for ${serviceName}:`, error.message);
+      console.error(` Proxy Error for ${serviceName}:`, error.message);
       
       // Record failure in circuit breaker
       this.circuitBreaker.recordFailure(serviceName, error);
@@ -274,7 +274,7 @@ class ApiGateway {
           });
         });
         
-        console.log('\n🔍 Available Endpoints:');
+        console.log('\n Available Endpoints:');
         console.log(`   GET  /health - Health check with circuit breaker status`);
         console.log(`   GET  /api - API documentation`);
         console.log(`   GET  /circuit-breaker/status - Circuit breaker status`);

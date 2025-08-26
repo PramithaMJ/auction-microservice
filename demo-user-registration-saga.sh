@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # User Registration Saga Demo Script
-echo "🎬 Starting User Registration Saga Demo"
+echo " Starting User Registration Saga Demo"
 echo "========================================"
 
 # Colors for output
@@ -17,11 +17,11 @@ print_step() {
 }
 
 print_success() {
-    echo -e "${GREEN}✅ $1${NC}"
+    echo -e "${GREEN} $1${NC}"
 }
 
 print_error() {
-    echo -e "${RED}❌ $1${NC}"
+    echo -e "${RED} $1${NC}"
 }
 
 print_warning() {

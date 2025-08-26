@@ -73,7 +73,7 @@ router.post(
         userAvatar: user.avatar
       });
 
-      console.log(`✅ User Registration Saga started: ${sagaResponse.data.sagaId}`);
+      console.log(` User Registration Saga started: ${sagaResponse.data.sagaId}`);
 
       // Also publish UserAccountCreated event for the saga
       await new UserAccountCreatedPublisher(natsWrapper.client, natsWrapper).publish({
@@ -87,7 +87,7 @@ router.post(
       }, { retries: 2 });
 
     } catch (error) {
-      console.log('❌ Failed to start User Registration Saga, falling back to direct events');
+      console.log(' Failed to start User Registration Saga, falling back to direct events');
       
       // Fallback to original event publishing if saga fails
       try {
@@ -99,7 +99,7 @@ router.post(
           version: user.version!,
         }, { retries: 2 });
       } catch (fallbackError) {
-        console.log('❌ Failed to publish UserCreated event, but user registration succeeded');
+        console.log(' Failed to publish UserCreated event, but user registration succeeded');
       }
 
       try {
@@ -109,7 +109,7 @@ router.post(
           text: `Hello ${user.name}. Thank you for registering an account with auctionweb.site!`,
         }, { retries: 2 });
       } catch (fallbackError) {
-        console.log('❌ Failed to publish EmailCreated event, but user registration succeeded');
+        console.log(' Failed to publish EmailCreated event, but user registration succeeded');
       }
     }
 
