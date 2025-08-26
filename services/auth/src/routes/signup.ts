@@ -68,6 +68,7 @@ router.post(
       email: user.email,
       subject: 'Thank you for registering an account!',
       text: `Hello ${user.name}. Thank you for registering an account with auctionweb.site!`,
+      version: 0 // Add version field as required by EmailCreatedEvent
     });
 
     req.session = { jwt: userJwt };
