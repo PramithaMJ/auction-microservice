@@ -18,7 +18,7 @@ RUN rm -f package-lock.json
 RUN npm install --no-package-lock --force
 
 # Ensure node_modules directory structure exists
-RUN mkdir -p node_modules/@jjmauction/common
+RUN mkdir -p node_modules && mkdir -p node_modules/@jjmauction/common
 
 # Copy the built common package to node_modules
 RUN cp -r /app/common/build/* node_modules/@jjmauction/common/
