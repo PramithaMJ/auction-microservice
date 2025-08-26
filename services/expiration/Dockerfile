@@ -1,6 +1,13 @@
 FROM node:alpine
 
+WORKDIR /app
 
+# Copy and build common package first
+COPY ../../common /common
+WORKDIR /common
+RUN npm install && npm run build
+
+# Go back to app directory
 WORKDIR /app
 
 # Copy package files for better layer caching
