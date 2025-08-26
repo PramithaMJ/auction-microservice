@@ -82,8 +82,7 @@ router.post(
         await new EmailCreatedPublisher(natsWrapper.client).publish({
           email: owner.email,
           subject: `New bid placed on your item: ${listing.title}`,
-          text: `A new bid of $${(amount / 100).toFixed(2)} has been placed on your item "${listing.title}".`,
-          version: 1
+          text: `A new bid of $${(amount / 100).toFixed(2)} has been placed on your item "${listing.title}".`
         });
       }
 
