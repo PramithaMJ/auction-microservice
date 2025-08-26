@@ -28,7 +28,7 @@ export class UserRegistrationSagaOrchestrator {
     const sagaId = uuidv4();
     const timestamp = new Date().toISOString();
 
-    console.log(`🚀 Starting User Registration Saga: ${sagaId} for user: ${request.userEmail}`);
+    console.log(` Starting User Registration Saga: ${sagaId} for user: ${request.userEmail}`);
 
     // Initialize saga state
     const initialState: SagaState = {
