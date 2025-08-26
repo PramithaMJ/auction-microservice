@@ -15,6 +15,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/minimatch": "^6.0.0",
     "del-cli": "^3.0.1",
     "typescript": "^5.0.4"
   },
