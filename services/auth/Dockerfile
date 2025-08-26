@@ -5,12 +5,22 @@ WORKDIR /app
 # Install system dependencies required for node-gyp (sqlite3 needs this)
 RUN apk add --no-cache python3 make g++ 
 
-# Copy package.json and install deps
-COPY package*.json ./
+# Copy the common package source and build it
+COPY ./common ./common
+WORKDIR /app/common
+RUN npm install && npm run build
+
+# Switch back to app directory and copy auth service files
+WORKDIR /app
+COPY ./services/auth/package.json ./
+COPY ./services/auth/package-lock.json* ./
+
+# Install auth service dependencies
+RUN npm cache clean --force
 RUN npm install
 
-# Copy application source
-COPY . .
+# Copy auth service source code
+COPY ./services/auth/ ./
 
 # Expose port
 EXPOSE 3101

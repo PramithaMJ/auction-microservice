@@ -207,8 +207,8 @@ services:
   auth:
     image: pramithamj/auction-website-ms-auth:${IMAGE_TAG:-latest}
     build:
-      context: ./services/auth
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./services/auth/Dockerfile
     container_name: auction-auth
     ports:
       - "3101:3101"
