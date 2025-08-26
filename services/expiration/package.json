@@ -20,7 +20,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@jjmauction/common": "^1.0.10",
+    "@jjmauction/common": "^1.0.24",
     "@types/node": "^18.0.0",
     "bull": "^3.20.0",
     "ts-node": "^10.9.1",
