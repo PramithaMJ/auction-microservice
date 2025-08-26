@@ -15,7 +15,7 @@ export class WelcomeEmailSentListener extends Listener<WelcomeEmailSentEvent> {
   }
 
   async onMessage(data: WelcomeEmailSentEvent['data'], msg: Message) {
-    console.log(`🎧 Received WelcomeEmailSent event for saga: ${data.sagaId}`);
+    console.log(` Received WelcomeEmailSent event for saga: ${data.sagaId}`);
 
     try {
       await this.sagaOrchestrator.handleWelcomeEmailSent(data);

@@ -14,7 +14,7 @@ export class UserAccountCreatedListener extends Listener<UserAccountCreatedEvent
   async onMessage(data: UserAccountCreatedEvent['data'], msg: Message) {
     const { sagaId, userId, userEmail, userName } = data;
 
-    console.log(`🎧 Profile Service received UserAccountCreated for saga: ${sagaId}`);
+    console.log(` Profile Service received UserAccountCreated for saga: ${sagaId}`);
 
     try {
       // Create profile for the user

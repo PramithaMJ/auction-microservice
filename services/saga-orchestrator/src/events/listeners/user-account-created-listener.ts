@@ -15,7 +15,7 @@ export class UserAccountCreatedListener extends Listener<UserAccountCreatedEvent
   }
 
   async onMessage(data: UserAccountCreatedEvent['data'], msg: Message) {
-    console.log(`🎧 Received UserAccountCreated event for saga: ${data.sagaId}`);
+    console.log(` Received UserAccountCreated event for saga: ${data.sagaId}`);
 
     try {
       await this.sagaOrchestrator.handleAccountCreated(data);

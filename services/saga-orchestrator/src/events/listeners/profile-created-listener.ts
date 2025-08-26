@@ -15,7 +15,7 @@ export class ProfileCreatedListener extends Listener<ProfileCreatedEvent> {
   }
 
   async onMessage(data: ProfileCreatedEvent['data'], msg: Message) {
-    console.log(`🎧 Received ProfileCreated event for saga: ${data.sagaId}`);
+    console.log(` Received ProfileCreated event for saga: ${data.sagaId}`);
 
     try {
       await this.sagaOrchestrator.handleProfileCreated(data);

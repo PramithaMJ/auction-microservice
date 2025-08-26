@@ -13,7 +13,7 @@ If you have existing images or encounter push errors, run:
 
 See [DOCKER-MIGRATION.md](./DOCKER-MIGRATION.md) for complete details.ide shows you how to run the entire Auction Website using Docker Compose instead of the hybrid script.
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### Prerequisites
 - Docker Desktop installed and running
@@ -33,7 +33,7 @@ See [DOCKER-MIGRATION.md](./DOCKER-MIGRATION.md) for complete details.ide shows 
 # 3) Custom Configuration
 ```
 
-**📋 Manual Setup:**
+** Manual Setup:**
 ```bash
 # For local development
 cp .env.local.example .env
@@ -59,7 +59,7 @@ cp .env.production.example .env
 This script will:
 -  Check all prerequisites
 - 🏗️ Build all Docker images
-- 🚀 Start all services in the correct order
+-  Start all services in the correct order
 - ⏳ Wait for services to be ready
 - 📊 Show service status and URLs
 

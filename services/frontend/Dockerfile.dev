@@ -1,32 +1,36 @@
 # Multi-stage build for better dependency management
 FROM node:18-alpine AS common-builder
 
+WORKDIR /app
+
+# Copy common package
+COPY ./common ./common
+
+# Build common package
 WORKDIR /app/common
-
-# Copy common package files
-COPY ./common/package*.json ./
-RUN npm install
-
-# Copy common source and build
-COPY ./common/src ./src
-COPY ./common/tsconfig.json ./
-RUN npm run build
+RUN npm install && npm run build
 
 # Main application stage
 FROM node:18-alpine
 
 WORKDIR /app
 
-# Copy package files first
+# Install build dependencies
+RUN apk add --no-cache \
+    python3 \
+    make \
+    g++ \
+    bash \
+    libc-dev \
+    && ln -sf python3 /usr/bin/python
+
+# Copy the entire common package first
+COPY --from=common-builder /app/common ./common
+
+# Copy frontend package files
 COPY ./services/frontend/package*.json ./
 
-# Create node_modules/@jjmauction directory
-RUN mkdir -p node_modules/@jjmauction
-
-# Copy built common package from previous stage to the correct location
-COPY --from=common-builder /app/common ./node_modules/@jjmauction/common
-
-# Install main app dependencies (this will respect the existing common package)
+# Install frontend dependencies
 RUN npm install --production=false
 
 # Copy application source

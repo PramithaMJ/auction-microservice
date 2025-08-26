@@ -38,7 +38,7 @@ This guide documents the complete **two-layer circuit breaker implementation** f
     └───────────────────────────────────────────────────┘
 ```
 
-## 📋 Implementation Summary
+##  Implementation Summary
 
 ###  **Layer 1: API Gateway Circuit Breaker**
 - **Location**: `/services/api-gateway/src/circuit-breaker.ts`
@@ -83,7 +83,7 @@ services/
 └── demo-nats-circuit-breaker.sh         # ✨ NEW - Complete demo
 ```
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### 1. Test API Gateway Circuit Breaker
 ```bash

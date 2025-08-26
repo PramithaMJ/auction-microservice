@@ -71,7 +71,7 @@ export class UserRegistrationSagaOrchestrator {
   async handleAccountCreated(event: UserAccountCreatedEvent['data']): Promise<void> {
     const { sagaId, userId, userEmail, userName, userAvatar, version, timestamp } = event;
     
-    console.log(`📋 Processing Account Created for saga: ${sagaId}`);
+    console.log(` Processing Account Created for saga: ${sagaId}`);
 
     try {
       const sagaState = await sagaStateManager.getSagaState(sagaId);
@@ -101,7 +101,7 @@ export class UserRegistrationSagaOrchestrator {
   async handleProfileCreated(event: ProfileCreatedEvent['data']): Promise<void> {
     const { sagaId, userId, profileId, timestamp } = event;
     
-    console.log(`📋 Processing Profile Created for saga: ${sagaId}`);
+    console.log(` Processing Profile Created for saga: ${sagaId}`);
 
     try {
       const sagaState = await sagaStateManager.getSagaState(sagaId);
@@ -130,7 +130,7 @@ export class UserRegistrationSagaOrchestrator {
   async handleWelcomeEmailSent(event: WelcomeEmailSentEvent['data']): Promise<void> {
     const { sagaId, userId, email, timestamp } = event;
     
-    console.log(`📋 Processing Welcome Email Sent for saga: ${sagaId}`);
+    console.log(` Processing Welcome Email Sent for saga: ${sagaId}`);
 
     try {
       const sagaState = await sagaStateManager.getSagaState(sagaId);

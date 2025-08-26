@@ -259,7 +259,7 @@ class ApiGateway {
   public async start(): Promise<void> {
     try {
       const server = this.app.listen(config.server.port, config.server.host, () => {
-        console.log('🚀 API Gateway started successfully!');
+        console.log(' API Gateway started successfully!');
         console.log(`🌐 Gateway URL: http://${config.server.host}:${config.server.port}`);
         console.log(' Circuit Breaker Configuration:');
         console.log(`   - Failure Threshold: 5 failures`);

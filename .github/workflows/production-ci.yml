@@ -122,7 +122,7 @@ jobs:
     steps:
     - name: Deploy to staging
       run: |
-        echo "🚀 Deploying to staging environment"
+        echo " Deploying to staging environment"
         echo "Version: v1.0.${{ github.run_number }}"
         # Add your staging deployment commands here
         # kubectl apply -f k8s/ --namespace=staging
@@ -137,7 +137,7 @@ jobs:
     steps:
     - name: Deploy to production
       run: |
-        echo "🚀 Deploying to production environment"
+        echo " Deploying to production environment"
         echo "Version: ${{ github.ref_name }}"
         # Add your production deployment commands here
         # kubectl apply -f k8s/ --namespace=production

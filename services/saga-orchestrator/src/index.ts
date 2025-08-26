@@ -7,7 +7,7 @@ import { WelcomeEmailSentListener } from './events/listeners/welcome-email-sent-
 
 (async () => {
   try {
-    console.log('🚀 Starting Saga Orchestrator Service...');
+    console.log(' Starting Saga Orchestrator Service...');
 
     // Environment validation
     if (!process.env.NATS_URL) {
@@ -54,7 +54,7 @@ import { WelcomeEmailSentListener } from './events/listeners/welcome-email-sent-
     });
 
     // Start event listeners
-    console.log('🎧 Starting event listeners...');
+    console.log(' Starting event listeners...');
     new UserAccountCreatedListener(natsWrapper.client, sagaOrchestrator).listen();
     new ProfileCreatedListener(natsWrapper.client, sagaOrchestrator).listen();
     new WelcomeEmailSentListener(natsWrapper.client, sagaOrchestrator).listen();
@@ -63,7 +63,7 @@ import { WelcomeEmailSentListener } from './events/listeners/welcome-email-sent-
     const port = process.env.PORT || 3108;
     app.listen(port, () => {
       console.log(` Saga Orchestrator Service listening on port ${port}!`);
-      console.log('📋 Available endpoints:');
+      console.log(' Available endpoints:');
       console.log(`   GET    /health - Service health check`);
       console.log(`   POST   /api/sagas/user-registration/start - Start user registration saga`);
       console.log(`   GET    /api/sagas/user-registration/:sagaId - Get saga status`);

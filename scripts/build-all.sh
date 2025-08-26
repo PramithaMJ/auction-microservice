@@ -54,7 +54,7 @@ echo -e "${BLUE}🔧 Building Common Package...${NC}"
 build_service "common" "./common" "./common/Dockerfile"
 
 # Build services
-echo -e "${BLUE}🚀 Building Microservices...${NC}"
+echo -e "${BLUE} Building Microservices...${NC}"
 
 services=(
     "auth:./services/auth:./services/auth/Dockerfile"
@@ -79,7 +79,7 @@ build_service "frontend" "./services/frontend" "./services/frontend/Dockerfile.d
 echo ""
 echo -e "${GREEN}🎉 All images built successfully!${NC}"
 echo ""
-echo -e "${BLUE}📋 Built Images:${NC}"
+echo -e "${BLUE} Built Images:${NC}"
 
 # List all built images
 services_list=("common" "auth" "bid" "listing" "payment" "profile" "email" "expiration" "api-gateway" "frontend")

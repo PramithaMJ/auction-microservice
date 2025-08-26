@@ -48,7 +48,7 @@ pull_images() {
 
 # Function to start services
 start_services() {
-    echo -e "${YELLOW}🚀 Starting services with docker-compose...${NC}"
+    echo -e "${YELLOW} Starting services with docker-compose...${NC}"
     
     # Use the pull-only compose file
     docker-compose -f docker-compose.pull-only.yml down --remove-orphans

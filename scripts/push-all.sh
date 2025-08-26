@@ -3,7 +3,7 @@
 # Push all Docker images to Docker Hub
 set -e
 
-echo "🚀 Pushing all Docker images to Docker Hub..."
+echo " Pushing all Docker images to Docker Hub..."
 
 # Colors for output
 RED='\033[0;31m'
@@ -61,7 +61,7 @@ done
 echo ""
 echo -e "${GREEN}🎉 All images pushed successfully to Docker Hub!${NC}"
 echo ""
-echo -e "${BLUE}📋 Pushed Images:${NC}"
+echo -e "${BLUE} Pushed Images:${NC}"
 
 for service in "${services[@]}"; do
     echo -e "  ${GREEN}✓${NC} ${DOCKER_USERNAME}/auction-website-ms-${service}:${FULL_TAG}"

@@ -16,7 +16,7 @@ NC='\033[0m' # No Color
 # Default to latest if no version specified
 VERSION=${1:-latest}
 
-echo -e "${BLUE}🚀 Deploying Auction Website${NC}"
+echo -e "${BLUE} Deploying Auction Website${NC}"
 echo -e "${BLUE} Version: ${VERSION}${NC}"
 echo ""
 

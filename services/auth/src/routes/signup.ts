@@ -64,7 +64,7 @@ router.post(
     try {
       const sagaOrchestratorUrl = process.env.SAGA_ORCHESTRATOR_URL || 'http://localhost:3108';
       
-      console.log(`🚀 Starting User Registration Saga for user: ${user.email}`);
+      console.log(` Starting User Registration Saga for user: ${user.email}`);
       
       const sagaResponse = await axios.post(`${sagaOrchestratorUrl}/api/sagas/user-registration/start`, {
         userId: user.id,

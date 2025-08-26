@@ -1,4 +1,4 @@
-# 🚀 Complete CI/CD Setup Guide
+#  Complete CI/CD Setup Guide
 
 Your auction website now has a complete CI/CD pipeline! Here's everything you need to know:
 
@@ -49,7 +49,7 @@ git commit -m "feat: Add complete CI/CD pipeline with versioning"
 git push origin main
 ```
 
-## 🚀 Usage
+##  Usage
 
 ### Local Development
 ```bash
