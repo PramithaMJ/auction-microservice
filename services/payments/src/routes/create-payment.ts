@@ -70,7 +70,8 @@ router.post(
       await new EmailCreatedPublisher(natsWrapper.client).publish({
         email: winnerEmail,
         subject: `Payment received for auction: ${listing.id}`,
-        text: `Your payment for the auction (ID: ${listing.id}) was successful. Thank you!`
+        text: `Your payment for the auction (ID: ${listing.id}) was successful. Thank you!`,
+        version: 0
       });
     }
 
