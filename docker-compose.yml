@@ -250,6 +250,8 @@ services:
         condition: service_started
       common:
         condition: service_completed_successfully
+      listings:
+        condition: service_started
     networks:
       - auction-network
     restart: unless-stopped
@@ -363,8 +365,9 @@ services:
       - NATS_URL=nats://nats-streaming:4222
       - NATS_CLUSTER_ID=auction
       - NATS_CLIENT_ID=email-service
-      - EMAIL=your_email@gmail.com
-      - EMAIL_PASSWORD=your_app_specific_password
+      - EMAIL=pramithamj3990@gmail.com
+      - EMAIL_PASSWORD=nejqsceaqopfsjry
+
     depends_on:
       nats-streaming:
         condition: service_started
@@ -416,14 +419,16 @@ services:
       - "${FRONTEND_PORT:-3000}:3000"
     environment:
       - NODE_ENV=${NODE_ENV:-development}
-      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
-      - NEXT_PUBLIC_API_GATEWAY_PORT=${NEXT_PUBLIC_API_GATEWAY_PORT:-3001}
-      - SERVER_API_URL=${SERVER_API_URL:-http://api-gateway:3001}
+      - NEXT_PUBLIC_API_URL=http://98.87.131.233:3001
+      - NEXT_PUBLIC_API_GATEWAY_PORT=3001
+      - SERVER_API_URL=http://98.87.131.233:3001
       - NEXT_PUBLIC_SERVER_IP=${SERVER_IP:-98.87.131.233}
       - WATCHPACK_POLLING=true
     depends_on:
       api-gateway:
         condition: service_started
+      common:
+        condition: service_completed_successfully
     networks:
       - auction-network
     restart: unless-stopped
@@ -431,6 +436,8 @@ services:
       - ./services/frontend:/app
       - /app/node_modules
       - /app/.next
+      # Mount the common build directly to the correct location
+      - common-build:/app/node_modules/@jjmauction/common
 
 volumes:
   redis-data:

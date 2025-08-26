@@ -140,16 +140,16 @@ router.post(
         if (isNaN(enteredDate.getTime())) {
           errors.push({ message: 'Invalid Date', field: 'expiresAt' });
         } else {
-          const tomorrowsDate = new Date(Date.now() + 24 * 60 * 60 * 1000);
+          const minDurationDate = new Date(Date.now() + 30 * 60 * 1000); // 30 minutes from now
           console.log(
-            'Tomorrow date:',
-            tomorrowsDate,
-            'entered > tomorrow:',
-            enteredDate > tomorrowsDate
+            'Min duration date:',
+            minDurationDate,
+            'entered > minDuration:',
+            enteredDate > minDurationDate
           );
-          if (enteredDate <= tomorrowsDate) {
+          if (enteredDate <= minDurationDate) {
             errors.push({
-              message: 'Auctions must last at least 24 hours',
+              message: 'Auctions must last at least 30 minutes',
               field: 'expiresAt',
             });
           }
