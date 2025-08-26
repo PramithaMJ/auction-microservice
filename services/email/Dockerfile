@@ -10,11 +10,11 @@ RUN npm install && npm run build
 # Switch back to app directory and copy email service files
 WORKDIR /app
 COPY ./services/email/package.json ./
-COPY ./services/email/package-lock.json* ./
 
-# Install email service dependencies
+# Install email service dependencies (avoid package-lock.json issues)
 RUN npm cache clean --force
-RUN npm install
+RUN rm -f package-lock.json
+RUN npm install --no-package-lock --force
 
 # Install typescript for building
 RUN npm install -g typescript ts-node
