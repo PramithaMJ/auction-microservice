@@ -284,7 +284,7 @@ class ApiGateway {
 
       // Graceful shutdown
       process.on('SIGTERM', () => {
-        console.log('📴 Received SIGTERM, shutting down gracefully...');
+        console.log(' Received SIGTERM, shutting down gracefully...');
         server.close(() => {
           console.log(' API Gateway stopped');
           process.exit(0);
@@ -292,7 +292,7 @@ class ApiGateway {
       });
 
       process.on('SIGINT', () => {
-        console.log('📴 Received SIGINT, shutting down gracefully...');
+        console.log(' Received SIGINT, shutting down gracefully...');
         server.close(() => {
           console.log(' API Gateway stopped');
           process.exit(0);

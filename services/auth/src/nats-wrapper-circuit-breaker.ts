@@ -194,7 +194,7 @@ class NatsWrapper {
         });
 
         this.client.on('close', () => {
-          console.log('🔌 NATS connection closed');
+          console.log(' NATS connection closed');
           this._client = undefined;
           this._isConnecting = false;
           
@@ -205,7 +205,7 @@ class NatsWrapper {
         });
 
         this.client.on('disconnect', () => {
-          console.log('🔌 NATS disconnected');
+          console.log(' NATS disconnected');
           this.recordFailure(new Error('NATS disconnected'));
         });
 

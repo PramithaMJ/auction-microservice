@@ -121,7 +121,7 @@ class SagaStateManager {
     if (this.client && this.connected) {
       await this.client.quit();
       this.connected = false;
-      console.log('🔌 Redis client disconnected');
+      console.log(' Redis client disconnected');
     }
   }
 }

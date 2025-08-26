@@ -35,19 +35,19 @@ import { WelcomeEmailSentListener } from './events/listeners/welcome-email-sent-
 
     // Setup NATS event handlers
     natsWrapper.client.on('close', () => {
-      console.log('📴 NATS connection closed!');
+      console.log(' NATS connection closed!');
       process.exit();
     });
 
     process.on('SIGINT', async () => {
-      console.log('📴 Received SIGINT, shutting down gracefully...');
+      console.log(' Received SIGINT, shutting down gracefully...');
       await natsWrapper.client.close();
       await sagaStateManager.close();
       process.exit();
     });
 
     process.on('SIGTERM', async () => {
-      console.log('📴 Received SIGTERM, shutting down gracefully...');
+      console.log(' Received SIGTERM, shutting down gracefully...');
       await natsWrapper.client.close();
       await sagaStateManager.close();
       process.exit();
