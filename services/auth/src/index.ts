@@ -1,6 +1,6 @@
 import { app } from './app';
 import { db } from './models';
-import { natsWrapper } from './nats-wrapper';
+import { natsWrapper } from './nats-wrapper-circuit-breaker';
 
 (async () => {
   try {
@@ -31,6 +31,14 @@ import { natsWrapper } from './nats-wrapper';
       process.env.NATS_CLIENT_ID,
       process.env.NATS_URL
     );
+
+    natsWrapper.client.on('close', () => {
+      console.log('NATS connection closed!');
+      process.exit();
+    });
+
+    process.on('SIGINT', () => natsWrapper.close());
+    process.on('SIGTERM', () => natsWrapper.close());
 
     await db.authenticate();
     db.sync();

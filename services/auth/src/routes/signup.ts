@@ -7,8 +7,10 @@ import { Op } from 'sequelize';
 
 import { EmailCreatedPublisher } from '../events/publishers/email-created-publisher';
 import { UserCreatedPublisher } from '../events/publishers/user-created-publisher';
+import { EmailCreatedPublisherEnhanced } from '../events/publishers/email-created-publisher-enhanced';
+import { UserCreatedPublisherEnhanced } from '../events/publishers/user-created-publisher-enhanced';
 import { User } from '../models';
-import { natsWrapper } from '../nats-wrapper';
+import { natsWrapper } from '../nats-wrapper-circuit-breaker';
 import { toHash } from '../utils/to-hash';
 
 const router = express.Router();
@@ -56,19 +58,30 @@ router.post(
       process.env.JWT_KEY!
     );
 
-    await new UserCreatedPublisher(natsWrapper.client).publish({
-      id: user.id!,
-      name,
-      email,
-      avatar,
-      version: user.version!,
-    });
+    // Use enhanced publishers with circuit breaker protection
+    try {
+      await new UserCreatedPublisherEnhanced(natsWrapper.client, natsWrapper).publish({
+        id: user.id!,
+        name,
+        email,
+        avatar,
+        version: user.version!,
+      }, { retries: 2 });
+    } catch (error) {
+      console.log('❌ Failed to publish UserCreated event, but user registration succeeded');
+      // User registration still succeeds even if event publishing fails
+    }
 
-    new EmailCreatedPublisher(natsWrapper.client).publish({
-      email: user.email,
-      subject: 'Thank you for registering an account!',
-      text: `Hello ${user.name}. Thank you for registering an account with auctionweb.site!`,
-    });
+    try {
+      await new EmailCreatedPublisherEnhanced(natsWrapper.client, natsWrapper).publish({
+        email: user.email,
+        subject: 'Thank you for registering an account!',
+        text: `Hello ${user.name}. Thank you for registering an account with auctionweb.site!`,
+      }, { retries: 2 });
+    } catch (error) {
+      console.log('❌ Failed to publish EmailCreated event, but user registration succeeded');
+      // User registration still succeeds even if email event publishing fails
+    }
 
     req.session = { jwt: userJwt };
     res.status(201).send(user);

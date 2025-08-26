@@ -1,7 +1,7 @@
 import { app } from './app';
 import { UserCreatedListener } from './events/listeners/user-created-listener';
 import { db } from './models';
-import { natsWrapper } from './nats-wrapper';
+import { natsWrapper } from './nats-wrapper-circuit-breaker';
 
 (async () => {
   try {

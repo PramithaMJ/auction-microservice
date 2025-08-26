@@ -1,13 +1,14 @@
 import { app } from './app';
+import { UserCreatedListener } from './events/listeners/user-created-listener';
 import { db } from './models';
-import { natsWrapper } from './nats-wrapper-circuit-breaker';
+import { natsWrapper } from './nats-wrapper';
 
 (async () => {
   try {
-    console.log('The bid service has started');
+    console.log('The profile service has started');
 
-    if (!process.env.PAYMENTS_MYSQL_URI) {
-      throw new Error('PAYMENTS_MYSQL_URI must be defined');
+    if (!process.env.PROFILE_MYSQL_URI) {
+      throw new Error('PROFILE_MYSQL_URI must be defined');
     }
 
     if (!process.env.JWT_KEY) {
@@ -24,10 +25,6 @@ import { natsWrapper } from './nats-wrapper-circuit-breaker';
 
     if (!process.env.NATS_CLUSTER_ID) {
       throw new Error('NATS_CLUSTER_ID must be defined');
-    }
-
-    if (!process.env.STRIPE_KEY) {
-      throw new Error('STRIPE_KEY must be defined');
     }
 
     await natsWrapper.connect(
@@ -48,10 +45,12 @@ import { natsWrapper } from './nats-wrapper-circuit-breaker';
     await db.sync();
     console.log('Conneted to MySQL');
 
-    const port = process.env.PORT || 3104;
+    const port = process.env.PORT || 3105;
     app.listen(port, () => console.log(`Listening on port ${port}!`));
 
-    console.log('The payments service has started up successfully');
+    new UserCreatedListener(natsWrapper.client).listen();
+
+    console.log('The profile service has started up successfully');
   } catch (err) {
     console.error(err);
     process.exit(0);
