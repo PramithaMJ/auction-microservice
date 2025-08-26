@@ -20,11 +20,10 @@ RUN npm install && npm run build
 # Switch back to app directory and copy profile service files
 WORKDIR /app
 COPY ./services/profile/package.json ./
-COPY ./services/profile/package-lock.json* ./
 
-# Install profile service dependencies
+# Install profile service dependencies (avoid package-lock.json issues)
 RUN npm cache clean --force
-RUN npm install
+RUN npm install --no-package-lock --force
 
 # Install typescript for building
 RUN npm install -g typescript ts-node
