@@ -4,12 +4,12 @@ FROM node:18-alpine AS common-builder
 WORKDIR /app/common
 
 # Copy common package files
-COPY ../../common/package*.json ./
+COPY ./common/package*.json ./
 RUN npm install
 
 # Copy common source and build
-COPY ../../common/src ./src
-COPY ../../common/tsconfig.json ./
+COPY ./common/src ./src
+COPY ./common/tsconfig.json ./
 RUN npm run build
 
 # Main application stage
@@ -18,7 +18,7 @@ FROM node:18-alpine
 WORKDIR /app
 
 # Copy package files first
-COPY package*.json ./
+COPY ./services/frontend/package*.json ./
 
 # Create node_modules/@jjmauction directory
 RUN mkdir -p node_modules/@jjmauction
@@ -30,13 +30,13 @@ COPY --from=common-builder /app/common ./node_modules/@jjmauction/common
 RUN npm install --production=false
 
 # Copy application source
-COPY src ./src
-COPY public ./public
-COPY next.config.js ./
-COPY .babelrc ./
-COPY tsconfig.json ./
-COPY tailwind.config.js ./
-COPY postcss.config.js ./
+COPY ./services/frontend/src ./src
+COPY ./services/frontend/public ./public
+COPY ./services/frontend/next.config.js ./
+COPY ./services/frontend/.babelrc ./
+COPY ./services/frontend/tsconfig.json ./
+COPY ./services/frontend/tailwind.config.js ./
+COPY ./services/frontend/postcss.config.js ./
 
 # Expose port
 EXPOSE 3000
