@@ -19,9 +19,9 @@ DATE=$(date +%Y%m%d)
 FULL_TAG="${VERSION}-${SHORT_SHA}"
 
 echo -e "${BLUE} Version: ${VERSION}${NC}"
-echo -e "${BLUE}🔖 Full Tag: ${FULL_TAG}${NC}"
-echo -e "${BLUE}📅 Date: ${DATE}${NC}"
-echo -e "${BLUE}💾 Commit: ${SHORT_SHA}${NC}"
+echo -e "${BLUE} Full Tag: ${FULL_TAG}${NC}"
+echo -e "${BLUE} Date: ${DATE}${NC}"
+echo -e "${BLUE} Commit: ${SHORT_SHA}${NC}"
 echo ""
 
 # Docker username
@@ -77,7 +77,7 @@ echo -e "${BLUE}🎨 Building Frontend...${NC}"
 build_service "frontend" "./services/frontend" "./services/frontend/Dockerfile.dev"
 
 echo ""
-echo -e "${GREEN}🎉 All images built successfully!${NC}"
+echo -e "${GREEN} All images built successfully!${NC}"
 echo ""
 echo -e "${BLUE} Built Images:${NC}"
 

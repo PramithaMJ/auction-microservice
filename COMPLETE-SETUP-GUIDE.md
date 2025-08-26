@@ -225,4 +225,4 @@ export IMAGE_TAG=v1.0.100
 
 ---
 
-🎉 **Congratulations!** Your auction website now has enterprise-grade CI/CD pipeline with automatic Docker builds, versioning, and deployment capabilities!
+ **Congratulations!** Your auction website now has enterprise-grade CI/CD pipeline with automatic Docker builds, versioning, and deployment capabilities!

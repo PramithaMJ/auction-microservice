@@ -181,7 +181,7 @@ export class UserRegistrationSagaOrchestrator {
         await sagaStateManager.deleteSagaState(sagaId);
       }, 60000); // Delete after 1 minute
 
-      console.log(`🎉 User Registration Saga ${sagaId} completed successfully`);
+      console.log(` User Registration Saga ${sagaId} completed successfully`);
 
     } catch (error) {
       console.error(` Failed to complete saga ${sagaId}:`, error);

@@ -107,7 +107,7 @@ main() {
     show_usage
     
     echo ""
-    echo -e "${GREEN}🎉 Deployment completed successfully!${NC}"
+    echo -e "${GREEN} Deployment completed successfully!${NC}"
     echo -e "${BLUE} Running version: ${VERSION}${NC}"
 }
 

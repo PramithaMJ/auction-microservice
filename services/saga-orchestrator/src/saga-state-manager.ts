@@ -51,7 +51,7 @@ class SagaStateManager {
 
     try {
       await this.client.setEx(key, 3600, value); // Expire after 1 hour
-      console.log(`💾 Saved saga state for ${sagaState.sagaId}: ${sagaState.state}`);
+      console.log(` Saved saga state for ${sagaState.sagaId}: ${sagaState.state}`);
     } catch (error) {
       console.error(` Failed to save saga state for ${sagaState.sagaId}:`, error);
       throw error;

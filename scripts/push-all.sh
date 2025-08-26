@@ -25,7 +25,7 @@ SHORT_SHA=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")
 FULL_TAG="${VERSION}-${SHORT_SHA}"
 
 echo -e "${BLUE} Version: ${VERSION}${NC}"
-echo -e "${BLUE}🔖 Full Tag: ${FULL_TAG}${NC}"
+echo -e "${BLUE} Full Tag: ${FULL_TAG}${NC}"
 echo ""
 
 # Docker username
@@ -59,7 +59,7 @@ for service in "${services[@]}"; do
 done
 
 echo ""
-echo -e "${GREEN}🎉 All images pushed successfully to Docker Hub!${NC}"
+echo -e "${GREEN} All images pushed successfully to Docker Hub!${NC}"
 echo ""
 echo -e "${BLUE} Pushed Images:${NC}"
 
