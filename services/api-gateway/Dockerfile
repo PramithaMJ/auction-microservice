@@ -3,13 +3,13 @@ FROM node:18-alpine
 WORKDIR /app
 
 # Copy package.json and package-lock.json (if available)
-COPY package*.json ./
+COPY ./services/api-gateway/package*.json ./
 
 # Install dependencies
 RUN npm i 
 
 # Copy application source
-COPY . .
+COPY ./services/api-gateway ./
 
 # Build the application
 RUN npm run build

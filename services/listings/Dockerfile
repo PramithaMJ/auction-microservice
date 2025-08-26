@@ -14,7 +14,7 @@ RUN apk add --no-cache \
     && ln -sf python3 /usr/bin/python
 
 # Copy and build common package first
-COPY ../../common /common
+COPY ./common /common
 WORKDIR /common
 RUN npm install && npm run build
 
@@ -22,7 +22,7 @@ RUN npm install && npm run build
 WORKDIR /app
 
 # Copy package.json and lockfile first (better caching)
-COPY package*.json ./
+COPY ./services/listings/package*.json ./
 
 # Install dependencies
 RUN npm install
@@ -31,7 +31,7 @@ RUN npm install
 RUN npm install -g typescript ts-node
 
 # Copy source
-COPY . .
+COPY ./services/listings ./
 
 # Expose port
 EXPOSE 3103

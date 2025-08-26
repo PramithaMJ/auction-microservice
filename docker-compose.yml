@@ -151,8 +151,8 @@ services:
   api-gateway:
     image: pramithamj/auction-website-ms-api-gateway:${IMAGE_TAG:-latest}
     build:
-      context: ./services/api-gateway
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./services/api-gateway/Dockerfile
     container_name: auction-api-gateway
     ports:
       - "${API_GATEWAY_PORT:-3001}:3001"
@@ -219,8 +219,8 @@ services:
   bid:
     image: pramithamj/auction-website-ms-bid:${IMAGE_TAG:-latest}
     build:
-      context: ./services/bid
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./services/bid/Dockerfile
     container_name: auction-bid
     ports:
       - "3102:3102"
@@ -246,8 +246,8 @@ services:
   listings:
     image: pramithamj/auction-website-ms-listing:${IMAGE_TAG:-latest}
     build:
-      context: ./services/listings
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./services/listings/Dockerfile
     container_name: auction-listings
     ports:
       - "3103:3103"
@@ -275,8 +275,8 @@ services:
   payments:
     image: pramithamj/auction-website-ms-payment:${IMAGE_TAG:-latest}
     build:
-      context: ./services/payments
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./services/payments/Dockerfile
     container_name: auction-payments
     ports:
       - "3104:3104"
@@ -350,8 +350,8 @@ services:
   saga-orchestrator:
     image: pramithamj/auction-website-ms-saga-orchestrator:${IMAGE_TAG:-latest}
     build:
-      context: ./services/saga-orchestrator
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./services/saga-orchestrator/Dockerfile
     container_name: auction-saga-orchestrator
     ports:
       - "3108:3108"
@@ -377,8 +377,8 @@ services:
   expiration:
     image: pramithamj/auction-website-ms-expiration:${IMAGE_TAG:-latest}
     build:
-      context: ./services/expiration
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./services/expiration/Dockerfile
     container_name: auction-expiration
     ports:
       - "3107:3107"
@@ -403,8 +403,8 @@ services:
   frontend:
     image: pramithamj/auction-website-ms-frontend:${IMAGE_TAG:-latest}
     build:
-      context: ./services/frontend
-      dockerfile: Dockerfile.dev
+      context: .
+      dockerfile: ./services/frontend/Dockerfile.dev
     container_name: auction-frontend
     ports:
       - "${FRONTEND_PORT:-3000}:3000"
