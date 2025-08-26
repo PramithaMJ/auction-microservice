@@ -13,7 +13,7 @@ const app = express();
 app.set('trust proxy', true);
 app.use(json());
 app.use(cookieSession({ signed: false, secure: false }));
-app.use(currentUser as express.RequestHandler);
+app.use(currentUser);
 
 app.use(createPaymentRouter);
 
