@@ -2,17 +2,25 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-# Copy package.json and package-lock.json (if available)
-COPY package*.json ./
+# Copy the common package source and build it
+COPY ./common ./common
+WORKDIR /app/common
+RUN npm install && npm run build
 
-# Install dependencies
-RUN npm i
+# Switch back to app directory and copy email service files
+WORKDIR /app
+COPY ./services/email/package.json ./
+COPY ./services/email/package-lock.json* ./
+
+# Install email service dependencies
+RUN npm cache clean --force
+RUN npm install
 
 # Install typescript for building
 RUN npm install -g typescript ts-node
 
-# Copy application source
-COPY . .
+# Copy email service source code
+COPY ./services/email/ ./
 
 # Build the application
 RUN npm run build 2>/dev/null || tsc

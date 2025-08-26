@@ -12,17 +12,25 @@ RUN apk add --no-cache \
     sqlite-dev \
     && ln -sf python3 /usr/bin/python
 
-# Copy package.json and package-lock.json (if available)
-COPY package*.json ./
+# Copy the common package source and build it
+COPY ./common ./common
+WORKDIR /app/common
+RUN npm install && npm run build
 
-# Install dependencies
+# Switch back to app directory and copy profile service files
+WORKDIR /app
+COPY ./services/profile/package.json ./
+COPY ./services/profile/package-lock.json* ./
+
+# Install profile service dependencies
+RUN npm cache clean --force
 RUN npm install
 
 # Install typescript for building
 RUN npm install -g typescript ts-node
 
-# Copy application source
-COPY . .
+# Copy profile service source code
+COPY ./services/profile/ ./
 
 # Expose port
 EXPOSE 3105

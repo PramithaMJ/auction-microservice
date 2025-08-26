@@ -331,8 +331,8 @@ services:
   profile:
     image: pramithamj/auction-website-ms-profile:${IMAGE_TAG:-latest}
     build:
-      context: ./services/profile
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./services/profile/Dockerfile
     container_name: auction-profile
     ports:
       - "3105:3105"
@@ -360,8 +360,8 @@ services:
   email:
     image: pramithamj/auction-website-ms-email:${IMAGE_TAG:-latest}
     build:
-      context: ./services/email
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./services/email/Dockerfile
     container_name: auction-email
     ports:
       - "3106:3106"
@@ -389,8 +389,8 @@ services:
   saga-orchestrator:
     image: pramithamj/auction-website-ms-saga-orchestrator:${IMAGE_TAG:-latest}
     build:
-      context: ./services/saga-orchestrator
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./services/saga-orchestrator/Dockerfile
     container_name: auction-saga-orchestrator
     ports:
       - "3108:3108"
