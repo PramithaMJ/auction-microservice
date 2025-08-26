@@ -17,7 +17,12 @@ COPY ./services/auth/package-lock.json* ./
 
 # Install auth service dependencies
 RUN npm cache clean --force
-RUN npm install
+RUN rm -f package-lock.json
+RUN npm install --no-package-lock --force
+
+# Create the @jjmauction directory and link the common package
+RUN mkdir -p node_modules/@jjmauction
+RUN ln -sf /app/common node_modules/@jjmauction/common
 
 # Copy auth service source code
 COPY ./services/auth/ ./

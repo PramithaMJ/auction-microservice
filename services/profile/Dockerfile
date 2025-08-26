@@ -23,7 +23,12 @@ COPY ./services/profile/package.json ./
 
 # Install profile service dependencies (avoid package-lock.json issues)
 RUN npm cache clean --force
+RUN rm -f package-lock.json
 RUN npm install --no-package-lock --force
+
+# Create the @jjmauction directory and link the common package
+RUN mkdir -p node_modules/@jjmauction
+RUN ln -sf /app/common node_modules/@jjmauction/common
 
 # Install typescript for building
 RUN npm install -g typescript ts-node
