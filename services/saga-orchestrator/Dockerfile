@@ -15,11 +15,12 @@ COPY ./services/saga-orchestrator/package-lock.json* ./
 # Install saga-orchestrator service dependencies (avoid package-lock.json issues)
 RUN npm cache clean --force
 RUN rm -f package-lock.json
-RUN npm install --no-package-lock --force --omit=dev
+RUN npm install --no-package-lock --force
 
-# Create the @jjmauction directory and link the common package
-RUN mkdir -p node_modules/@jjmauction
-RUN ln -sf /app/common node_modules/@jjmauction/common
+# Ensure node_modules exists and copy the built common package
+RUN mkdir -p node_modules/@jjmauction/common
+RUN cp -r /app/common/build/* node_modules/@jjmauction/common/
+RUN cp /app/common/package.json node_modules/@jjmauction/common/
 
 # Copy saga-orchestrator service source code
 COPY ./services/saga-orchestrator/ ./
