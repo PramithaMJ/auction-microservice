@@ -1,7 +1,7 @@
 import 'express-async-errors';
 import { json } from 'body-parser';
 import express from 'express';
-import { NotFoundError, errorHandler } from '@jjmauction/common';
+import { NotFoundError, errorHandler } from './common';
 import { ErrorRequestHandler } from 'express';
 import { UserRegistrationSagaOrchestrator } from './user-registration-saga-orchestrator';
 

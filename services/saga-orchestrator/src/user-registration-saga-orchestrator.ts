@@ -10,7 +10,7 @@ import {
   UserAccountDeletedEvent,
   ProfileDeletedEvent,
   Subjects
-} from '@jjmauction/common';
+} from './common';
 import { natsWrapper } from './nats-wrapper';
 import { sagaStateManager, SagaState } from './saga-state-manager';
 

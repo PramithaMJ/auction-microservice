@@ -1,4 +1,4 @@
-import { Listener, Subjects, UserAccountCreatedEvent } from '@jjmauction/common';
+import { Listener, Subjects, UserAccountCreatedEvent } from '../../common';
 import { Message } from 'node-nats-streaming';
 import { UserRegistrationSagaOrchestrator } from '../../user-registration-saga-orchestrator';
 import { queueGroupName } from './queue-group-name';

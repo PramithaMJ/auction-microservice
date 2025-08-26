@@ -389,8 +389,8 @@ services:
   saga-orchestrator:
     image: pramithamj/auction-website-ms-saga-orchestrator:${IMAGE_TAG:-latest}
     build:
-      context: .
-      dockerfile: ./services/saga-orchestrator/Dockerfile
+      context: ./services/saga-orchestrator
+      dockerfile: Dockerfile
     container_name: auction-saga-orchestrator
     ports:
       - "3108:3108"
@@ -408,13 +408,9 @@ services:
         condition: service_healthy
       nats-streaming:
         condition: service_started
-      common:
-        condition: service_completed_successfully
     networks:
       - auction-network
     restart: unless-stopped
-    volumes:
-      - common-build:/app/node_modules/@jjmauction/common
 
   expiration:
     image: pramithamj/auction-website-ms-expiration:${IMAGE_TAG:-latest}
