@@ -403,6 +403,7 @@ services:
       - NATS_CLIENT_ID=saga-orchestrator-service
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+      - REDIS_URL=redis://redis:6379
     depends_on:
       redis:
         condition: service_healthy

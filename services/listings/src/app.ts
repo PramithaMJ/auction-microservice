@@ -19,7 +19,7 @@ const app = express();
 app.set('trust proxy', true);
 app.use(json());
 app.use(cookieSession({ signed: false, secure: false }));
-app.use(currentUser);
+app.use(currentUser as express.RequestHandler);
 
 // Health check endpoint
 app.get('/healthcheck', (req, res) => {
