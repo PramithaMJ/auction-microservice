@@ -16,7 +16,7 @@
     "@aws-sdk/client-s3": "^3.864.0",
     "@aws-sdk/lib-storage": "^3.864.0",
     "@aws-sdk/s3-request-presigner": "^3.873.0",
-    "@jjmauction/common": "^1.0.24",
+    "@jjmauction/common": "file:../../common",
     "@types/cookie-session": "^2.0.42",
     "@types/express": "^4.17.9",
     "@types/jsonwebtoken": "^8.5.0",
