@@ -44,7 +44,7 @@ export abstract class PublisherWithCircuitBreaker<T extends Event> {
 
   private standardPublish(data: T['data']): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.client.publish(this.subject, JSON.stringify(data), (err) => {
+      this.client.publish(this.subject, JSON.stringify(data), (err: any) => {
         if (err) {
           reject(err);
         } else {
@@ -73,7 +73,7 @@ export abstract class PublisherWithCircuitBreaker<T extends Event> {
     // 3. Send to a dead letter queue
     // 4. Trigger an alert/notification
     
-    console.log(`🔄 Event marked for retry: ${fallbackData.subject}`);
+    console.log(` Event marked for retry: ${fallbackData.subject}`);
     
     // For now, just log it - but you could implement actual persistence here
     // Example: this.storeForRetry(fallbackData);

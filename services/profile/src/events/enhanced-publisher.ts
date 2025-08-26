@@ -73,7 +73,7 @@ export abstract class PublisherWithCircuitBreaker<T extends Event> {
     // 3. Send to a dead letter queue
     // 4. Trigger an alert/notification
     
-    console.log(`🔄 Event marked for retry: ${fallbackData.subject}`);
+    console.log(` Event marked for retry: ${fallbackData.subject}`);
     
     // For now, just log it - but you could implement actual persistence here
     // Example: this.storeForRetry(fallbackData);

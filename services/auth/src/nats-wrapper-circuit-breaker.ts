@@ -84,7 +84,7 @@ class NatsWrapper {
         if (now >= this._health.nextAttemptTime) {
           // Transition to half-open state
           this._health.state = NatsCircuitState.HALF_OPEN;
-          console.log(`🔄 NATS circuit breaker transitioning to HALF_OPEN`);
+          console.log(` NATS circuit breaker transitioning to HALF_OPEN`);
           return { allowed: true };
         }
         return { 
@@ -109,7 +109,7 @@ class NatsWrapper {
       // NATS is back up, close the circuit
       this._health.state = NatsCircuitState.CLOSED;
       this._health.failures = 0;
-      console.log(`✅ NATS circuit breaker transitioning to CLOSED (service recovered)`);
+      console.log(` NATS circuit breaker transitioning to CLOSED (service recovered)`);
     } else if (this._health.state === NatsCircuitState.CLOSED) {
       // Clean up old failures outside monitoring window
       if (now - this._health.lastFailureTime > this._config.monitoringWindow) {
@@ -146,7 +146,7 @@ class NatsWrapper {
 
     this._reconnectTimer = setTimeout(async () => {
       if (this._health.state === NatsCircuitState.OPEN && this._clusterId && this._clientId && this._url) {
-        console.log(`🔄 Attempting automatic NATS reconnection...`);
+        console.log(` Attempting automatic NATS reconnection...`);
         try {
           await this.connect(this._clusterId, this._clientId, this._url);
         } catch (error) {
@@ -180,13 +180,13 @@ class NatsWrapper {
 
       await new Promise<void>((resolve, reject) => {
         this.client.on('connect', () => {
-          console.log('✅ Connected to NATS');
+          console.log(' Connected to NATS');
           this._isConnecting = false;
           this.recordSuccess();
           resolve();
         });
 
-        this.client.on('error', (err) => {
+        this.client.on('error', (err: any) => {
           console.log('❌ NATS connection error:', err.message);
           this._isConnecting = false;
           this.recordFailure(err);
@@ -210,11 +210,11 @@ class NatsWrapper {
         });
 
         this.client.on('reconnecting', () => {
-          console.log('🔄 NATS reconnecting...');
+          console.log(' NATS reconnecting...');
         });
 
         this.client.on('reconnect', () => {
-          console.log('✅ NATS reconnected');
+          console.log(' NATS reconnected');
           this.recordSuccess();
         });
       });
@@ -245,7 +245,7 @@ class NatsWrapper {
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
       try {
         await new Promise<void>((resolve, reject) => {
-          this.client.publish(subject, JSON.stringify(data), (err) => {
+          this.client.publish(subject, JSON.stringify(data), (err: any) => {
             if (err) {
               reject(err);
             } else {
@@ -311,7 +311,7 @@ class NatsWrapper {
     this._health.failures = 0;
     this._health.lastFailureTime = 0;
     this._health.nextAttemptTime = 0;
-    console.log(`🔄 NATS circuit breaker has been reset to CLOSED`);
+    console.log(` NATS circuit breaker has been reset to CLOSED`);
   }
 
   // Get comprehensive health status

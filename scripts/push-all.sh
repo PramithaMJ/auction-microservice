@@ -48,7 +48,7 @@ push_service() {
     docker push "${DOCKER_USERNAME}/auction-website-ms-${service_name}:${FULL_TAG}"
     docker push "${DOCKER_USERNAME}/auction-website-ms-${service_name}:latest"
     
-    echo -e "${GREEN}✅ ${service_name} pushed successfully${NC}"
+    echo -e "${GREEN} ${service_name} pushed successfully${NC}"
 }
 
 # Services to push

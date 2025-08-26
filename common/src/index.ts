@@ -23,3 +23,10 @@ export * from './events/user-created-event';
 export * from './events/email-created-event';
 export * from './events/listing-updated-event';
 export * from './events/payment-created-event';
+export * from './events/saga-subjects';
+export * from './events/user-registration-saga-events';
+
+// Export saga events individually for better IDE support
+export { UserAccountCreatedEvent } from './events/user-registration-saga-events';
+export { ProfileCreatedEvent } from './events/user-registration-saga-events';
+export { WelcomeEmailSentEvent } from './events/user-registration-saga-events';

@@ -8,7 +8,7 @@ const createProfile = async (id) => {
   return await Profile.create({
     userId: id,
     about: '',
-    firstName: 'Chandula',
+    firstName: 'pramithamj',
     lastName: 'Malkovic',
     country: 'Australia',
   });
@@ -39,5 +39,5 @@ it('responds with the correct details of a users profile if it exists', async ()
     .set('Cookie', cookie)
     .send();
 
-  expect(response.body.firstName).toEqual('Chandula');
+  expect(response.body.firstName).toEqual('pramithamj');
 });

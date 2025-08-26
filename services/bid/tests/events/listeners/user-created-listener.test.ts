@@ -10,7 +10,7 @@ const setup = () => {
 
   const data: UserCreatedEvent['data'] = {
     id: uuidv4(),
-    name: 'Chandula',
+    name: 'pramithamj',
     email: 'test@test.com',
     avatar: 'test.png',
     version: 0,

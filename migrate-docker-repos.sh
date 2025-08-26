@@ -56,7 +56,7 @@ case $choice in
                     fi
                 done
                 
-                echo -e "${GREEN}✅ Tagged ${service}${NC}"
+                echo -e "${GREEN} Tagged ${service}${NC}"
             else
                 echo -e "${YELLOW}⚠️  ${old_name}:latest not found locally${NC}"
             fi
@@ -75,7 +75,7 @@ case $choice in
             if docker pull "${old_name}:latest" 2>/dev/null; then
                 echo -e "${BLUE}Tagging: ${old_name}:latest → ${new_name}:latest${NC}"
                 docker tag "${old_name}:latest" "${new_name}:latest"
-                echo -e "${GREEN}✅ Pulled and tagged ${service}${NC}"
+                echo -e "${GREEN} Pulled and tagged ${service}${NC}"
             else
                 echo -e "${YELLOW}⚠️  Could not pull ${old_name}:latest${NC}"
             fi
@@ -90,7 +90,7 @@ case $choice in
         for service in "${services[@]}"; do
             old_name="${DOCKER_USERNAME}/auction-website/${service}"
             if docker image inspect "${old_name}:latest" > /dev/null 2>&1; then
-                echo -e "${GREEN}✅ ${old_name}:latest${NC}"
+                echo -e "${GREEN} ${old_name}:latest${NC}"
             else
                 echo -e "${RED}❌ ${old_name}:latest${NC}"
             fi
@@ -101,7 +101,7 @@ case $choice in
         for service in "${services[@]}"; do
             new_name="${DOCKER_USERNAME}/auction-website-ms-${service}"
             if docker image inspect "${new_name}:latest" > /dev/null 2>&1; then
-                echo -e "${GREEN}✅ ${new_name}:latest${NC}"
+                echo -e "${GREEN} ${new_name}:latest${NC}"
             else
                 echo -e "${RED}❌ ${new_name}:latest${NC}"
             fi
@@ -132,7 +132,7 @@ case $choice in
                     fi
                 done
             done
-            echo -e "${GREEN}✅ Old format images cleaned up${NC}"
+            echo -e "${GREEN} Old format images cleaned up${NC}"
         else
             echo "Cleanup cancelled"
         fi

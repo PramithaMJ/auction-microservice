@@ -43,7 +43,7 @@ pull_images() {
         }
     done
     
-    echo -e "${GREEN}✅ All images pulled successfully${NC}"
+    echo -e "${GREEN} All images pulled successfully${NC}"
 }
 
 # Function to start services
@@ -54,7 +54,7 @@ start_services() {
     docker-compose -f docker-compose.pull-only.yml down --remove-orphans
     docker-compose -f docker-compose.pull-only.yml up -d
     
-    echo -e "${GREEN}✅ All services started${NC}"
+    echo -e "${GREEN} All services started${NC}"
 }
 
 # Function to show status

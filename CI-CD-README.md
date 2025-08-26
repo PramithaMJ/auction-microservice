@@ -94,9 +94,9 @@ All images will be pushed to Docker Hub under `pramithamj/auction-website/`:
 
 ### Features:
 
-- ✅ Multi-platform builds (linux/amd64, linux/arm64)
-- ✅ Docker layer caching for faster builds
-- ✅ Automatic versioning
-- ✅ Comprehensive logging
-- ✅ Parallel builds for efficiency
-- ✅ Security with secrets management
+-  Multi-platform builds (linux/amd64, linux/arm64)
+-  Docker layer caching for faster builds
+-  Automatic versioning
+-  Comprehensive logging
+-  Parallel builds for efficiency
+-  Security with secrets management

@@ -57,7 +57,7 @@ cp .env.production.example .env
 ```
 
 This script will:
-- ✅ Check all prerequisites
+-  Check all prerequisites
 - 🏗️ Build all Docker images
 - 🚀 Start all services in the correct order
 - ⏳ Wait for services to be ready
@@ -173,7 +173,7 @@ docker stats
 docker-compose logs -f -t auth
 ```
 
-## 🔄 Updates and Rebuilds
+##  Updates and Rebuilds
 
 ### Rebuild Specific Service
 ```bash
@@ -242,7 +242,7 @@ EMAIL_PASSWORD=your_app_specific_password
 NEXT_PUBLIC_API_URL=http://localhost:3001
 ```
 
-## 🔄 Migration from Hybrid Script
+##  Migration from Hybrid Script
 
 If you were using the `start-local-hybrid.sh` script:
 
@@ -251,11 +251,11 @@ If you were using the `start-local-hybrid.sh` script:
 3. **Start Docker setup**: `./start-docker.sh`
 
 Benefits of Docker setup:
-- ✅ Consistent environment across machines
-- ✅ No need for local Node.js/npm installation
-- ✅ Isolated services with proper networking
-- ✅ Easy scaling and management
-- ✅ Simplified deployment to production
+-  Consistent environment across machines
+-  No need for local Node.js/npm installation
+-  Isolated services with proper networking
+-  Easy scaling and management
+-  Simplified deployment to production
 
 ## 📚 Additional Commands
 

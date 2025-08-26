@@ -35,7 +35,7 @@ const Home = () => {
                 </Link>
                 <a
                   className="ml-3 text-indigo-600 hover:underline"
-                  href="https://github.com/ChandulaJ/auction-website"
+                  href="https://github.com/PramithaMJ/auction-microservice"
                 >
                   View the Code
                 </a>

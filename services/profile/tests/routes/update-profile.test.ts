@@ -8,7 +8,7 @@ const createProfile = async (id) => {
   return await Profile.create({
     userId: id,
     about: '',
-    firstName: 'Chandula',
+    firstName: 'pramithamj',
     lastName: 'Malkovic',
     country: 'Australia',
   });

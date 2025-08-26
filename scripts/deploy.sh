@@ -44,7 +44,7 @@ pull_images() {
         fi
     done
     
-    echo -e "${GREEN}✅ Image pull completed${NC}"
+    echo -e "${GREEN} Image pull completed${NC}"
 }
 
 # Function to start services
@@ -77,7 +77,7 @@ start_services() {
     echo -e "  Starting frontend..."
     docker-compose up -d frontend
     
-    echo -e "${GREEN}✅ All services started${NC}"
+    echo -e "${GREEN} All services started${NC}"
 }
 
 # Function to show status

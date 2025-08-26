@@ -46,7 +46,7 @@ build_service() {
         -f "${dockerfile_path}" \
         "${context_path}"
     
-    echo -e "${GREEN}✅ ${service_name} built successfully${NC}"
+    echo -e "${GREEN} ${service_name} built successfully${NC}"
 }
 
 # Build common package

@@ -163,7 +163,7 @@ class ApiGateway {
 
     try {
       console.log(
-        `🔄 Proxying ${req.method} ${req.originalUrl} → ${serviceName} (Circuit: ${this.circuitBreaker.getServiceHealth(serviceName).state})`
+        ` Proxying ${req.method} ${req.originalUrl} → ${serviceName} (Circuit: ${this.circuitBreaker.getServiceHealth(serviceName).state})`
       );
       const fullTargetUrl = `${targetUrl}${req.originalUrl}`;
       console.log(` Forwarding to: ${fullTargetUrl}`);
@@ -202,7 +202,7 @@ class ApiGateway {
 
       const response = await axios(axiosConfig);
       
-      console.log(`✅ Response from ${serviceName}: ${response.status}`);
+      console.log(` Response from ${serviceName}: ${response.status}`);
       
       // Record success in circuit breaker
       this.circuitBreaker.recordSuccess(serviceName);
@@ -261,7 +261,7 @@ class ApiGateway {
       const server = this.app.listen(config.server.port, config.server.host, () => {
         console.log('🚀 API Gateway started successfully!');
         console.log(`🌐 Gateway URL: http://${config.server.host}:${config.server.port}`);
-        console.log('🔄 Circuit Breaker Configuration:');
+        console.log(' Circuit Breaker Configuration:');
         console.log(`   - Failure Threshold: 5 failures`);
         console.log(`   - Reset Timeout: 30 seconds`);
         console.log(`   - Request Timeout: 10 seconds`);

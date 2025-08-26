@@ -22,7 +22,7 @@ if [ ! -f .env ]; then
     exit 1
 fi
 
-echo -e "${GREEN}✅ .env file found${NC}"
+echo -e "${GREEN} .env file found${NC}"
 
 # Load environment variables
 set -a
@@ -44,7 +44,7 @@ test_config() {
             return 0
         fi
     else
-        echo -e "${GREEN}✅ $name = $value${NC}"
+        echo -e "${GREEN} $name = $value${NC}"
         return 0
     fi
 }
@@ -89,7 +89,7 @@ echo "Testing Docker Compose configuration..."
 
 # Test docker-compose config
 if docker-compose config > /dev/null 2>&1; then
-    echo -e "${GREEN}✅ Docker Compose configuration is valid${NC}"
+    echo -e "${GREEN} Docker Compose configuration is valid${NC}"
 else
     echo -e "${RED}❌ Docker Compose configuration has errors${NC}"
     echo "Run: docker-compose config"

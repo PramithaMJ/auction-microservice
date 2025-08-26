@@ -174,7 +174,7 @@ jobs:
     - name: Notification
       run: |
         if [[ "${{ needs.test.result }}" == "success" && "${{ needs.security.result }}" == "success" && "${{ needs.build-and-push.result }}" == "success" ]]; then
-          echo "✅ CI/CD Pipeline completed successfully!"
+          echo " CI/CD Pipeline completed successfully!"
           echo "🐳 All Docker images have been built and pushed to Docker Hub"
           echo "📦 Version: v1.0.${{ github.run_number }}"
         else

@@ -1,5 +1,7 @@
 import { EmailCreatedListener } from './events/listeners/email-created-listener';
+import { ProfileCreatedListener } from './events/listeners/profile-created-listener';
 import { natsWrapper } from './nats-wrapper-circuit-breaker';
+import { app } from './app';
 
 (async () => {
   try {
@@ -40,6 +42,11 @@ import { natsWrapper } from './nats-wrapper-circuit-breaker';
     process.on('SIGTERM', () => natsWrapper.client.close());
 
     await new EmailCreatedListener(natsWrapper.client).listen();
+    await new ProfileCreatedListener(natsWrapper.client).listen();
+
+    app.listen(3106, () => {
+      console.log('Email service listening on port 3106');
+    });
 
     console.log('The email service has started up successfully');
   } catch (err) {
