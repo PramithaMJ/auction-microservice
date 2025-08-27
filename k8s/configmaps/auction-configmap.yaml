@@ -1,0 +1,52 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: auction-config
+  namespace: auction-system
+data:
+  # Environment
+  NODE_ENV: "development"
+  
+  # NATS Configuration
+  NATS_URL: "nats://nats-streaming.auction-infrastructure.svc.cluster.local:4222"
+  NATS_CLUSTER_ID: "auction"
+  
+  # Redis Configuration
+  REDIS_HOST: "redis.auction-infrastructure.svc.cluster.local"
+  REDIS_PORT: "6379"
+  REDIS_URL: "redis://redis.auction-infrastructure.svc.cluster.local:6379"
+  
+  # Database URIs
+  AUTH_MYSQL_URI: "mysql://root:password@auth-mysql.auction-infrastructure.svc.cluster.local:3306/auth"
+  BID_MYSQL_URI: "mysql://root:password@bid-mysql.auction-infrastructure.svc.cluster.local:3306/bid"
+  LISTINGS_MYSQL_URI: "mysql://root:password@listings-mysql.auction-infrastructure.svc.cluster.local:3306/listings"
+  PAYMENTS_MYSQL_URI: "mysql://root:password@payments-mysql.auction-infrastructure.svc.cluster.local:3306/payments"
+  PROFILE_MYSQL_URI: "mysql://root:password@profile-mysql.auction-infrastructure.svc.cluster.local:3306/profile"
+  
+  # Service URLs
+  AUTH_SERVICE_URL: "http://auth-service.auction-system.svc.cluster.local:3101"
+  BID_SERVICE_URL: "http://bid-service.auction-system.svc.cluster.local:3102"
+  LISTINGS_SERVICE_URL: "http://listings-service.auction-system.svc.cluster.local:3103"
+  PAYMENTS_SERVICE_URL: "http://payments-service.auction-system.svc.cluster.local:3104"
+  PROFILE_SERVICE_URL: "http://profile-service.auction-system.svc.cluster.local:3105"
+  EMAIL_SERVICE_URL: "http://email-service.auction-system.svc.cluster.local:3106"
+  SAGA_ORCHESTRATOR_URL: "http://saga-orchestrator-service.auction-system.svc.cluster.local:3108"
+  
+  # AWS Configuration
+  AWS_REGION: "us-east-1"
+  
+  # CORS Configuration
+  CORS_ORIGIN: "http://localhost:3000,http://localhost:3001,http://98.87.131.233:3000,http://98.87.131.233:3001,http://98.87.131.233"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frontend-config
+  namespace: auction-system
+data:
+  NEXT_PUBLIC_API_URL: "http://98.87.131.233:3001"
+  NEXT_PUBLIC_API_GATEWAY_PORT: "3001"
+  SERVER_API_URL: "http://98.87.131.233:3001"
+  NEXT_PUBLIC_SERVER_IP: "98.87.131.233"
+  NEXT_PUBLIC_LISTINGS_SOCKET_URL: "http://98.87.131.233:3103/socket"
+  WATCHPACK_POLLING: "true"

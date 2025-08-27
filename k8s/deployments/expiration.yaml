@@ -1,0 +1,93 @@
+# Expiration Service Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: expiration
+  namespace: auction-system
+  labels:
+    app: expiration
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: expiration
+  template:
+    metadata:
+      labels:
+        app: expiration
+    spec:
+      containers:
+      - name: expiration
+        image: pramithamj/auction-website-ms-expiration:latest
+        ports:
+        - containerPort: 3107
+        env:
+        - name: PORT
+          value: "3107"
+        - name: NODE_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: NODE_ENV
+        - name: JWT_KEY
+          valueFrom:
+            secretKeyRef:
+              name: auction-secrets
+              key: JWT_KEY
+        - name: NATS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: NATS_URL
+        - name: NATS_CLUSTER_ID
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: NATS_CLUSTER_ID
+        - name: NATS_CLIENT_ID
+          value: "expiration-service"
+        - name: REDIS_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: REDIS_HOST
+        - name: REDIS_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: REDIS_PORT
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "50m"
+          limits:
+            memory: "256Mi"
+            cpu: "100m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3107
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 3107
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          failureThreshold: 3
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: expiration-service
+  namespace: auction-system
+spec:
+  selector:
+    app: expiration
+  ports:
+  - port: 3107
+    targetPort: 3107
+    name: http
+  type: ClusterIP
