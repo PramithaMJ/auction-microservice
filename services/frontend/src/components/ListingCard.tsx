@@ -71,6 +71,26 @@ const StyledImageContainer = styled.div`${tw`
 	rounded-t-xl
 	border-b
 	border-yellow-200
+	overflow-hidden
+	position-relative
+`}`;
+
+const StyledImage = styled.img`${tw`
+	w-full
+	h-full
+	object-cover
+	transition-transform
+	duration-300
+	hover:scale-110
+`}`;
+
+const StyledImageFallback = styled.div`${tw`
+	w-full
+	h-full
+	flex
+	items-center
+	justify-center
+	bg-gradient-to-br from-yellow-100 to-orange-100
 `}`;
 
 const StyledEmojiIcon = styled.div`${tw`
@@ -104,14 +124,45 @@ const getEmojiForListing = (title: string): string => {
 };
 
 const ListingCard = ({ name, price, slug, smallImage, expiresAt }: IProps) => {
+  const [imageError, setImageError] = React.useState(false);
+  const [imageLoaded, setImageLoaded] = React.useState(false);
   const emojiIcon = getEmojiForListing(name);
+  
+  const handleImageError = () => {
+    setImageError(true);
+  };
+
+  const handleImageLoad = () => {
+    setImageLoaded(true);
+  };
   
   return (
     <StyledListingCard>
       <Link href={slug}>
         <StyledCardContent>
           <StyledImageContainer>
-            <StyledEmojiIcon>{emojiIcon}</StyledEmojiIcon>
+            {smallImage && !imageError ? (
+              <>
+                <StyledImage
+                  src={smallImage}
+                  alt={name}
+                  onError={handleImageError}
+                  onLoad={handleImageLoad}
+                  style={{ opacity: imageLoaded ? 1 : 0 }}
+                />
+                {!imageLoaded && (
+                  <StyledImageFallback style={{ position: 'absolute', top: 0, left: 0 }}>
+                    <div className="animate-pulse">
+                      <div className="w-full h-full bg-gray-200 rounded"></div>
+                    </div>
+                  </StyledImageFallback>
+                )}
+              </>
+            ) : (
+              <StyledImageFallback>
+                <StyledEmojiIcon>{emojiIcon}</StyledEmojiIcon>
+              </StyledImageFallback>
+            )}
           </StyledImageContainer>
           <TextWrapper>
             <StyledTitle>{name}</StyledTitle>

@@ -66,15 +66,33 @@ const StyledImgContainer = styled.div`${tw`
 	px-8
 `}`;
 
-const StyledEmojiDisplay = styled.div`${tw`
+const StyledImageContainer = styled.div`${tw`
 	mb-4 
 	rounded-2xl 
 	shadow-lg
+	overflow-hidden
+	h-96
+	relative
+	border-2
+	border-gray-200
+`}`;
+
+const StyledImage = styled.img`${tw`
+	w-full
+	h-full
+	object-cover
+	transition-transform
+	duration-300
+	hover:scale-105
+`}`;
+
+const StyledEmojiDisplay = styled.div`${tw`
+	w-full
+	h-full
 	bg-gradient-to-br from-yellow-100 to-orange-100
 	flex
 	items-center
 	justify-center
-	h-96
 	border-2
 	border-yellow-200
 `}`;
@@ -82,6 +100,26 @@ const StyledEmojiDisplay = styled.div`${tw`
 const StyledLargeEmoji = styled.div`${tw`
 	text-9xl
 	opacity-90
+`}`;
+
+const StyledLoadingContainer = styled.div`${tw`
+	w-full
+	h-full
+	bg-gray-100
+	flex
+	items-center
+	justify-center
+	border-2
+	border-gray-200
+`}`;
+
+const StyledLoadingSpinner = styled.div`${tw`
+	animate-spin
+	rounded-full
+	h-12
+	w-12
+	border-b-2
+	border-yellow-600
 `}`;
 
 // Function to get emoji based on listing title
@@ -121,9 +159,50 @@ const Listing = ({ listingData }) => {
   } = useContext(AppContext);
   const [listing, setListing] = useState(listingData);
   const [isBidding, setIsBidding] = useState(false);
+  const [imageLoading, setImageLoading] = useState(true);
+  const [imageError, setImageError] = useState(false);
 
   // Get emoji icon for this listing
   const emojiIcon = listing ? getEmojiForListing(listing.title) : '🎁';
+
+  // Image component with loading and error handling
+  const ListingImage = () => {
+    if (!listing?.imageUrl) {
+      return (
+        <StyledEmojiDisplay>
+          <StyledLargeEmoji>{emojiIcon}</StyledLargeEmoji>
+        </StyledEmojiDisplay>
+      );
+    }
+
+    if (imageLoading) {
+      return (
+        <StyledLoadingContainer>
+          <StyledLoadingSpinner />
+        </StyledLoadingContainer>
+      );
+    }
+
+    if (imageError) {
+      return (
+        <StyledEmojiDisplay>
+          <StyledLargeEmoji>{emojiIcon}</StyledLargeEmoji>
+        </StyledEmojiDisplay>
+      );
+    }
+
+    return (
+      <StyledImage
+        src={listing.imageUrl}
+        alt={listing.title}
+        onLoad={() => setImageLoading(false)}
+        onError={() => {
+          setImageLoading(false);
+          setImageError(true);
+        }}
+      />
+    );
+  };
 
   useEffect(() => {
     const room = listing && listing.slug;
@@ -140,14 +219,29 @@ const Listing = ({ listingData }) => {
 
     socket.on('bid', (data) => {
       setListing(data);
+      // Reset image state if listing data changes
+      if (data?.imageUrl !== listing?.imageUrl) {
+        setImageLoading(true);
+        setImageError(false);
+      }
     });
 
     socket.on('bid-deleted', (data) => {
       setListing(data);
+      // Reset image state if listing data changes
+      if (data?.imageUrl !== listing?.imageUrl) {
+        setImageLoading(true);
+        setImageError(false);
+      }
     });
 
     socket.on('listing-deleted', (data) => {
       setListing(data);
+      // Reset image state if listing data changes
+      if (data?.imageUrl !== listing?.imageUrl) {
+        setImageLoading(true);
+        setImageError(false);
+      }
     });
 
     return () => {
@@ -303,9 +397,9 @@ const Listing = ({ listingData }) => {
           )}
         </StyledTextContent>
         <StyledImgContainer>
-          <StyledEmojiDisplay>
-            <StyledLargeEmoji>{emojiIcon}</StyledLargeEmoji>
-          </StyledEmojiDisplay>
+          <StyledImageContainer>
+            <ListingImage />
+          </StyledImageContainer>
         </StyledImgContainer>
       </StyledListing>
     </>
