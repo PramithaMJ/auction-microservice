@@ -29,8 +29,8 @@ router.get(
 
     console.log(`[Internal API] Listing found: ${listing.title}`);
     
-    // Get the associated user data
-    const associatedUser = (listing as any).User;
+    // Get the associated user data using the typed association
+    const associatedUser = listing.User;
     
     // Return the listing with user information
     res.status(200).json({

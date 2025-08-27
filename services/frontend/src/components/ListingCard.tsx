@@ -46,6 +46,7 @@ const StyledTitle = styled.h3`${tw`
 	mb-2
 	text-lg
 	leading-tight
+	overflow-hidden
 `}
 	display: -webkit-box;
 	-webkit-line-clamp: 2;

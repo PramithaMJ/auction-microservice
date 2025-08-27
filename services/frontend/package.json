@@ -16,6 +16,7 @@
     "@emotion/styled": "^11.14.1",
     "@jjmauction/common": "file:./common",
     "@tailwindcss/forms": "^0.3.4",
+    "@tailwindcss/line-clamp": "^0.4.4",
     "autoprefixer": "^10.4.0",
     "axios": "^0.27.2",
     "babel-plugin-macros": "^3.1.0",
