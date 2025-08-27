@@ -7,10 +7,12 @@
     "test": "tests"
   },
   "dependencies": {
-    "@jjmauction/common": "^1.0.22",
+    "@jjmauction/common": "file:../../common",
     "@types/cookie-session": "^2.0.42",
     "@types/express": "^4.17.9",
     "@types/jsonwebtoken": "^8.5.0",
+    "@types/node": "^18.0.0",
+    "axios": "^1.11.0",
     "cookie-session": "^1.4.0",
     "cross-env": "^7.0.3",
     "express": "^4.17.1",
@@ -19,20 +21,22 @@
     "gravatar": "^1.8.1",
     "jsonwebtoken": "^8.5.1",
     "mysql2": "^2.2.5",
+    "node-nats-streaming": "^0.3.2",
     "sequelize": "^6.5.0",
-    "ts-node-dev": "^1.0.0",
-    "typescript": "^4.1.2",
+    "ts-node": "^10.9.1",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.0.4",
     "uuid": "^8.2.0"
   },
   "devDependencies": {
     "@types/bluebird": "^3.5.33",
     "@types/gravatar": "^1.8.1",
-    "@types/jest": "^26.0.19",
+    "@types/jest": "^29.5.0",
     "@types/supertest": "^2.0.10",
-    "jest": "^26.6.3",
+    "jest": "^29.5.0",
     "sqlite3": "^5.0.2",
     "supertest": "^6.0.1",
-    "ts-jest": "^26.4.4"
+    "ts-jest": "^29.1.0"
   },
   "scripts": {
     "start": "ts-node src/index.ts",
@@ -45,7 +49,13 @@
     "testEnvironment": "node",
     "setupFilesAfterEnv": [
       "./tests/setup.ts"
-    ]
+    ],
+    "extensionsToTreatAsEsm": [".ts"],
+    "globals": {
+      "ts-jest": {
+        "useESM": true
+      }
+    }
   },
   "keywords": [],
   "author": "",

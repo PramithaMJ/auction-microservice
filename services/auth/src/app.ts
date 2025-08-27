@@ -10,6 +10,7 @@ import { signinRouter } from './routes/signin';
 import { signoutRouter } from './routes/signout';
 import { signupRouter } from './routes/signup';
 import { updatePasswordRouter } from './routes/update-password';
+import { internalGetUserRouter } from './routes/internal-get-user';
 import { natsWrapper } from './nats-wrapper-circuit-breaker';
 
 const app = express();
@@ -24,6 +25,7 @@ app.use(currentUserRouter);
 app.use(signinRouter);
 app.use(signoutRouter);
 app.use(signupRouter);
+app.use(internalGetUserRouter);
 
 // NATS Circuit Breaker endpoints
 app.get('/nats/health', (req, res) => {

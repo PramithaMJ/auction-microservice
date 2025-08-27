@@ -3,6 +3,7 @@ import { ListingCreatedListener } from './events/listeners/listing-created-liste
 import { ListingDeletedListener } from './events/listeners/listing-deleted-listener';
 import { ListingUpdatedListener } from './events/listeners/listing-updated-listener';
 import { UserCreatedListener } from './events/listeners/user-created-listener';
+import { UserAccountCreatedListener } from './events/listeners/user-account-created-listener';
 import { db } from './models';
 import { natsWrapper } from './nats-wrapper-circuit-breaker';
 import { syncExistingData } from './utils/sync-listings';
@@ -59,6 +60,7 @@ import { syncExistingData } from './utils/sync-listings';
     new ListingDeletedListener(natsWrapper.client).listen();
     new ListingUpdatedListener(natsWrapper.client).listen();
     new UserCreatedListener(natsWrapper.client).listen();
+    new UserAccountCreatedListener(natsWrapper.client).listen();
 
     console.log('The auth service has started up successfully');
   } catch (err) {

@@ -7,7 +7,7 @@ import express, { Request, Response } from 'express';
 
 import { ListingDeletedPublisher } from '../events/publishers/listing-deleted-publisher';
 import { Listing, db } from '../models';
-import { natsWrapper } from '../nats-wrapper';
+import { natsWrapper } from '../nats-wrapper-circuit-breaker';
 import { socketIOWrapper } from '../socket-io-wrapper';
 
 const router = express.Router();

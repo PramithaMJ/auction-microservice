@@ -12,9 +12,10 @@ const setup = () => {
 
   const data: UserCreatedEvent['data'] = {
     id: uuidv4(),
-    name: 'Chandula',
+    name: 'pramithamj',
     email: 'test@gmail.com',
     avatar: 'test.png',
+    version: 0,
   };
 
   // @ts-ignore

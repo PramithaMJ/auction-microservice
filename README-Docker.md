@@ -2,7 +2,7 @@
 
 This g💡 **No more hardcoded IPs!** The application now automatically configures URLs based on your environment settings.
 
-### 📦 Docker Repository Migration (Important!)
+###  Docker Repository Migration (Important!)
 
 **New Repository Naming Convention:** We've updated from `auction-website/service` to `auction-website-ms-service` format to fix CI/CD deployment issues.
 
@@ -13,7 +13,7 @@ If you have existing images or encounter push errors, run:
 
 See [DOCKER-MIGRATION.md](./DOCKER-MIGRATION.md) for complete details.ide shows you how to run the entire Auction Website using Docker Compose instead of the hybrid script.
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### Prerequisites
 - Docker Desktop installed and running
@@ -22,7 +22,7 @@ See [DOCKER-MIGRATION.md](./DOCKER-MIGRATION.md) for complete details.ide shows 
 
 ### 1. Environment Configuration
 
-**🎯 Easy Setup with Configuration Script (Recommended):**
+** Easy Setup with Configuration Script (Recommended):**
 ```bash
 # Run the automated configuration script
 ./configure-env.sh
@@ -33,7 +33,7 @@ See [DOCKER-MIGRATION.md](./DOCKER-MIGRATION.md) for complete details.ide shows 
 # 3) Custom Configuration
 ```
 
-**📋 Manual Setup:**
+** Manual Setup:**
 ```bash
 # For local development
 cp .env.local.example .env
@@ -57,9 +57,9 @@ cp .env.production.example .env
 ```
 
 This script will:
-- ✅ Check all prerequisites
+-  Check all prerequisites
 - 🏗️ Build all Docker images
-- 🚀 Start all services in the correct order
+-  Start all services in the correct order
 - ⏳ Wait for services to be ready
 - 📊 Show service status and URLs
 
@@ -173,7 +173,7 @@ docker stats
 docker-compose logs -f -t auth
 ```
 
-## 🔄 Updates and Rebuilds
+##  Updates and Rebuilds
 
 ### Rebuild Specific Service
 ```bash
@@ -242,7 +242,7 @@ EMAIL_PASSWORD=your_app_specific_password
 NEXT_PUBLIC_API_URL=http://localhost:3001
 ```
 
-## 🔄 Migration from Hybrid Script
+##  Migration from Hybrid Script
 
 If you were using the `start-local-hybrid.sh` script:
 
@@ -251,11 +251,11 @@ If you were using the `start-local-hybrid.sh` script:
 3. **Start Docker setup**: `./start-docker.sh`
 
 Benefits of Docker setup:
-- ✅ Consistent environment across machines
-- ✅ No need for local Node.js/npm installation
-- ✅ Isolated services with proper networking
-- ✅ Easy scaling and management
-- ✅ Simplified deployment to production
+-  Consistent environment across machines
+-  No need for local Node.js/npm installation
+-  Isolated services with proper networking
+-  Easy scaling and management
+-  Simplified deployment to production
 
 ## 📚 Additional Commands
 

@@ -26,7 +26,7 @@ export abstract class PublisherWithCircuitBreaker<T extends Event> {
         await this.standardPublish(data);
       }
     } catch (error) {
-      console.error(`📤❌ Failed to publish event to ${this.subject}:`, error);
+      console.error(` Failed to publish event to ${this.subject}:`, error);
       
       if (options.fallback !== false) {
         // Log the failed event for potential replay
@@ -44,11 +44,11 @@ export abstract class PublisherWithCircuitBreaker<T extends Event> {
 
   private standardPublish(data: T['data']): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.client.publish(this.subject, JSON.stringify(data), (err) => {
+      this.client.publish(this.subject, JSON.stringify(data), (err: any) => {
         if (err) {
           reject(err);
         } else {
-          console.log('📤 Event published to subject', this.subject);
+          console.log(' Event published to subject', this.subject);
           resolve();
         }
       });
@@ -73,7 +73,7 @@ export abstract class PublisherWithCircuitBreaker<T extends Event> {
     // 3. Send to a dead letter queue
     // 4. Trigger an alert/notification
     
-    console.log(`🔄 Event marked for retry: ${fallbackData.subject}`);
+    console.log(` Event marked for retry: ${fallbackData.subject}`);
     
     // For now, just log it - but you could implement actual persistence here
     // Example: this.storeForRetry(fallbackData);

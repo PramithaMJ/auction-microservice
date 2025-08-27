@@ -1,4 +1,4 @@
-# 🚀 Complete CI/CD Setup Guide
+#  Complete CI/CD Setup Guide
 
 Your auction website now has a complete CI/CD pipeline! Here's everything you need to know:
 
@@ -49,7 +49,7 @@ git commit -m "feat: Add complete CI/CD pipeline with versioning"
 git push origin main
 ```
 
-## 🚀 Usage
+##  Usage
 
 ### Local Development
 ```bash
@@ -76,7 +76,7 @@ docker-compose up -d
 ./scripts/deploy.sh v1.0.100
 ```
 
-## 📦 Image Versioning
+##  Image Versioning
 
 Every commit to `main` creates these tags:
 - `latest` - Always the newest
@@ -85,7 +85,7 @@ Every commit to `main` creates these tags:
 
 Example: `pramithamj/auction-website/auth:v1.0.123-abc1234`
 
-## 🌐 Service URLs (After Deployment)
+##  Service URLs (After Deployment)
 
 - **Frontend**: http://localhost:3000
 - **API Gateway**: http://localhost:3001
@@ -108,7 +108,7 @@ Example: `pramithamj/auction-website/auth:v1.0.123-abc1234`
 - Redis: `localhost:6379`
 - NATS: `localhost:4222`
 
-## 🔍 Monitoring & Debugging
+##  Monitoring & Debugging
 
 ### View Logs
 ```bash
@@ -204,7 +204,7 @@ export IMAGE_TAG=v1.0.123
 export IMAGE_TAG=v1.0.100
 ```
 
-## 🎯 Next Steps
+##  Next Steps
 
 1. **Set up staging/production environments**
 2. **Configure monitoring** (Prometheus, Grafana)
@@ -225,4 +225,4 @@ export IMAGE_TAG=v1.0.100
 
 ---
 
-🎉 **Congratulations!** Your auction website now has enterprise-grade CI/CD pipeline with automatic Docker builds, versioning, and deployment capabilities!
+ **Congratulations!** Your auction website now has enterprise-grade CI/CD pipeline with automatic Docker builds, versioning, and deployment capabilities!

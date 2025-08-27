@@ -4,11 +4,13 @@ import { body } from 'express-validator';
 import gravatar from 'gravatar';
 import jwt from 'jsonwebtoken';
 import { Op } from 'sequelize';
+import axios from 'axios';
 
 import { EmailCreatedPublisher } from '../events/publishers/email-created-publisher';
 import { UserCreatedPublisher } from '../events/publishers/user-created-publisher';
 import { EmailCreatedPublisherEnhanced } from '../events/publishers/email-created-publisher-enhanced';
 import { UserCreatedPublisherEnhanced } from '../events/publishers/user-created-publisher-enhanced';
+import { UserAccountCreatedPublisher } from '../events/publishers/user-account-created-publisher';
 import { User } from '../models';
 import { natsWrapper } from '../nats-wrapper-circuit-breaker';
 import { toHash } from '../utils/to-hash';
@@ -58,29 +60,57 @@ router.post(
       process.env.JWT_KEY!
     );
 
-    // Use enhanced publishers with circuit breaker protection
+    // Start User Registration Saga instead of publishing events directly
     try {
-      await new UserCreatedPublisherEnhanced(natsWrapper.client, natsWrapper).publish({
-        id: user.id!,
-        name,
-        email,
-        avatar,
-        version: user.version!,
-      }, { retries: 2 });
-    } catch (error) {
-      console.log('❌ Failed to publish UserCreated event, but user registration succeeded');
-      // User registration still succeeds even if event publishing fails
-    }
+      const sagaOrchestratorUrl = process.env.SAGA_ORCHESTRATOR_URL || 'http://localhost:3108';
+      
+      console.log(` Starting User Registration Saga for user: ${user.email}`);
+      
+      const sagaResponse = await axios.post(`${sagaOrchestratorUrl}/api/sagas/user-registration/start`, {
+        userId: user.id,
+        userEmail: user.email,
+        userName: user.name,
+        userAvatar: user.avatar
+      });
 
-    try {
-      await new EmailCreatedPublisherEnhanced(natsWrapper.client, natsWrapper).publish({
-        email: user.email,
-        subject: 'Thank you for registering an account!',
-        text: `Hello ${user.name}. Thank you for registering an account with auctionweb.site!`,
+      console.log(` User Registration Saga started: ${sagaResponse.data.sagaId}`);
+
+      // Also publish UserAccountCreated event for the saga
+      await new UserAccountCreatedPublisher(natsWrapper.client, natsWrapper).publish({
+        sagaId: sagaResponse.data.sagaId,
+        userId: user.id!,
+        userEmail: user.email,
+        userName: user.name,
+        userAvatar: user.avatar,
+        version: user.version!,
+        timestamp: new Date().toISOString()
       }, { retries: 2 });
+
     } catch (error) {
-      console.log('❌ Failed to publish EmailCreated event, but user registration succeeded');
-      // User registration still succeeds even if email event publishing fails
+      console.log(' Failed to start User Registration Saga, falling back to direct events');
+      
+      // Fallback to original event publishing if saga fails
+      try {
+        await new UserCreatedPublisherEnhanced(natsWrapper.client, natsWrapper).publish({
+          id: user.id!,
+          name,
+          email,
+          avatar,
+          version: user.version!,
+        }, { retries: 2 });
+      } catch (fallbackError) {
+        console.log(' Failed to publish UserCreated event, but user registration succeeded');
+      }
+
+      try {
+        await new EmailCreatedPublisherEnhanced(natsWrapper.client, natsWrapper).publish({
+          email: user.email,
+          subject: 'Thank you for registering an account!',
+          text: `Hello ${user.name}. Thank you for registering an account with auctionweb.site!`,
+        }, { retries: 2 });
+      } catch (fallbackError) {
+        console.log(' Failed to publish EmailCreated event, but user registration succeeded');
+      }
     }
 
     req.session = { jwt: userJwt };

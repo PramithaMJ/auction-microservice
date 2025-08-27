@@ -23,35 +23,210 @@ const StyledListingCard = styled.div`${tw`
 `}`;
 
 const StyledCardContent = styled.div`${tw`
-	rounded
-	shadow
+	rounded-xl
+	shadow-lg
+	hover:shadow-xl
 	cursor-pointer
+	bg-white
+	border
+	border-gray-100
+	transition-all
+	duration-300
+	hover:transform
+	hover:scale-105
 `}`;
 
 const TextWrapper = styled.div`${tw`
-	p-3
+	p-4
 `}`;
 
-const StyledText = styled.a`${tw`
-	text-indigo-600 
-	hover:underline
+const StyledTitle = styled.h3`${tw`
+	font-semibold
+	text-gray-900
+	mb-2
+	text-lg
+	leading-tight
+	overflow-hidden
+`}
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+`;
+
+const StyledText = styled.div`${tw`
+	text-yellow-600 
+	font-medium
+	mb-2
+	text-sm
 `}`;
 
 const StyledPrice = styled.p`${tw`
-	text-xl
+	text-2xl
+	font-bold
+	text-gray-900
 `}`;
 
-const StyledImg = styled.img`${tw`
-	w-full	
+const StyledImageContainer = styled.div`${tw`
+	w-full
+	h-48
+	bg-gradient-to-br from-yellow-100 to-orange-100
+	flex
+	items-center
+	justify-center
+	rounded-t-xl
+	border-b
+	border-yellow-200
+	overflow-hidden
+	relative
 `}`;
+
+const StyledImage = styled.img`${tw`
+	w-full
+	h-full
+	object-cover
+	transition-transform
+	duration-300
+	hover:scale-110
+`}`;
+
+const StyledImageFallback = styled.div`${tw`
+	w-full
+	h-full
+	flex
+	items-center
+	justify-center
+	bg-gradient-to-br from-yellow-100 to-orange-100
+`}`;
+
+const StyledEmojiIcon = styled.div`${tw`
+	text-6xl
+	opacity-80
+`}`;
+
+const StyledLoadingSpinner = styled.div`${tw`
+	w-8
+	h-8
+	border-4
+	border-yellow-200
+	border-t-yellow-600
+	rounded-full
+	animate-spin
+`}`;
+
+const StyledDebugInfo = styled.div`${tw`
+	absolute
+	top-2
+	left-2
+	bg-red-500
+	text-white
+	text-xs
+	px-2
+	py-1
+	rounded
+	z-10
+`}`;
+
+// Function to get emoji based on listing title
+const getEmojiForListing = (title: string): string => {
+  const titleLower = title.toLowerCase();
+  
+  if (titleLower.includes('watch') || titleLower.includes('clock') || titleLower.includes('time')) return '⌚';
+  if (titleLower.includes('car') || titleLower.includes('vehicle') || titleLower.includes('auto')) return '🚗';
+  if (titleLower.includes('art') || titleLower.includes('paint') || titleLower.includes('canvas')) return '🎨';
+  if (titleLower.includes('book') || titleLower.includes('novel') || titleLower.includes('read')) return '📚';
+  if (titleLower.includes('music') || titleLower.includes('guitar') || titleLower.includes('piano')) return '🎵';
+  if (titleLower.includes('camera') || titleLower.includes('photo') || titleLower.includes('lens')) return '📷';
+  if (titleLower.includes('jewelry') || titleLower.includes('ring') || titleLower.includes('necklace')) return '💎';
+  if (titleLower.includes('phone') || titleLower.includes('mobile') || titleLower.includes('smartphone')) return '📱';
+  if (titleLower.includes('computer') || titleLower.includes('laptop') || titleLower.includes('pc')) return '💻';
+  if (titleLower.includes('vintage') || titleLower.includes('antique') || titleLower.includes('classic')) return '🏺';
+  if (titleLower.includes('sports') || titleLower.includes('ball') || titleLower.includes('game')) return '⚽';
+  if (titleLower.includes('furniture') || titleLower.includes('chair') || titleLower.includes('table')) return '🪑';
+  if (titleLower.includes('fashion') || titleLower.includes('clothes') || titleLower.includes('dress')) return '👗';
+  if (titleLower.includes('electronics') || titleLower.includes('gadget') || titleLower.includes('device')) return '🔌';
+  if (titleLower.includes('collectible') || titleLower.includes('rare') || titleLower.includes('limited')) return '🏆';
+  if (titleLower.includes('coffee') || titleLower.includes('bottle')) return '☕';
+  if (titleLower.includes('gaming') || titleLower.includes('mouse')) return '🖱️';
+  if (titleLower.includes('spectacle') || titleLower.includes('glasses')) return '👓';
+  
+  // Default emojis for common auction items
+  const defaultEmojis = ['🎁', '💍', '🖼️', '🎯', '🎪', '🎭', '🎊', '🎀', '🏅', '⭐'];
+  return defaultEmojis[Math.floor(Math.random() * defaultEmojis.length)];
+};
 
 const ListingCard = ({ name, price, slug, smallImage, expiresAt }: IProps) => {
+  const [imageError, setImageError] = React.useState(false);
+  const [imageLoaded, setImageLoaded] = React.useState(false);
+  const [imageLoading, setImageLoading] = React.useState(true);
+  const emojiIcon = getEmojiForListing(name);
+  
+  // Debug: log the smallImage URL
+  React.useEffect(() => {
+    console.log('ListingCard Debug:', {
+      name,
+      smallImage,
+      hasSmallImage: !!smallImage,
+      imageLength: smallImage?.length || 0
+    });
+  }, [name, smallImage]);
+  
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    console.error('Image failed to load:', {
+      name,
+      smallImage,
+      error: e.currentTarget.src
+    });
+    setImageError(true);
+    setImageLoading(false);
+  };
+
+  const handleImageLoad = () => {
+    console.log('Image loaded successfully:', name);
+    setImageLoaded(true);
+    setImageLoading(false);
+  };
+
+  const shouldShowImage = smallImage && smallImage.trim() !== '' && !imageError;
+  
   return (
     <StyledListingCard>
       <Link href={slug}>
         <StyledCardContent>
-          <StyledImg src={smallImage} alt={name} />
+          <StyledImageContainer>
+            {/* Debug info - remove in production */}
+            {process.env.NODE_ENV === 'development' && (
+              <StyledDebugInfo>
+                {smallImage ? '🖼️' : '❌'} {imageError ? 'ERR' : 'OK'}
+              </StyledDebugInfo>
+            )}
+            
+            {shouldShowImage ? (
+              <>
+                <StyledImage
+                  src={smallImage}
+                  alt={name}
+                  onError={handleImageError}
+                  onLoad={handleImageLoad}
+                  style={{ 
+                    opacity: imageLoaded ? 1 : 0,
+                    transition: 'opacity 0.3s ease-in-out'
+                  }}
+                />
+                {imageLoading && (
+                  <StyledImageFallback style={{ position: 'absolute', top: 0, left: 0 }}>
+                    <StyledLoadingSpinner />
+                  </StyledImageFallback>
+                )}
+              </>
+            ) : (
+              <StyledImageFallback>
+                <StyledEmojiIcon>{emojiIcon}</StyledEmojiIcon>
+              </StyledImageFallback>
+            )}
+          </StyledImageContainer>
           <TextWrapper>
+            <StyledTitle>{name}</StyledTitle>
             <StyledText>
               <Countdown expiresAt={expiresAt} />
             </StyledText>

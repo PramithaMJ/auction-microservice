@@ -5,12 +5,10 @@ interface UserPayload {
   id: string;
 }
 
-// How we can change an existing type defenition from request
-declare global {
-  namespace Express {
-    interface Request {
-      currentUser?: UserPayload;
-    }
+declare module 'express-serve-static-core' {
+  interface Request {
+    currentUser?: UserPayload;
+    session?: any;
   }
 }
 

@@ -13,8 +13,8 @@ NC='\033[0m' # No Color
 # Get version from command line or use default
 VERSION=${1:-latest}
 
-echo -e "${BLUE}🐳 Docker Compose - Pull & Run Only${NC}"
-echo -e "${BLUE}📦 Version: ${VERSION}${NC}"
+echo -e "${BLUE} Docker Compose - Pull & Run Only${NC}"
+echo -e "${BLUE} Version: ${VERSION}${NC}"
 echo ""
 
 # Set environment variable for docker-compose
@@ -23,7 +23,7 @@ export IMAGE_TAG=$VERSION
 # Function to check if Docker is running
 check_docker() {
     if ! docker info > /dev/null 2>&1; then
-        echo -e "${RED}❌ Docker is not running. Please start Docker and try again.${NC}"
+        echo -e "${RED} Docker is not running. Please start Docker and try again.${NC}"
         exit 1
     fi
 }
@@ -37,24 +37,24 @@ pull_images() {
     for service in "${services[@]}"; do
         echo -e "  Pulling pramithamj/auction-website/${service}:${VERSION}"
         docker pull "pramithamj/auction-website/${service}:${VERSION}" || {
-            echo -e "${RED}❌ Failed to pull ${service}:${VERSION}${NC}"
+            echo -e "${RED} Failed to pull ${service}:${VERSION}${NC}"
             echo -e "${YELLOW}💡 Make sure the image exists on Docker Hub${NC}"
             exit 1
         }
     done
     
-    echo -e "${GREEN}✅ All images pulled successfully${NC}"
+    echo -e "${GREEN} All images pulled successfully${NC}"
 }
 
 # Function to start services
 start_services() {
-    echo -e "${YELLOW}🚀 Starting services with docker-compose...${NC}"
+    echo -e "${YELLOW} Starting services with docker-compose...${NC}"
     
     # Use the pull-only compose file
     docker-compose -f docker-compose.pull-only.yml down --remove-orphans
     docker-compose -f docker-compose.pull-only.yml up -d
     
-    echo -e "${GREEN}✅ All services started${NC}"
+    echo -e "${GREEN} All services started${NC}"
 }
 
 # Function to show status
@@ -64,7 +64,7 @@ show_status() {
     docker-compose -f docker-compose.pull-only.yml ps
     
     echo ""
-    echo -e "${BLUE}🌐 Access URLs:${NC}"
+    echo -e "${BLUE} Access URLs:${NC}"
     echo -e "  Frontend:    ${GREEN}http://localhost:3000${NC}"
     echo -e "  API Gateway: ${GREEN}http://localhost:3001${NC}"
     echo -e "  Auth:        ${GREEN}http://localhost:3101${NC}"
@@ -107,8 +107,8 @@ main() {
     show_usage
     
     echo ""
-    echo -e "${GREEN}🎉 Deployment completed successfully!${NC}"
-    echo -e "${BLUE}📦 Running version: ${VERSION}${NC}"
+    echo -e "${GREEN} Deployment completed successfully!${NC}"
+    echo -e "${BLUE} Running version: ${VERSION}${NC}"
 }
 
 # Handle interruption

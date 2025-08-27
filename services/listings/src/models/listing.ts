@@ -2,6 +2,7 @@
 import { ListingStatus } from '@jjmauction/common';
 import { BuildOptions, DataTypes, Model, Sequelize, UUIDV4 } from 'sequelize';
 import SequelizeSlugify from 'sequelize-slugify';
+import { UserModel } from './user';
 
 export interface ListingAttributes {
   createdAt?: Date;
@@ -23,7 +24,9 @@ export interface ListingAttributes {
 
 export interface ListingModel
   extends Model<ListingAttributes>,
-    ListingAttributes {}
+    ListingAttributes {
+  User?: UserModel; // Sequelize association
+}
 
 export class Listing extends Model<ListingModel, ListingAttributes> {}
 

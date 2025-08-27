@@ -16,8 +16,8 @@ NC='\033[0m' # No Color
 # Default to latest if no version specified
 VERSION=${1:-latest}
 
-echo -e "${BLUE}🚀 Deploying Auction Website${NC}"
-echo -e "${BLUE}📦 Version: ${VERSION}${NC}"
+echo -e "${BLUE} Deploying Auction Website${NC}"
+echo -e "${BLUE} Version: ${VERSION}${NC}"
 echo ""
 
 # Set environment variable
@@ -26,7 +26,7 @@ export IMAGE_TAG=$VERSION
 # Function to check if Docker is running
 check_docker() {
     if ! docker info > /dev/null 2>&1; then
-        echo -e "${RED}❌ Docker is not running. Please start Docker and try again.${NC}"
+        echo -e "${RED} Docker is not running. Please start Docker and try again.${NC}"
         exit 1
     fi
 }
@@ -44,7 +44,7 @@ pull_images() {
         fi
     done
     
-    echo -e "${GREEN}✅ Image pull completed${NC}"
+    echo -e "${GREEN} Image pull completed${NC}"
 }
 
 # Function to start services
@@ -77,7 +77,7 @@ start_services() {
     echo -e "  Starting frontend..."
     docker-compose up -d frontend
     
-    echo -e "${GREEN}✅ All services started${NC}"
+    echo -e "${GREEN} All services started${NC}"
 }
 
 # Function to show status
@@ -87,7 +87,7 @@ show_status() {
     docker-compose ps
     
     echo ""
-    echo -e "${BLUE}🌐 Access URLs:${NC}"
+    echo -e "${BLUE} Access URLs:${NC}"
     echo -e "  Frontend:    ${GREEN}http://localhost:3000${NC}"
     echo -e "  API Gateway: ${GREEN}http://localhost:3001${NC}"
     echo -e "  Auth:        ${GREEN}http://localhost:3101${NC}"
@@ -131,8 +131,8 @@ main() {
     show_logs
     
     echo ""
-    echo -e "${GREEN}🎉 Deployment completed successfully!${NC}"
-    echo -e "${BLUE}📦 Running version: ${VERSION}${NC}"
+    echo -e "${GREEN} Deployment completed successfully!${NC}"
+    echo -e "${BLUE} Running version: ${VERSION}${NC}"
 }
 
 # Handle interruption

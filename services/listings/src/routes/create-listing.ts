@@ -2,8 +2,8 @@ import { BadRequestError, requireAuth } from '@jjmauction/common';
 import express, { Request, Response } from 'express';
 
 import { ListingCreatedPublisher } from '../events/publishers/listing-created-publisher';
-import { Listing, db } from '../models';
-import { natsWrapper } from '../nats-wrapper';
+import { Listing, User, db } from '../models';
+import { natsWrapper } from '../nats-wrapper-circuit-breaker';
 import { generateImageUrls, uploadToS3 } from '../utils/s3-config';
 
 // Define S3 file interface
@@ -172,6 +172,21 @@ router.post(
       console.log('=== CREATING LISTING ===');
 
       await db.transaction(async (transaction) => {
+        // Ensure user exists in listings database (temporary fix for saga migration)
+        const existingUser = await User.findOne({ 
+          where: { id: req.currentUser.id }, 
+          transaction 
+        });
+        
+        if (!existingUser) {
+          console.log(`User ${req.currentUser.id} not found in listings database, creating...`);
+          await User.create({
+            id: req.currentUser.id,
+            name: `User_${req.currentUser.id.slice(0, 8)}`, // Generate a name from user ID
+          }, { transaction });
+          console.log(`User ${req.currentUser.id} created in listings database`);
+        }
+
         // Get S3 file information from multer-s3
         const uploadedFile = req.file;
         if (!uploadedFile) {

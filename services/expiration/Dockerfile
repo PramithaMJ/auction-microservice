@@ -1,16 +1,23 @@
 FROM node:alpine
 
+WORKDIR /app
 
+# Copy and build common package first
+COPY ./common /common
+WORKDIR /common
+RUN npm install && npm run build
+
+# Go back to app directory
 WORKDIR /app
 
 # Copy package files for better layer caching
-COPY package*.json ./
+COPY ./services/expiration/package*.json ./
 
 # Install dependencies using npm ci for faster, reliable installs
 RUN npm install
 
 # Copy application source
-COPY . .
+COPY ./services/expiration ./
 
 # Expose port
 EXPOSE 3107

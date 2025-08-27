@@ -163,7 +163,7 @@ class ApiGateway {
 
     try {
       console.log(
-        `🔄 Proxying ${req.method} ${req.originalUrl} → ${serviceName} (Circuit: ${this.circuitBreaker.getServiceHealth(serviceName).state})`
+        ` Proxying ${req.method} ${req.originalUrl} → ${serviceName} (Circuit: ${this.circuitBreaker.getServiceHealth(serviceName).state})`
       );
       const fullTargetUrl = `${targetUrl}${req.originalUrl}`;
       console.log(` Forwarding to: ${fullTargetUrl}`);
@@ -202,7 +202,7 @@ class ApiGateway {
 
       const response = await axios(axiosConfig);
       
-      console.log(`✅ Response from ${serviceName}: ${response.status}`);
+      console.log(` Response from ${serviceName}: ${response.status}`);
       
       // Record success in circuit breaker
       this.circuitBreaker.recordSuccess(serviceName);
@@ -217,7 +217,7 @@ class ApiGateway {
       res.status(response.status).json(response.data);
       
     } catch (error: any) {
-      console.error(`❌ Proxy Error for ${serviceName}:`, error.message);
+      console.error(` Proxy Error for ${serviceName}:`, error.message);
       
       // Record failure in circuit breaker
       this.circuitBreaker.recordFailure(serviceName, error);
@@ -259,14 +259,14 @@ class ApiGateway {
   public async start(): Promise<void> {
     try {
       const server = this.app.listen(config.server.port, config.server.host, () => {
-        console.log('🚀 API Gateway started successfully!');
-        console.log(`🌐 Gateway URL: http://${config.server.host}:${config.server.port}`);
-        console.log('🔄 Circuit Breaker Configuration:');
+        console.log(' API Gateway started successfully!');
+        console.log(` Gateway URL: http://${config.server.host}:${config.server.port}`);
+        console.log(' Circuit Breaker Configuration:');
         console.log(`   - Failure Threshold: 5 failures`);
         console.log(`   - Reset Timeout: 30 seconds`);
         console.log(`   - Request Timeout: 10 seconds`);
         console.log(`   - Monitoring Window: 1 minute`);
-        console.log('📡 Service Routes:');
+        console.log(' Service Routes:');
         
         Object.entries(config.services).forEach(([name, service]) => {
           service.paths.forEach(path => {
@@ -274,7 +274,7 @@ class ApiGateway {
           });
         });
         
-        console.log('\n🔍 Available Endpoints:');
+        console.log('\n Available Endpoints:');
         console.log(`   GET  /health - Health check with circuit breaker status`);
         console.log(`   GET  /api - API documentation`);
         console.log(`   GET  /circuit-breaker/status - Circuit breaker status`);
@@ -284,7 +284,7 @@ class ApiGateway {
 
       // Graceful shutdown
       process.on('SIGTERM', () => {
-        console.log('📴 Received SIGTERM, shutting down gracefully...');
+        console.log(' Received SIGTERM, shutting down gracefully...');
         server.close(() => {
           console.log(' API Gateway stopped');
           process.exit(0);
@@ -292,7 +292,7 @@ class ApiGateway {
       });
 
       process.on('SIGINT', () => {
-        console.log('📴 Received SIGINT, shutting down gracefully...');
+        console.log(' Received SIGINT, shutting down gracefully...');
         server.close(() => {
           console.log(' API Gateway stopped');
           process.exit(0);

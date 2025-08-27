@@ -18,10 +18,10 @@ SHORT_SHA=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")
 DATE=$(date +%Y%m%d)
 FULL_TAG="${VERSION}-${SHORT_SHA}"
 
-echo -e "${BLUE}📦 Version: ${VERSION}${NC}"
-echo -e "${BLUE}🔖 Full Tag: ${FULL_TAG}${NC}"
-echo -e "${BLUE}📅 Date: ${DATE}${NC}"
-echo -e "${BLUE}💾 Commit: ${SHORT_SHA}${NC}"
+echo -e "${BLUE} Version: ${VERSION}${NC}"
+echo -e "${BLUE} Full Tag: ${FULL_TAG}${NC}"
+echo -e "${BLUE} Date: ${DATE}${NC}"
+echo -e "${BLUE} Commit: ${SHORT_SHA}${NC}"
 echo ""
 
 # Docker username
@@ -36,7 +36,7 @@ build_service() {
     echo -e "${YELLOW}Building ${service_name}...${NC}"
     
     if [ ! -f "${dockerfile_path}" ]; then
-        echo -e "${RED}❌ Dockerfile not found: ${dockerfile_path}${NC}"
+        echo -e "${RED} Dockerfile not found: ${dockerfile_path}${NC}"
         return 1
     fi
     
@@ -46,7 +46,7 @@ build_service() {
         -f "${dockerfile_path}" \
         "${context_path}"
     
-    echo -e "${GREEN}✅ ${service_name} built successfully${NC}"
+    echo -e "${GREEN} ${service_name} built successfully${NC}"
 }
 
 # Build common package
@@ -54,7 +54,7 @@ echo -e "${BLUE}🔧 Building Common Package...${NC}"
 build_service "common" "./common" "./common/Dockerfile"
 
 # Build services
-echo -e "${BLUE}🚀 Building Microservices...${NC}"
+echo -e "${BLUE} Building Microservices...${NC}"
 
 services=(
     "auth:./services/auth:./services/auth/Dockerfile"
@@ -77,9 +77,9 @@ echo -e "${BLUE}🎨 Building Frontend...${NC}"
 build_service "frontend" "./services/frontend" "./services/frontend/Dockerfile.dev"
 
 echo ""
-echo -e "${GREEN}🎉 All images built successfully!${NC}"
+echo -e "${GREEN} All images built successfully!${NC}"
 echo ""
-echo -e "${BLUE}📋 Built Images:${NC}"
+echo -e "${BLUE} Built Images:${NC}"
 
 # List all built images
 services_list=("common" "auth" "bid" "listing" "payment" "profile" "email" "expiration" "api-gateway" "frontend")

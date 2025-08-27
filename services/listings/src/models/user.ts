@@ -3,6 +3,7 @@ import { BuildOptions, DataTypes, Model, Sequelize, UUIDV4 } from 'sequelize';
 export interface UserAttributes {
   id?: string;
   name: string;
+  email: string;
   createdAt?: Date;
   version?: number;
 }
@@ -26,6 +27,11 @@ const UserFactory = (sequelize: Sequelize): UserStatic => {
         primaryKey: true,
       },
       name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+      },
+      email: {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true,

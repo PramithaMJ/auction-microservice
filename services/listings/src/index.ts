@@ -3,6 +3,7 @@ import { BidCreatedListener } from './events/listeners/bid-created-listener';
 import { BidDeletedListener } from './events/listeners/bid-deleted-listener';
 import { ListingExpiredListener } from './events/listeners/listing-expired-listener';
 import { UserCreatedListener } from './events/listeners/user-created-listener';
+import { UserAccountCreatedListener } from './events/listeners/user-account-created-listener';
 import { db } from './models';
 import { natsWrapper } from './nats-wrapper-circuit-breaker';
 import { socketIOWrapper } from './socket-io-wrapper';
@@ -89,6 +90,7 @@ import { socketIOWrapper } from './socket-io-wrapper';
     new BidCreatedListener(natsWrapper.client).listen();
     new BidDeletedListener(natsWrapper.client).listen();
     new UserCreatedListener(natsWrapper.client).listen();
+    new UserAccountCreatedListener(natsWrapper.client).listen();
     new ListingExpiredListener(natsWrapper.client).listen();
 
     console.log('The listings service has started up successfully');

@@ -3,7 +3,7 @@
 # Push all Docker images to Docker Hub
 set -e
 
-echo "🚀 Pushing all Docker images to Docker Hub..."
+echo " Pushing all Docker images to Docker Hub..."
 
 # Colors for output
 RED='\033[0;31m'
@@ -24,8 +24,8 @@ VERSION="v1.0.local"
 SHORT_SHA=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")
 FULL_TAG="${VERSION}-${SHORT_SHA}"
 
-echo -e "${BLUE}📦 Version: ${VERSION}${NC}"
-echo -e "${BLUE}🔖 Full Tag: ${FULL_TAG}${NC}"
+echo -e "${BLUE} Version: ${VERSION}${NC}"
+echo -e "${BLUE} Full Tag: ${FULL_TAG}${NC}"
 echo ""
 
 # Docker username
@@ -39,7 +39,7 @@ push_service() {
     
     # Check if images exist
     if ! docker image inspect "${DOCKER_USERNAME}/auction-website-ms-${service_name}:${FULL_TAG}" > /dev/null 2>&1; then
-        echo -e "${RED}❌ Image not found: ${DOCKER_USERNAME}/auction-website-ms-${service_name}:${FULL_TAG}${NC}"
+        echo -e "${RED} Image not found: ${DOCKER_USERNAME}/auction-website-ms-${service_name}:${FULL_TAG}${NC}"
         echo -e "${YELLOW}💡 Run ./scripts/build-all.sh first${NC}"
         return 1
     fi
@@ -48,7 +48,7 @@ push_service() {
     docker push "${DOCKER_USERNAME}/auction-website-ms-${service_name}:${FULL_TAG}"
     docker push "${DOCKER_USERNAME}/auction-website-ms-${service_name}:latest"
     
-    echo -e "${GREEN}✅ ${service_name} pushed successfully${NC}"
+    echo -e "${GREEN} ${service_name} pushed successfully${NC}"
 }
 
 # Services to push
@@ -59,9 +59,9 @@ for service in "${services[@]}"; do
 done
 
 echo ""
-echo -e "${GREEN}🎉 All images pushed successfully to Docker Hub!${NC}"
+echo -e "${GREEN} All images pushed successfully to Docker Hub!${NC}"
 echo ""
-echo -e "${BLUE}📋 Pushed Images:${NC}"
+echo -e "${BLUE} Pushed Images:${NC}"
 
 for service in "${services[@]}"; do
     echo -e "  ${GREEN}✓${NC} ${DOCKER_USERNAME}/auction-website-ms-${service}:${FULL_TAG}"

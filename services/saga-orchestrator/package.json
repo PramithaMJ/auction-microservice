@@ -1,0 +1,45 @@
+{
+  "name": "saga-orchestrator",
+  "version": "1.0.0",
+  "description": "Saga Orchestrator for Auction Website Microservices",
+  "main": "src/index.ts",
+  "scripts": {
+    "start": "ts-node src/index.ts",
+    "dev": "ts-node-dev src/index.ts",
+    "build": "tsc",
+    "test": "jest --watchAll --no-cache",
+    "test:ci": "jest"
+  },
+  "keywords": [
+    "saga",
+    "orchestrator",
+    "microservices"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/cookie-session": "^2.0.42",
+    "@types/express": "^4.17.17",
+    "@types/jsonwebtoken": "^8.5.0",
+    "@types/node": "^18.0.0",
+    "@types/uuid": "^10.0.0",
+    "cookie-session": "^1.4.0",
+    "express": "^4.18.2",
+    "express-async-errors": "^3.1.1",
+    "express-validator": "^6.7.0",
+    "jsonwebtoken": "^8.5.1",
+    "node-nats-streaming": "^0.3.2",
+    "redis": "^4.6.14",
+    "ts-node": "^10.9.1",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.0.4",
+    "uuid": "^10.0.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.1",
+    "@types/supertest": "^2.0.12",
+    "jest": "^29.5.0",
+    "supertest": "^6.3.3",
+    "ts-jest": "^29.1.0"
+  }
+}

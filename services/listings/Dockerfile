@@ -13,17 +13,25 @@ RUN apk add --no-cache \
     sqlite-dev \
     && ln -sf python3 /usr/bin/python
 
+# Copy and build common package first
+COPY ./common /common
+WORKDIR /common
+RUN npm install && npm run build
+
+# Go back to app directory
+WORKDIR /app
+
 # Copy package.json and lockfile first (better caching)
-COPY package*.json ./
+COPY ./services/listings/package*.json ./
 
 # Install dependencies
-RUN npm ci
+RUN npm install
 
 # Install typescript globally
 RUN npm install -g typescript ts-node
 
 # Copy source
-COPY . .
+COPY ./services/listings ./
 
 # Expose port
 EXPOSE 3103

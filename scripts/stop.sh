@@ -24,7 +24,7 @@ docker-compose down --remove-orphans
 # echo -e "${YELLOW}Removing images...${NC}"
 # docker system prune -f
 
-echo -e "${GREEN}✅ All services stopped${NC}"
+echo -e "${GREEN} All services stopped${NC}"
 
 echo ""
 echo -e "${YELLOW}💡 To restart:${NC}"

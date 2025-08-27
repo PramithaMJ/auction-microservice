@@ -6,7 +6,7 @@ import { natsWrapper } from '../src/nats-wrapper';
 const signup = async () => {
   const email = 'test@test.com';
   const password = 'password';
-  const name = 'chandula';
+  const name = 'Test User';
 
   const response = await request(app)
     .post('/api/users/signup')

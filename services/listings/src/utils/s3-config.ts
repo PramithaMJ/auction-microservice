@@ -69,15 +69,17 @@ const generateImageUrls = async (
   large: string;
 }> => {
   try {
-    // Generate pre-signed URL that expires in 24 hours
+    // Try to generate pre-signed URL that expires in 7 days (longer than before)
     const command = new GetObjectCommand({
       Bucket: bucketName,
       Key: key,
     });
 
     const signedUrl = await getSignedUrl(s3Client, command, {
-      expiresIn: 86400,
+      expiresIn: 604800, // 7 days instead of 24 hours
     });
+
+    console.log('Generated fresh S3 signed URL for key:', key);
 
     // For simplicity, we'll use the same signed URL for different sizes
     // In a production environment, you might want to use AWS Lambda or CloudFront
@@ -89,10 +91,14 @@ const generateImageUrls = async (
     };
   } catch (error) {
     console.error('Error generating signed URLs:', error);
-    // Fallback to direct URLs
+    
+    // Fallback to public S3 URLs (if bucket allows public access)
+    // This is safer for development but requires public bucket policy
     const baseUrl = `https://${bucketName}.s3.${
       process.env.AWS_REGION || 'us-east-1'
     }.amazonaws.com/${key}`;
+
+    console.log('Using direct S3 URL as fallback:', baseUrl);
 
     return {
       original: baseUrl,
