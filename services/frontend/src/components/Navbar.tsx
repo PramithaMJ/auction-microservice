@@ -44,10 +44,10 @@ const Navbar = () => {
           <div className="flex items-center">
             <Link href="/">
               <a className="flex items-center space-x-2 group">
-                <div className="w-8 h-8 bg-gradient-to-br from-amber-500 to-orange-600 rounded-lg flex items-center justify-center group-hover:shadow-md transition-shadow">
+                <div className="w-8 h-8 bg-yellow-500 rounded-lg flex items-center justify-center group-hover:shadow-md transition-shadow">
                   <span className="text-white font-bold text-lg">A</span>
                 </div>
-                <span className="text-xl font-bold bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">
+                <span className="text-xl font-bold text-yellow-600">
                   AuctionHub
                 </span>
               </a>
@@ -60,8 +60,8 @@ const Navbar = () => {
               <Link key={item.name} href={item.href}>
                 <a className={`inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors duration-200 ${
                   router.pathname === item.href
-                    ? 'text-amber-700 bg-amber-50'
-                    : 'text-gray-700 hover:text-amber-700 hover:bg-amber-50'
+                    ? 'text-yellow-700 bg-yellow-50'
+                    : 'text-gray-700 hover:text-yellow-700 hover:bg-yellow-50'
                 }`}>
                   <span className="mr-2">{item.icon}</span>
                   {item.name}
@@ -75,12 +75,12 @@ const Navbar = () => {
             {auth.isAuthenticated ? (
               <>
                 <Link href="/dashboard">
-                  <a className="text-gray-700 hover:text-amber-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors">
+                  <a className="text-gray-700 hover:text-yellow-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors">
                     Dashboard
                   </a>
                 </Link>
                 <Link href="/profile">
-                  <a className="text-gray-700 hover:text-amber-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors">
+                  <a className="text-gray-700 hover:text-yellow-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors">
                     Profile
                   </a>
                 </Link>
@@ -94,12 +94,12 @@ const Navbar = () => {
             ) : (
               <>
                 <Link href="/auth/signin">
-                  <a className="text-gray-700 hover:text-amber-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors">
+                  <a className="text-gray-700 hover:text-yellow-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors">
                     Sign In
                   </a>
                 </Link>
                 <Link href="/auth/signup">
-                  <a className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 shadow-md hover:shadow-lg">
+                  <a className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 shadow-md hover:shadow-lg">
                     Get Started
                   </a>
                 </Link>
@@ -111,7 +111,7 @@ const Navbar = () => {
           <div className="md:hidden flex items-center">
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="inline-flex items-center justify-center p-2 rounded-lg text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-amber-500"
+              className="inline-flex items-center justify-center p-2 rounded-lg text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-yellow-500"
             >
               <span className="sr-only">Open main menu</span>
               {!isMobileMenuOpen ? (
@@ -137,8 +137,8 @@ const Navbar = () => {
                 <a
                   className={`flex items-center px-3 py-2 rounded-lg text-base font-medium transition-colors ${
                     router.pathname === item.href
-                      ? 'text-amber-700 bg-amber-100'
-                      : 'text-gray-700 hover:text-amber-700 hover:bg-amber-50'
+                      ? 'text-yellow-700 bg-yellow-100'
+                      : 'text-gray-700 hover:text-yellow-700 hover:bg-yellow-50'
                   }`}
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
@@ -152,7 +152,7 @@ const Navbar = () => {
               <>
                 <Link href="/dashboard">
                   <a
-                    className="flex items-center px-3 py-2 rounded-lg text-base font-medium text-gray-700 hover:text-amber-700 hover:bg-amber-50"
+                    className="flex items-center px-3 py-2 rounded-lg text-base font-medium text-gray-700 hover:text-yellow-700 hover:bg-yellow-50"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     <span className="mr-3">📊</span>
@@ -161,7 +161,7 @@ const Navbar = () => {
                 </Link>
                 <Link href="/profile">
                   <a
-                    className="flex items-center px-3 py-2 rounded-lg text-base font-medium text-gray-700 hover:text-amber-700 hover:bg-amber-50"
+                    className="flex items-center px-3 py-2 rounded-lg text-base font-medium text-gray-700 hover:text-yellow-700 hover:bg-yellow-50"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     <span className="mr-3">👤</span>
@@ -183,7 +183,7 @@ const Navbar = () => {
               <>
                 <Link href="/auth/signin">
                   <a
-                    className="flex items-center px-3 py-2 rounded-lg text-base font-medium text-gray-700 hover:text-amber-700 hover:bg-amber-50"
+                    className="flex items-center px-3 py-2 rounded-lg text-base font-medium text-gray-700 hover:text-yellow-700 hover:bg-yellow-50"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     <span className="mr-3">🔑</span>
@@ -192,7 +192,7 @@ const Navbar = () => {
                 </Link>
                 <Link href="/auth/signup">
                   <a
-                    className="flex items-center px-3 py-2 rounded-lg text-base font-medium bg-gradient-to-r from-amber-600 to-orange-600 text-white mx-3 shadow-md"
+                    className="flex items-center px-3 py-2 rounded-lg text-base font-medium bg-yellow-500 text-white mx-3 shadow-md"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     <span className="mr-3">✨</span>

@@ -54,13 +54,13 @@ const Listings = ({ listings, search }) => {
       </Breadcrumbs>
 
       {/* Header Section */}
-      <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl p-6 mb-8 border border-amber-100">
+      <div className="bg-yellow-50 rounded-2xl p-6 mb-8 border border-yellow-100">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
           <div className="mb-4 lg:mb-0">
             <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-2">
               {!search ? (
                 <>
-                  <span className="bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">
+                  <span className="text-yellow-600">
                     Live Auctions
                   </span>
                   <span className="text-gray-700"> & Bidding</span>
@@ -68,7 +68,7 @@ const Listings = ({ listings, search }) => {
               ) : (
                 <>
                   Search Results for{' '}
-                  <span className="bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">
+                  <span className="text-yellow-600">
                     "{search}"
                   </span>
                 </>
@@ -77,7 +77,7 @@ const Listings = ({ listings, search }) => {
             <p className="text-lg text-gray-600">
               {listings.length > 0 ? (
                 <>
-                  <span className="font-semibold text-amber-700">{listings.length}</span>
+                  <span className="font-semibold text-yellow-700">{listings.length}</span>
                   {' '}exclusive items waiting for your bid
                 </>
               ) : (
@@ -88,11 +88,11 @@ const Listings = ({ listings, search }) => {
           
           {/* Quick Stats */}
           <div className="flex space-x-6 text-center">
-            <div className="bg-white rounded-xl px-4 py-3 shadow-sm border border-amber-100">
-              <div className="text-2xl font-bold text-amber-600">{listings.length}</div>
+            <div className="bg-white rounded-xl px-4 py-3 shadow-sm border border-yellow-100">
+              <div className="text-2xl font-bold text-yellow-600">{listings.length}</div>
               <div className="text-sm text-gray-500">Active Auctions</div>
             </div>
-            <div className="bg-white rounded-xl px-4 py-3 shadow-sm border border-amber-100">
+            <div className="bg-white rounded-xl px-4 py-3 shadow-sm border border-yellow-100">
               <div className="text-2xl font-bold text-green-600">Live</div>
               <div className="text-sm text-gray-500">Bidding Now</div>
             </div>
@@ -109,8 +109,8 @@ const Listings = ({ listings, search }) => {
               key={category}
               className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
                 filterBy === category.toLowerCase().replace(' ', '-')
-                  ? 'bg-amber-600 text-white shadow-md'
-                  : 'bg-gray-100 text-gray-700 hover:bg-amber-50 hover:text-amber-700'
+                  ? 'bg-yellow-500 text-white shadow-md'
+                  : 'bg-gray-100 text-gray-700 hover:bg-yellow-50 hover:text-yellow-700'
               }`}
               onClick={() => setFilterBy(category.toLowerCase().replace(' ', '-'))}
             >
@@ -126,7 +126,7 @@ const Listings = ({ listings, search }) => {
             <button
               className={`p-2 rounded-l-lg ${
                 viewMode === 'grid' 
-                  ? 'bg-amber-600 text-white' 
+                  ? 'bg-yellow-500 text-white' 
                   : 'bg-white text-gray-400 hover:text-gray-600'
               }`}
               onClick={() => setViewMode('grid')}
@@ -138,7 +138,7 @@ const Listings = ({ listings, search }) => {
             <button
               className={`p-2 rounded-r-lg ${
                 viewMode === 'list' 
-                  ? 'bg-amber-600 text-white' 
+                  ? 'bg-yellow-500 text-white' 
                   : 'bg-white text-gray-400 hover:text-gray-600'
               }`}
               onClick={() => setViewMode('list')}
@@ -153,7 +153,7 @@ const Listings = ({ listings, search }) => {
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="px-4 py-2 border border-gray-200 rounded-lg bg-white text-gray-700 focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+            className="px-4 py-2 border border-gray-200 rounded-lg bg-white text-gray-700 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
           >
             {sortOptions.map((option) => (
               <option key={option.value} value={option.value}>
@@ -193,7 +193,7 @@ const Listings = ({ listings, search }) => {
               : "There are currently no active auctions. Check back soon for new listings!"
             }
           </p>
-          <button className="bg-amber-600 hover:bg-amber-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+          <button className="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-3 rounded-lg font-medium transition-colors">
             Browse All Categories
           </button>
         </div>

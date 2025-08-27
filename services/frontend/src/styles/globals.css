@@ -19,11 +19,11 @@
 @layer components {
   /* Auction-specific button styles */
   .btn-auction-primary {
-    @apply bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white font-medium px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200;
+    @apply bg-yellow-500 hover:bg-yellow-600 text-white font-medium px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200;
   }
   
   .btn-auction-secondary {
-    @apply border-2 border-amber-600 text-amber-700 bg-white hover:bg-amber-50 font-medium px-6 py-3 rounded-xl shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200;
+    @apply border-2 border-yellow-500 text-yellow-600 bg-white hover:bg-yellow-50 font-medium px-6 py-3 rounded-xl shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200;
   }
   
   /* Auction card styles */
@@ -46,7 +46,7 @@
   }
   
   .status-badge-ending {
-    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 animate-pulse;
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800;
   }
   
   .status-badge-completed {
@@ -55,7 +55,7 @@
   
   /* Price display */
   .price-display {
-    @apply text-2xl font-bold bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent;
+    @apply text-2xl font-bold text-yellow-600;
   }
   
   /* Countdown timer */
@@ -64,7 +64,7 @@
   }
   
   .countdown-urgent {
-    @apply bg-red-100 text-red-700 animate-pulse;
+    @apply bg-red-100 text-red-700;
   }
 }
 
