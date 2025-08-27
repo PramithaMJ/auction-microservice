@@ -16,10 +16,7 @@ interface IProps {
 
 const StyledListingCard = styled.div`${tw`
 	w-full
-	lg:w-1/5
-  sm:w-1/3
-	px-2
-	mb-4
+	h-full
 `}`;
 
 const StyledCardContent = styled.div`${tw`
@@ -33,25 +30,36 @@ const StyledCardContent = styled.div`${tw`
 	transition-all
 	duration-300
 	hover:transform
-	hover:scale-105
+	hover:scale-[1.02]
+	overflow-hidden
+	h-full
+	flex
+	flex-col
 `}`;
 
 const TextWrapper = styled.div`${tw`
 	p-4
+	flex-1
+	flex
+	flex-col
+	justify-between
 `}`;
 
 const StyledTitle = styled.h3`${tw`
 	font-semibold
 	text-gray-900
 	mb-2
-	text-lg
+	text-base
 	leading-tight
-	overflow-hidden
+	min-h-[3rem]
+	flex
+	items-start
 `}
 	display: -webkit-box;
 	-webkit-line-clamp: 2;
 	-webkit-box-orient: vertical;
 	overflow: hidden;
+	word-break: break-word;
 `;
 
 const StyledText = styled.div`${tw`
@@ -59,12 +67,14 @@ const StyledText = styled.div`${tw`
 	font-medium
 	mb-2
 	text-sm
+	flex-shrink-0
 `}`;
 
 const StyledPrice = styled.p`${tw`
-	text-2xl
+	text-xl
 	font-bold
 	text-gray-900
+	flex-shrink-0
 `}`;
 
 const StyledImageContainer = styled.div`${tw`
@@ -79,6 +89,7 @@ const StyledImageContainer = styled.div`${tw`
 	border-yellow-200
 	overflow-hidden
 	relative
+	flex-shrink-0
 `}`;
 
 const StyledImage = styled.img`${tw`
@@ -197,7 +208,7 @@ const ListingCard = ({ name, price, slug, smallImage, expiresAt }: IProps) => {
             {/* Debug info - remove in production */}
             {process.env.NODE_ENV === 'development' && (
               <StyledDebugInfo>
-                {smallImage ? '🖼️' : ''} {imageError ? 'ERR' : 'OK'}
+                {smallImage ? '🖼️' : '❌'} {imageError ? 'ERR' : 'OK'}
               </StyledDebugInfo>
             )}
             
@@ -226,10 +237,12 @@ const ListingCard = ({ name, price, slug, smallImage, expiresAt }: IProps) => {
             )}
           </StyledImageContainer>
           <TextWrapper>
-            <StyledTitle>{name}</StyledTitle>
-            <StyledText>
-              <Countdown expiresAt={expiresAt} />
-            </StyledText>
+            <div>
+              <StyledTitle>{name}</StyledTitle>
+              <StyledText>
+                <Countdown expiresAt={expiresAt} />
+              </StyledText>
+            </div>
             <StyledPrice>{centsToDollars(price)}</StyledPrice>
           </TextWrapper>
         </StyledCardContent>
