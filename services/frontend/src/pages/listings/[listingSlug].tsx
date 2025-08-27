@@ -66,11 +66,48 @@ const StyledImgContainer = styled.div`${tw`
 	px-8
 `}`;
 
-const StyledImg = styled.img`${tw`
+const StyledEmojiDisplay = styled.div`${tw`
 	mb-4 
-	rounded 
-	shadow
+	rounded-2xl 
+	shadow-lg
+	bg-gradient-to-br from-yellow-100 to-orange-100
+	flex
+	items-center
+	justify-center
+	h-96
+	border-2
+	border-yellow-200
 `}`;
+
+const StyledLargeEmoji = styled.div`${tw`
+	text-9xl
+	opacity-90
+`}`;
+
+// Function to get emoji based on listing title
+const getEmojiForListing = (title: string): string => {
+  const titleLower = title.toLowerCase();
+  
+  if (titleLower.includes('watch') || titleLower.includes('clock') || titleLower.includes('time')) return '⌚';
+  if (titleLower.includes('car') || titleLower.includes('vehicle') || titleLower.includes('auto')) return '🚗';
+  if (titleLower.includes('art') || titleLower.includes('paint') || titleLower.includes('canvas')) return '🎨';
+  if (titleLower.includes('book') || titleLower.includes('novel') || titleLower.includes('read')) return '📚';
+  if (titleLower.includes('music') || titleLower.includes('guitar') || titleLower.includes('piano')) return '🎵';
+  if (titleLower.includes('camera') || titleLower.includes('photo') || titleLower.includes('lens')) return '📷';
+  if (titleLower.includes('jewelry') || titleLower.includes('ring') || titleLower.includes('necklace')) return '💎';
+  if (titleLower.includes('phone') || titleLower.includes('mobile') || titleLower.includes('smartphone')) return '📱';
+  if (titleLower.includes('computer') || titleLower.includes('laptop') || titleLower.includes('pc')) return '💻';
+  if (titleLower.includes('vintage') || titleLower.includes('antique') || titleLower.includes('classic')) return '🏺';
+  if (titleLower.includes('sports') || titleLower.includes('ball') || titleLower.includes('game')) return '⚽';
+  if (titleLower.includes('furniture') || titleLower.includes('chair') || titleLower.includes('table')) return '🪑';
+  if (titleLower.includes('fashion') || titleLower.includes('clothes') || titleLower.includes('dress')) return '👗';
+  if (titleLower.includes('electronics') || titleLower.includes('gadget') || titleLower.includes('device')) return '🔌';
+  if (titleLower.includes('collectible') || titleLower.includes('rare') || titleLower.includes('limited')) return '🏆';
+  
+  // Default emojis for common auction items
+  const defaultEmojis = ['🎁', '💍', '🖼️', '🎯', '🎪', '🎭', '🎊', '🎀', '🏅', '⭐'];
+  return defaultEmojis[Math.floor(Math.random() * defaultEmojis.length)];
+};
 
 const StyledErrorMessage = styled.div`${tw`
     text-sm
@@ -84,6 +121,9 @@ const Listing = ({ listingData }) => {
   } = useContext(AppContext);
   const [listing, setListing] = useState(listingData);
   const [isBidding, setIsBidding] = useState(false);
+
+  // Get emoji icon for this listing
+  const emojiIcon = listing ? getEmojiForListing(listing.title) : '🎁';
 
   useEffect(() => {
     const room = listing && listing.slug;
@@ -263,7 +303,9 @@ const Listing = ({ listingData }) => {
           )}
         </StyledTextContent>
         <StyledImgContainer>
-          <StyledImg src={listing.largeImage} alt="Product Image" />
+          <StyledEmojiDisplay>
+            <StyledLargeEmoji>{emojiIcon}</StyledLargeEmoji>
+          </StyledEmojiDisplay>
         </StyledImgContainer>
       </StyledListing>
     </>
