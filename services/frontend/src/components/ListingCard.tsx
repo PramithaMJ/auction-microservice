@@ -72,7 +72,7 @@ const StyledImageContainer = styled.div`${tw`
 	border-b
 	border-yellow-200
 	overflow-hidden
-	position-relative
+	relative
 `}`;
 
 const StyledImage = styled.img`${tw`
