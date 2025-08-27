@@ -29,6 +29,9 @@ router.get(
 
     console.log(`[Internal API] Listing found: ${listing.title}`);
     
+    // Get the associated user data
+    const associatedUser = (listing as any).User;
+    
     // Return the listing with user information
     res.status(200).json({
       id: listing.id,
@@ -41,9 +44,9 @@ router.get(
       smallImage: listing.smallImage,
       largeImage: listing.largeImage,
       userId: listing.userId,
-      user: listing.User ? {
-        id: listing.User.id,
-        name: listing.User.name
+      user: associatedUser ? {
+        id: associatedUser.id,
+        name: associatedUser.name
       } : null
     });
   }

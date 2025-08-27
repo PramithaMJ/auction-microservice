@@ -16,75 +16,68 @@ interface IProps {
 
 const StyledListingCard = styled.div`${tw`
 	w-full
-	max-w-sm
-	mx-auto
-	mb-6
+	lg:w-1/5
+  sm:w-1/3
+	px-2
+	mb-4
 `}`;
 
 const StyledCardContent = styled.div`${tw`
-	bg-white
-	rounded-2xl
+	rounded-xl
 	shadow-lg
-	hover:shadow-2xl
-	transition-all
-	duration-300
-	overflow-hidden
+	hover:shadow-xl
+	cursor-pointer
+	bg-white
 	border
 	border-gray-100
-	hover:border-gray-200
-	transform
+	transition-all
+	duration-300
+	hover:transform
 	hover:scale-105
-	cursor-pointer
 `}`;
 
 const TextWrapper = styled.div`${tw`
-	p-6
+	p-4
 `}`;
 
 const StyledTitle = styled.h3`${tw`
-	font-bold
+	font-semibold
 	text-gray-900
-	mb-3
+	mb-2
 	text-lg
 	leading-tight
-	line-clamp-2
-	min-h-[3.5rem]
-`}`;
+`}
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+`;
 
 const StyledText = styled.div`${tw`
-	text-orange-600 
-	font-semibold
-	mb-3
+	text-yellow-600 
+	font-medium
+	mb-2
 	text-sm
-	bg-orange-50
-	px-3
-	py-1
-	rounded-full
-	inline-block
 `}`;
 
 const StyledPrice = styled.p`${tw`
-	text-3xl
+	text-2xl
 	font-bold
-	text-green-600
-	mb-2
-`}`;
-
-const StyledPriceLabel = styled.p`${tw`
-	text-sm
-	text-gray-500
-	font-medium
+	text-gray-900
 `}`;
 
 const StyledImageContainer = styled.div`${tw`
 	w-full
-	h-64
-	bg-gradient-to-br from-blue-50 to-indigo-100
+	h-48
+	bg-gradient-to-br from-yellow-100 to-orange-100
 	flex
 	items-center
 	justify-center
-	relative
+	rounded-t-xl
+	border-b
+	border-yellow-200
 	overflow-hidden
+	relative
 `}`;
 
 const StyledImage = styled.img`${tw`
@@ -102,28 +95,34 @@ const StyledImageFallback = styled.div`${tw`
 	flex
 	items-center
 	justify-center
-	bg-gradient-to-br from-blue-50 to-indigo-100
+	bg-gradient-to-br from-yellow-100 to-orange-100
 `}`;
 
 const StyledEmojiIcon = styled.div`${tw`
-	text-8xl
-	opacity-90
-	filter
-	drop-shadow-lg
+	text-6xl
+	opacity-80
 `}`;
 
-const StyledBadge = styled.div`${tw`
+const StyledLoadingSpinner = styled.div`${tw`
+	w-8
+	h-8
+	border-4
+	border-yellow-200
+	border-t-yellow-600
+	rounded-full
+	animate-spin
+`}`;
+
+const StyledDebugInfo = styled.div`${tw`
 	absolute
-	top-4
-	right-4
+	top-2
+	left-2
 	bg-red-500
 	text-white
-	px-3
-	py-1
-	rounded-full
 	text-xs
-	font-bold
-	shadow-lg
+	px-2
+	py-1
+	rounded
 	z-10
 `}`;
 
@@ -146,6 +145,9 @@ const getEmojiForListing = (title: string): string => {
   if (titleLower.includes('fashion') || titleLower.includes('clothes') || titleLower.includes('dress')) return '👗';
   if (titleLower.includes('electronics') || titleLower.includes('gadget') || titleLower.includes('device')) return '🔌';
   if (titleLower.includes('collectible') || titleLower.includes('rare') || titleLower.includes('limited')) return '🏆';
+  if (titleLower.includes('coffee') || titleLower.includes('bottle')) return '☕';
+  if (titleLower.includes('gaming') || titleLower.includes('mouse')) return '🖱️';
+  if (titleLower.includes('spectacle') || titleLower.includes('glasses')) return '👓';
   
   // Default emojis for common auction items
   const defaultEmojis = ['🎁', '💍', '🖼️', '🎯', '🎪', '🎭', '🎊', '🎀', '🏅', '⭐'];
@@ -155,70 +157,70 @@ const getEmojiForListing = (title: string): string => {
 const ListingCard = ({ name, price, slug, smallImage, expiresAt }: IProps) => {
   const [imageError, setImageError] = React.useState(false);
   const [imageLoaded, setImageLoaded] = React.useState(false);
+  const [imageLoading, setImageLoading] = React.useState(true);
   const emojiIcon = getEmojiForListing(name);
   
-  // Debug logging
+  // Debug: log the smallImage URL
   React.useEffect(() => {
     console.log('ListingCard Debug:', {
       name,
       smallImage,
       hasSmallImage: !!smallImage,
-      imageError,
-      imageLoaded
+      imageLength: smallImage?.length || 0
     });
-  }, [name, smallImage, imageError, imageLoaded]);
+  }, [name, smallImage]);
   
-  const handleImageError = () => {
-    console.log('Image error for:', name, 'URL:', smallImage);
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    console.error('Image failed to load:', {
+      name,
+      smallImage,
+      error: e.currentTarget.src
+    });
     setImageError(true);
+    setImageLoading(false);
   };
 
   const handleImageLoad = () => {
-    console.log('Image loaded for:', name);
+    console.log('Image loaded successfully:', name);
     setImageLoaded(true);
+    setImageLoading(false);
   };
+
+  const shouldShowImage = smallImage && smallImage.trim() !== '' && !imageError;
   
   return (
     <StyledListingCard>
       <Link href={slug}>
         <StyledCardContent>
           <StyledImageContainer>
-            <StyledBadge>LIVE</StyledBadge>
-            {smallImage && !imageError ? (
+            {/* Debug info - remove in production */}
+            {process.env.NODE_ENV === 'development' && (
+              <StyledDebugInfo>
+                {smallImage ? '🖼️' : '❌'} {imageError ? 'ERR' : 'OK'}
+              </StyledDebugInfo>
+            )}
+            
+            {shouldShowImage ? (
               <>
                 <StyledImage
                   src={smallImage}
                   alt={name}
-                  onError={(e) => {
-                    console.error('Image failed to load:', {
-                      src: smallImage,
-                      name,
-                      error: e
-                    });
-                    handleImageError();
+                  onError={handleImageError}
+                  onLoad={handleImageLoad}
+                  style={{ 
+                    opacity: imageLoaded ? 1 : 0,
+                    transition: 'opacity 0.3s ease-in-out'
                   }}
-                  onLoad={() => {
-                    console.log('Image loaded successfully:', name);
-                    handleImageLoad();
-                  }}
-                  style={{ opacity: imageLoaded ? 1 : 0 }}
                 />
-                {!imageLoaded && (
-                  <StyledImageFallback style={{ position: 'absolute', top: 0, left: 0, zIndex: 1 }}>
-                    <div className="animate-pulse w-full h-full bg-gray-200 rounded-t-2xl flex items-center justify-center">
-                      <div className="text-gray-400">Loading...</div>
-                    </div>
+                {imageLoading && (
+                  <StyledImageFallback style={{ position: 'absolute', top: 0, left: 0 }}>
+                    <StyledLoadingSpinner />
                   </StyledImageFallback>
                 )}
               </>
             ) : (
               <StyledImageFallback>
-                <div className="text-center">
-                  <StyledEmojiIcon>{emojiIcon}</StyledEmojiIcon>
-                  <div className="text-gray-500 text-xs mt-2">
-                    {smallImage ? 'Image failed to load' : 'No image available'}
-                  </div>
-                </div>
+                <StyledEmojiIcon>{emojiIcon}</StyledEmojiIcon>
               </StyledImageFallback>
             )}
           </StyledImageContainer>
@@ -228,7 +230,6 @@ const ListingCard = ({ name, price, slug, smallImage, expiresAt }: IProps) => {
               <Countdown expiresAt={expiresAt} />
             </StyledText>
             <StyledPrice>{centsToDollars(price)}</StyledPrice>
-            <StyledPriceLabel>Current Bid</StyledPriceLabel>
           </TextWrapper>
         </StyledCardContent>
       </Link>
