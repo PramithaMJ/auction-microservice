@@ -25,7 +25,7 @@ export class ProfileCreatedListener extends Listener<ProfileCreatedEvent> {
 
       // Send welcome email
       const emailContent = `
-        Welcome to JJ Auction Platform, ${userName}!
+        Welcome to AuctionHub Platform, ${userName}!
         
         Thank you for registering with us. Your account has been successfully created.
         
@@ -43,7 +43,7 @@ export class ProfileCreatedListener extends Listener<ProfileCreatedEvent> {
       await transporter.sendMail({
         from: process.env.EMAIL,
         to: userEmail,
-        subject: 'Welcome to JJ Auction Platform!',
+        subject: 'Welcome to AuctionHub Platform!',
         text: emailContent,
       });
 

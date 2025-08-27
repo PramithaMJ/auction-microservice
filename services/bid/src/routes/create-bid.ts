@@ -52,18 +52,14 @@ router.post(
         );
       }
 
-      // Ensure user exists in the bid service database
-      await User.findOrCreate({
-        where: { id: req.currentUser!.id },
-        defaults: {
-          id: req.currentUser!.id,
-          name: `User-${req.currentUser!.id}`, // Unique placeholder - will be updated when user events arrive
-          email: `user-${req.currentUser!.id}@placeholder.com`, // Make email unique per user
-          avatar: '',
-          version: 0,
-        },
-        transaction,
-      });
+      // Check if user exists in the bid service database
+      // The user should already exist from UserAccountCreated event
+      const user = await User.findByPk(req.currentUser!.id, { transaction });
+      if (!user) {
+        throw new BadRequestError(
+          'User account not fully initialized. Please try again in a moment.'
+        );
+      }
 
       const bid = await Bid.create(
         {

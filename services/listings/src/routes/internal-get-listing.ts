@@ -17,7 +17,7 @@ router.get(
     const listing = await Listing.findOne({
       include: {
         model: User,
-        attributes: ['id', 'name'], // Only include necessary user fields
+        attributes: ['id', 'name', 'email'], // Include email field
       },
       where: { id: listingId },
     });
@@ -28,6 +28,12 @@ router.get(
     }
 
     console.log(`[Internal API] Listing found: ${listing.title}`);
+    console.log(`[Internal API] Listing userId: ${listing.userId}`);
+    console.log(`[Internal API] Associated user:`, listing.User ? {
+      id: listing.User.id,
+      name: listing.User.name,
+      email: listing.User.email
+    } : 'No user found');
     
     // Get the associated user data using the typed association
     const associatedUser = listing.User;
@@ -46,7 +52,8 @@ router.get(
       userId: listing.userId,
       user: associatedUser ? {
         id: associatedUser.id,
-        name: associatedUser.name
+        name: associatedUser.name,
+        email: associatedUser.email
       } : null
     });
   }

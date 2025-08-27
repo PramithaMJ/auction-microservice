@@ -9,14 +9,15 @@ export class UserAccountCreatedListener extends Listener<UserAccountCreatedEvent
   subject: Subjects.UserAccountCreated = Subjects.UserAccountCreated;
 
   async onMessage(data: UserAccountCreatedEvent['data'], msg: Message) {
-    const { userId, userName } = data;
+    const { userId, userName, userEmail } = data;
 
-    console.log(`[SAGA] Creating user ${userId} (${userName}) in listings service`);
+    console.log(`[SAGA] Creating user ${userId} (${userName}) with email ${userEmail} in listings service`);
 
     try {
       await User.create({ 
         id: userId, 
-        name: userName 
+        name: userName,
+        email: userEmail
       });
 
       console.log(`[SAGA] User ${userId} successfully created in listings service`);
