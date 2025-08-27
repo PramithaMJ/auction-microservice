@@ -416,6 +416,12 @@ Listing.getInitialProps = async (context: NextPageContext, client: any) => {
   try {
     const { listingSlug } = context.query;
     const { data } = await client.get(`/api/listings/${listingSlug}`);
+    
+    // Normalize the user data field for frontend compatibility
+    if (data && data.User && !data.user) {
+      data.user = data.User;
+    }
+    
     return { listingData: data };
   } catch (err) {
     console.error(err);
