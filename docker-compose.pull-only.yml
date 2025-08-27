@@ -379,6 +379,7 @@ services:
       - NEXT_PUBLIC_API_GATEWAY_PORT=${NEXT_PUBLIC_API_GATEWAY_PORT:-3001}
       - SERVER_API_URL=${SERVER_API_URL:-http://api-gateway:3001}
       - NEXT_PUBLIC_SERVER_IP=${SERVER_IP:-localhost}
+      - NEXT_PUBLIC_LISTINGS_SOCKET_URL=http://${SERVER_IP:-localhost}:3103/socket
       - WATCHPACK_POLLING=true
     depends_on:
       api-gateway:

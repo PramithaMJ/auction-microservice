@@ -414,6 +414,7 @@ services:
       - NEXT_PUBLIC_API_GATEWAY_PORT=3001
       - SERVER_API_URL=http://98.87.131.233:3001
       - NEXT_PUBLIC_SERVER_IP=${SERVER_IP:-98.87.131.233}
+      - NEXT_PUBLIC_LISTINGS_SOCKET_URL=http://98.87.131.233:3103/socket
       - WATCHPACK_POLLING=true
     depends_on:
       api-gateway:
