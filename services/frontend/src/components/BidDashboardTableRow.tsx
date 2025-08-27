@@ -58,7 +58,10 @@ const BidDashboardTableRow = ({ bid, onDelete }) => {
           </a>
         </Link>
         <div className="text-sm text-gray-500">
-          <Countdown expiresAt={bid.listing.expiresAt} />
+          <Countdown 
+            expiresAt={bid.listing.expiresAt}
+            showExpiredMessage={true}
+          />
         </div>
       </td>
       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -68,9 +71,27 @@ const BidDashboardTableRow = ({ bid, onDelete }) => {
         {centsToDollars(bid.listing.currentPrice)}
       </td>
       <td className="px-6 py-4 whitespace-nowrap">
-        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-          Active
-        </span>
+        {bid.listing.status === ListingStatus.Active ? (
+          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+            Active
+          </span>
+        ) : bid.listing.status === ListingStatus.Expired ? (
+          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+            Expired
+          </span>
+        ) : bid.listing.status === ListingStatus.AwaitingPayment ? (
+          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+            Awaiting Payment
+          </span>
+        ) : bid.listing.status === ListingStatus.Complete ? (
+          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+            Complete
+          </span>
+        ) : (
+          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+            {bid.listing.status}
+          </span>
+        )}
       </td>
       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
         {requiresPayment() ? (
@@ -78,13 +99,18 @@ const BidDashboardTableRow = ({ bid, onDelete }) => {
             token={createPayment}
             stripeKey="pk_test_51I7NJ5LQOU4SKz9IV9bdjUwPlGAb9UDKlwjKLxdmu52uQpPHfKn6KvpBIpEIIbI1XISEaFRmIpHgnpIGVFlwmKu300buDGjcwL"
           />
-        ) : (
+        ) : bid.listing.status === ListingStatus.Active ? (
           <button
             onClick={onDelete}
             className="text-indigo-600 hover:text-indigo-900"
           >
             Delete
           </button>
+        ) : (
+          <span className="text-gray-400 text-sm">
+            {bid.listing.status === ListingStatus.Expired ? 'Auction Ended' : 
+             bid.listing.status === ListingStatus.Complete ? 'Completed' : 'Cannot Delete'}
+          </span>
         )}
       </td>
     </tr>
