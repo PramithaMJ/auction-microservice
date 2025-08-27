@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import { Sequelize } from 'sequelize';
 
 import { Listing } from '../models';
+import { generateImageUrls } from '../utils/s3-config';
 
 const router = express.Router();
 
@@ -38,8 +39,34 @@ router.get('/api/listings/', async (req: Request, res: Response) => {
       : await Listing.findAll();
 
   console.log('listings found:', listings.length);
-  console.log('=== END DEBUG ===');
 
+  // Refresh S3 URLs for each listing to ensure they haven't expired
+  const bucketName = process.env.AWS_S3_BUCKET_NAME;
+  if (bucketName) {
+    const refreshedListings = await Promise.all(
+      listings.map(async (listing) => {
+        try {
+          if (listing.imageId) {
+            const refreshedUrls = await generateImageUrls(listing.imageId, bucketName);
+            return {
+              ...listing.toJSON(),
+              smallImage: refreshedUrls.small,
+              largeImage: refreshedUrls.large,
+            };
+          }
+          return listing.toJSON();
+        } catch (error) {
+          console.error('Error refreshing URLs for listing:', listing.id, error);
+          return listing.toJSON();
+        }
+      })
+    );
+    
+    console.log('=== END DEBUG ===');
+    return res.status(200).send(refreshedListings);
+  }
+
+  console.log('=== END DEBUG ===');
   res.status(200).send(listings);
 });
 

@@ -16,63 +16,75 @@ interface IProps {
 
 const StyledListingCard = styled.div`${tw`
 	w-full
-	lg:w-1/5
-  sm:w-1/3
-	px-2
-	mb-4
+	max-w-sm
+	mx-auto
+	mb-6
 `}`;
 
 const StyledCardContent = styled.div`${tw`
-	rounded-xl
-	shadow-lg
-	hover:shadow-xl
-	cursor-pointer
 	bg-white
-	border
-	border-gray-100
+	rounded-2xl
+	shadow-lg
+	hover:shadow-2xl
 	transition-all
 	duration-300
-	hover:transform
+	overflow-hidden
+	border
+	border-gray-100
+	hover:border-gray-200
+	transform
 	hover:scale-105
+	cursor-pointer
 `}`;
 
 const TextWrapper = styled.div`${tw`
-	p-4
+	p-6
 `}`;
 
 const StyledTitle = styled.h3`${tw`
-	font-semibold
+	font-bold
 	text-gray-900
-	mb-2
+	mb-3
 	text-lg
 	leading-tight
+	line-clamp-2
+	min-h-[3.5rem]
 `}`;
 
 const StyledText = styled.div`${tw`
-	text-yellow-600 
-	font-medium
-	mb-2
+	text-orange-600 
+	font-semibold
+	mb-3
 	text-sm
+	bg-orange-50
+	px-3
+	py-1
+	rounded-full
+	inline-block
 `}`;
 
 const StyledPrice = styled.p`${tw`
-	text-2xl
+	text-3xl
 	font-bold
-	text-gray-900
+	text-green-600
+	mb-2
+`}`;
+
+const StyledPriceLabel = styled.p`${tw`
+	text-sm
+	text-gray-500
+	font-medium
 `}`;
 
 const StyledImageContainer = styled.div`${tw`
 	w-full
-	h-48
-	bg-gradient-to-br from-yellow-100 to-orange-100
+	h-64
+	bg-gradient-to-br from-blue-50 to-indigo-100
 	flex
 	items-center
 	justify-center
-	rounded-t-xl
-	border-b
-	border-yellow-200
-	overflow-hidden
 	relative
+	overflow-hidden
 `}`;
 
 const StyledImage = styled.img`${tw`
@@ -90,12 +102,29 @@ const StyledImageFallback = styled.div`${tw`
 	flex
 	items-center
 	justify-center
-	bg-gradient-to-br from-yellow-100 to-orange-100
+	bg-gradient-to-br from-blue-50 to-indigo-100
 `}`;
 
 const StyledEmojiIcon = styled.div`${tw`
-	text-6xl
-	opacity-80
+	text-8xl
+	opacity-90
+	filter
+	drop-shadow-lg
+`}`;
+
+const StyledBadge = styled.div`${tw`
+	absolute
+	top-4
+	right-4
+	bg-red-500
+	text-white
+	px-3
+	py-1
+	rounded-full
+	text-xs
+	font-bold
+	shadow-lg
+	z-10
 `}`;
 
 // Function to get emoji based on listing title
@@ -128,11 +157,24 @@ const ListingCard = ({ name, price, slug, smallImage, expiresAt }: IProps) => {
   const [imageLoaded, setImageLoaded] = React.useState(false);
   const emojiIcon = getEmojiForListing(name);
   
+  // Debug logging
+  React.useEffect(() => {
+    console.log('ListingCard Debug:', {
+      name,
+      smallImage,
+      hasSmallImage: !!smallImage,
+      imageError,
+      imageLoaded
+    });
+  }, [name, smallImage, imageError, imageLoaded]);
+  
   const handleImageError = () => {
+    console.log('Image error for:', name, 'URL:', smallImage);
     setImageError(true);
   };
 
   const handleImageLoad = () => {
+    console.log('Image loaded for:', name);
     setImageLoaded(true);
   };
   
@@ -141,26 +183,42 @@ const ListingCard = ({ name, price, slug, smallImage, expiresAt }: IProps) => {
       <Link href={slug}>
         <StyledCardContent>
           <StyledImageContainer>
+            <StyledBadge>LIVE</StyledBadge>
             {smallImage && !imageError ? (
               <>
                 <StyledImage
                   src={smallImage}
                   alt={name}
-                  onError={handleImageError}
-                  onLoad={handleImageLoad}
+                  onError={(e) => {
+                    console.error('Image failed to load:', {
+                      src: smallImage,
+                      name,
+                      error: e
+                    });
+                    handleImageError();
+                  }}
+                  onLoad={() => {
+                    console.log('Image loaded successfully:', name);
+                    handleImageLoad();
+                  }}
                   style={{ opacity: imageLoaded ? 1 : 0 }}
                 />
                 {!imageLoaded && (
-                  <StyledImageFallback style={{ position: 'absolute', top: 0, left: 0 }}>
-                    <div className="animate-pulse">
-                      <div className="w-full h-full bg-gray-200 rounded"></div>
+                  <StyledImageFallback style={{ position: 'absolute', top: 0, left: 0, zIndex: 1 }}>
+                    <div className="animate-pulse w-full h-full bg-gray-200 rounded-t-2xl flex items-center justify-center">
+                      <div className="text-gray-400">Loading...</div>
                     </div>
                   </StyledImageFallback>
                 )}
               </>
             ) : (
               <StyledImageFallback>
-                <StyledEmojiIcon>{emojiIcon}</StyledEmojiIcon>
+                <div className="text-center">
+                  <StyledEmojiIcon>{emojiIcon}</StyledEmojiIcon>
+                  <div className="text-gray-500 text-xs mt-2">
+                    {smallImage ? 'Image failed to load' : 'No image available'}
+                  </div>
+                </div>
               </StyledImageFallback>
             )}
           </StyledImageContainer>
@@ -170,6 +228,7 @@ const ListingCard = ({ name, price, slug, smallImage, expiresAt }: IProps) => {
               <Countdown expiresAt={expiresAt} />
             </StyledText>
             <StyledPrice>{centsToDollars(price)}</StyledPrice>
+            <StyledPriceLabel>Current Bid</StyledPriceLabel>
           </TextWrapper>
         </StyledCardContent>
       </Link>
