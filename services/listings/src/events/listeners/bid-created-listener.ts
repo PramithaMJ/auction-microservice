@@ -20,7 +20,7 @@ export class BidCreatedListener extends Listener<BidCreatedEvent> {
     const { listingId, amount, userId } = data;
 
     const listing = await Listing.findOne({
-      include: { model: User },
+      include: { model: User, as: 'User' },
       where: { id: listingId },
     });
 
