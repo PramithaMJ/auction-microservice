@@ -260,13 +260,13 @@ class ApiGateway {
     try {
       const server = this.app.listen(config.server.port, config.server.host, () => {
         console.log(' API Gateway started successfully!');
-        console.log(`🌐 Gateway URL: http://${config.server.host}:${config.server.port}`);
+        console.log(` Gateway URL: http://${config.server.host}:${config.server.port}`);
         console.log(' Circuit Breaker Configuration:');
         console.log(`   - Failure Threshold: 5 failures`);
         console.log(`   - Reset Timeout: 30 seconds`);
         console.log(`   - Request Timeout: 10 seconds`);
         console.log(`   - Monitoring Window: 1 minute`);
-        console.log('📡 Service Routes:');
+        console.log(' Service Routes:');
         
         Object.entries(config.services).forEach(([name, service]) => {
           service.paths.forEach(path => {

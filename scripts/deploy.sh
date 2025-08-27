@@ -87,7 +87,7 @@ show_status() {
     docker-compose ps
     
     echo ""
-    echo -e "${BLUE}🌐 Access URLs:${NC}"
+    echo -e "${BLUE} Access URLs:${NC}"
     echo -e "  Frontend:    ${GREEN}http://localhost:3000${NC}"
     echo -e "  API Gateway: ${GREEN}http://localhost:3001${NC}"
     echo -e "  Auth:        ${GREEN}http://localhost:3101${NC}"

@@ -85,7 +85,7 @@ Every commit to `main` creates these tags:
 
 Example: `pramithamj/auction-website/auth:v1.0.123-abc1234`
 
-## 🌐 Service URLs (After Deployment)
+##  Service URLs (After Deployment)
 
 - **Frontend**: http://localhost:3000
 - **API Gateway**: http://localhost:3001
