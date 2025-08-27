@@ -61,7 +61,7 @@ This script will:
 - 🏗️ Build all Docker images
 -  Start all services in the correct order
 - ⏳ Wait for services to be ready
-- 📊 Show service status and URLs
+-  Show service status and URLs
 
 ### 3. Access the Application
 - **Frontend**: http://localhost:3000
@@ -78,7 +78,7 @@ This script will:
 This provides options to:
 1. Stop services (keep data)
 2. Stop and remove containers (keep data)
-3. Complete cleanup (⚠️ deletes all data)
+3. Complete cleanup ( deletes all data)
 4. Stop specific service
 5. Restart all services
 6. View service logs
@@ -124,7 +124,7 @@ docker-compose up -d --scale auth=2
 - **Expiration Service** (3107) - Auction expiration handling
 - **Frontend** (3000) - Next.js web application
 
-## 🔧 Development
+##  Development
 
 ### Hot Reloading
 The frontend service is configured for development with hot reloading. Changes to frontend code will automatically reload the browser.
@@ -153,7 +153,7 @@ docker-compose run --rm auth sh
 docker-compose exec auth-mysql mysql -u root -ppassword auth
 ```
 
-## 📊 Monitoring
+##  Monitoring
 
 ### Check Service Health
 ```bash
@@ -218,7 +218,7 @@ docker-compose up -d auth
 2. Close unnecessary applications
 3. Use `docker stats` to identify resource-heavy containers
 
-## 📝 Environment Variables
+##  Environment Variables
 
 Key variables in `.env`:
 ```bash

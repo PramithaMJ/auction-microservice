@@ -13,7 +13,7 @@ NC='\033[0m' # No Color
 
 # Function to print colored output
 print_step() {
-    echo -e "${BLUE}🔄 $1${NC}"
+    echo -e "${BLUE} $1${NC}"
 }
 
 print_success() {
@@ -25,7 +25,7 @@ print_error() {
 }
 
 print_warning() {
-    echo -e "${YELLOW}⚠️  $1${NC}"
+    echo -e "${YELLOW}  $1${NC}"
 }
 
 # Check if services are running

@@ -66,7 +66,7 @@ app.post('/cleanup', async (req, res) => {
     let result;
     
     if (emergency) {
-      console.log('🚨 Manual emergency cleanup requested');
+      console.log(' Manual emergency cleanup requested');
       result = await QueueCleanup.emergencyCleanup();
     } else {
       console.log('🧹 Manual cleanup requested');

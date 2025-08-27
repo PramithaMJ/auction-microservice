@@ -52,7 +52,7 @@ This guide documents the complete **two-layer circuit breaker implementation** f
 - **Configuration**: 3 failures, 30s timeout, 3 retries with backoff
 - **Features**: Auto-reconnection, health monitoring, graceful degradation
 
-## 🔧 Files Modified/Added
+##  Files Modified/Added
 
 ### API Gateway
 ```
@@ -109,7 +109,7 @@ cd services/bid && npm start &
 # ... etc
 ```
 
-## 📊 Monitoring Endpoints
+##  Monitoring Endpoints
 
 ### API Gateway (Layer 1)
 | Endpoint | Purpose | Response |
@@ -163,7 +163,7 @@ curl -X POST http://localhost:3101/nats/circuit-breaker/reset
 curl http://localhost:3101/nats/health  # Should show healthy
 ```
 
-## 📈 Circuit Breaker States
+##  Circuit Breaker States
 
 ### API Gateway Circuit Breaker
 - **CLOSED**:  Normal operation (all requests pass through)
@@ -192,12 +192,12 @@ curl http://localhost:3101/nats/health  # Should show healthy
 - Graceful degradation of features
 - System remains partially functional during outages
 
-### 📊 **Enhanced Observability**
+###  **Enhanced Observability**
 - Real-time visibility into service health
 - Circuit breaker state tracking
 - Failure pattern detection and alerting
 
-### 🔧 **Operational Excellence**
+###  **Operational Excellence**
 - Manual circuit breaker reset capability
 - Service-specific configuration
 - Automated recovery testing
@@ -239,7 +239,7 @@ new NatsWrapper({
 - Circuit breaker per API endpoint granularity
 - Distributed circuit breaker state sharing
 
-## 📝 Log Examples
+##  Log Examples
 
 ### API Gateway Circuit Breaker Logs
 ```

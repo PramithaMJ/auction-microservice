@@ -40,7 +40,7 @@ test_config() {
             echo -e "${RED} $name is not set (required)${NC}"
             return 1
         else
-            echo -e "${YELLOW}⚠️  $name is not set (optional)${NC}"
+            echo -e "${YELLOW}  $name is not set (optional)${NC}"
             return 0
         fi
     else

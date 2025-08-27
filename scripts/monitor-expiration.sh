@@ -39,7 +39,7 @@ check_health() {
     print_status $BLUE " Checking expiration service health..."
     
     if ! check_container $EXPIRATION_CONTAINER; then
-        print_status $RED "❌ Expiration container is not running"
+        print_status $RED " Expiration container is not running"
         return 1
     fi
     
@@ -48,28 +48,28 @@ check_health() {
     if health_response=$(curl -s "${EXPIRATION_HEALTH_URL}/health" 2>/dev/null); then
         local healthy=$(echo "$health_response" | grep -o '"healthy":[^,]*' | cut -d':' -f2)
         if [[ "$healthy" == "true" ]]; then
-            print_status $GREEN "✅ Expiration service is healthy"
+            print_status $GREEN " Expiration service is healthy"
             return 0
         else
-            print_status $YELLOW "⚠️  Expiration service is unhealthy"
+            print_status $YELLOW "  Expiration service is unhealthy"
             echo "$health_response" | jq '.' 2>/dev/null || echo "$health_response"
             return 1
         fi
     else
-        print_status $RED "❌ Cannot connect to expiration service health endpoint"
+        print_status $RED " Cannot connect to expiration service health endpoint"
         return 1
     fi
 }
 
 # Function to check queue status
 check_queue() {
-    print_status $BLUE "📊 Checking queue status..."
+    print_status $BLUE " Checking queue status..."
     
     local queue_response
     if queue_response=$(curl -s "${EXPIRATION_HEALTH_URL}/queue-status" 2>/dev/null); then
         echo "$queue_response" | jq '.' 2>/dev/null || echo "$queue_response"
     else
-        print_status $RED "❌ Cannot get queue status"
+        print_status $RED " Cannot get queue status"
         return 1
     fi
 }
@@ -79,41 +79,41 @@ check_redis() {
     print_status $BLUE "🔴 Checking Redis status..."
     
     if ! check_container $REDIS_CONTAINER; then
-        print_status $RED "❌ Redis container is not running"
+        print_status $RED " Redis container is not running"
         return 1
     fi
     
     # Check Redis connection
     if docker exec $REDIS_CONTAINER redis-cli ping >/dev/null 2>&1; then
-        print_status $GREEN "✅ Redis is responding"
+        print_status $GREEN " Redis is responding"
         
         # Check for failed expiration jobs
         local failed_jobs=$(docker exec $REDIS_CONTAINER redis-cli ZCARD bull:listing:expiration:failed 2>/dev/null || echo "0")
         if [[ "$failed_jobs" -gt 0 ]]; then
-            print_status $YELLOW "⚠️  Found $failed_jobs failed expiration jobs"
+            print_status $YELLOW "  Found $failed_jobs failed expiration jobs"
         else
-            print_status $GREEN "✅ No failed expiration jobs"
+            print_status $GREEN " No failed expiration jobs"
         fi
         
         return 0
     else
-        print_status $RED "❌ Redis is not responding"
+        print_status $RED " Redis is not responding"
         return 1
     fi
 }
 
 # Function to restart expiration service
 restart_service() {
-    print_status $YELLOW "🔄 Restarting expiration service..."
+    print_status $YELLOW " Restarting expiration service..."
     docker restart $EXPIRATION_CONTAINER
     
     # Wait for service to start
     sleep 10
     
     if check_health; then
-        print_status $GREEN "✅ Expiration service restarted successfully"
+        print_status $GREEN " Expiration service restarted successfully"
     else
-        print_status $RED "❌ Expiration service failed to restart properly"
+        print_status $RED " Expiration service failed to restart properly"
     fi
 }
 
@@ -126,42 +126,42 @@ cleanup_failed_jobs() {
     if cleanup_response=$(curl -s -X POST "${EXPIRATION_HEALTH_URL}/cleanup" \
         -H "Content-Type: application/json" \
         -d '{"retryFailedJobs": true, "maxRetryAttempts": 3}' 2>/dev/null); then
-        print_status $GREEN "✅ Cleanup triggered successfully"
+        print_status $GREEN " Cleanup triggered successfully"
         echo "$cleanup_response" | jq '.' 2>/dev/null || echo "$cleanup_response"
     else
-        print_status $RED "❌ Failed to trigger cleanup"
-        print_status $YELLOW "🔧 Trying manual Redis cleanup..."
+        print_status $RED " Failed to trigger cleanup"
+        print_status $YELLOW " Trying manual Redis cleanup..."
         
         # Manual Redis cleanup as fallback
         docker exec $REDIS_CONTAINER redis-cli ZREM bull:listing:expiration:failed $(docker exec $REDIS_CONTAINER redis-cli ZRANGE bull:listing:expiration:failed 0 -1)
-        print_status $GREEN "✅ Manual Redis cleanup completed"
+        print_status $GREEN " Manual Redis cleanup completed"
     fi
 }
 
 # Function to show logs
 show_logs() {
     local lines=${1:-50}
-    print_status $BLUE "📋 Showing last $lines lines of expiration service logs..."
+    print_status $BLUE " Showing last $lines lines of expiration service logs..."
     docker logs $EXPIRATION_CONTAINER --tail $lines
 }
 
 # Function to emergency cleanup
 emergency_cleanup() {
-    print_status $RED "🚨 Starting emergency cleanup..."
+    print_status $RED " Starting emergency cleanup..."
     
     # Try API first
     local cleanup_response
     if cleanup_response=$(curl -s -X POST "${EXPIRATION_HEALTH_URL}/cleanup" \
         -H "Content-Type: application/json" \
         -d '{"emergency": true}' 2>/dev/null); then
-        print_status $GREEN "✅ Emergency cleanup via API successful"
+        print_status $GREEN " Emergency cleanup via API successful"
         echo "$cleanup_response" | jq '.' 2>/dev/null || echo "$cleanup_response"
     else
-        print_status $YELLOW "⚠️  API cleanup failed, using direct Redis cleanup..."
+        print_status $YELLOW "  API cleanup failed, using direct Redis cleanup..."
         
         # Direct Redis cleanup
         docker exec $REDIS_CONTAINER redis-cli FLUSHDB
-        print_status $GREEN "✅ Redis database flushed"
+        print_status $GREEN " Redis database flushed"
         
         # Restart service
         restart_service
@@ -171,7 +171,7 @@ emergency_cleanup() {
 # Main menu
 show_menu() {
     echo ""
-    print_status $BLUE "🔧 Expiration Service Monitor"
+    print_status $BLUE " Expiration Service Monitor"
     echo "1. Check service health"
     echo "2. Check queue status" 
     echo "3. Check Redis status"
@@ -196,7 +196,7 @@ full_status() {
     check_queue
     echo ""
     
-    print_status $BLUE "📊 Container status:"
+    print_status $BLUE " Container status:"
     docker ps --filter "name=auction-" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
 }
 
@@ -253,7 +253,7 @@ case "${1:-menu}" in
                     exit 0
                     ;;
                 *) 
-                    print_status $RED "❌ Invalid option"
+                    print_status $RED " Invalid option"
                     ;;
             esac
             echo ""

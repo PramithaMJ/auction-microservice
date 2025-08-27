@@ -147,7 +147,7 @@ The production pipeline includes:
 - **Multi-stage builds** for smaller images
 - **Non-root containers** where possible
 
-## 🚨 Troubleshooting
+##  Troubleshooting
 
 ### Pipeline Failures
 1. Check GitHub Actions logs
@@ -180,7 +180,7 @@ docker pull pramithamj/auction-website/auth:latest
 open https://hub.docker.com/u/pramithamj
 ```
 
-## 📈 Scaling & Production
+##  Scaling & Production
 
 ### Kubernetes Deployment
 Your `k8s/` folder contains Kubernetes manifests:

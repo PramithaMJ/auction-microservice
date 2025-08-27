@@ -1,4 +1,4 @@
-import { expirationQueue } from './queues/expiration-queue';
+import { expirationQueue } from '../queues/expiration-queue';
 
 interface CleanupOptions {
   removeCompletedJobs?: number;
@@ -27,12 +27,12 @@ class QueueCleanup {
       const failed = await expirationQueue.getFailed();
       const completed = await expirationQueue.getCompleted();
       
-      console.log(`📊 Queue status: ${failed.length} failed, ${completed.length} completed`);
+      console.log(` Queue status: ${failed.length} failed, ${completed.length} completed`);
 
       // Clean completed jobs
       if (completed.length > removeCompletedJobs) {
         await expirationQueue.clean(0, 'completed', removeCompletedJobs);
-        console.log(`✅ Cleaned ${completed.length - removeCompletedJobs} completed jobs`);
+        console.log(` Cleaned ${completed.length - removeCompletedJobs} completed jobs`);
       }
 
       // Handle failed jobs
@@ -47,16 +47,16 @@ class QueueCleanup {
             const jobData = job.data;
             const attemptsMade = job.attemptsMade || 0;
             
-            console.log(`📋 Failed job ${job.id}: ${JSON.stringify(jobData)}, attempts: ${attemptsMade}`);
+            console.log(` Failed job ${job.id}: ${JSON.stringify(jobData)}, attempts: ${attemptsMade}`);
             
             if (retryFailedJobs && attemptsMade < maxRetryAttempts) {
               // Retry the job
               await job.retry();
               retried++;
-              console.log(`🔄 Retried job ${job.id} for listing ${jobData.id}`);
+              console.log(` Retried job ${job.id} for listing ${jobData.id}`);
             } else {
               // Log critical failure and remove
-              console.error('🚨 CRITICAL_EXPIRATION_FAILURE - Max attempts reached', {
+              console.error(' CRITICAL_EXPIRATION_FAILURE - Max attempts reached', {
                 jobId: job.id,
                 listingId: jobData.id,
                 attempts: attemptsMade,
@@ -68,11 +68,11 @@ class QueueCleanup {
               removed++;
             }
           } catch (error) {
-            console.error(`❌ Error processing failed job ${job.id}:`, error);
+            console.error(` Error processing failed job ${job.id}:`, error);
           }
         }
 
-        console.log(`📈 Cleanup summary: ${retried} jobs retried, ${removed} jobs removed`);
+        console.log(` Cleanup summary: ${retried} jobs retried, ${removed} jobs removed`);
       }
 
       // Clean old failed jobs if too many
@@ -81,7 +81,7 @@ class QueueCleanup {
         console.log(`🗑️  Cleaned old failed jobs, keeping last ${removeFailedJobs}`);
       }
 
-      console.log('✅ Queue cleanup completed');
+      console.log(' Queue cleanup completed');
       
       return {
         success: true,
@@ -92,7 +92,7 @@ class QueueCleanup {
       };
 
     } catch (error) {
-      console.error('❌ Queue cleanup failed:', error);
+      console.error(' Queue cleanup failed:', error);
       return {
         success: false,
         error: error.message
@@ -138,7 +138,7 @@ class QueueCleanup {
         }
       };
     } catch (error) {
-      console.error('❌ Failed to get queue stats:', error);
+      console.error(' Failed to get queue stats:', error);
       return null;
     }
   }
@@ -147,7 +147,7 @@ class QueueCleanup {
    * Emergency cleanup - removes all failed jobs and retries active ones
    */
   static async emergencyCleanup() {
-    console.log('🚨 Starting emergency cleanup...');
+    console.log(' Starting emergency cleanup...');
     
     try {
       // Remove all failed jobs
@@ -155,16 +155,16 @@ class QueueCleanup {
       console.log('🗑️  Removed all failed jobs');
 
       // Clean stalled jobs
-      await expirationQueue.clean(0, 'stalled');
-      console.log('🔧 Cleaned stalled jobs');
+      await expirationQueue.clean(5000, 'active');
+      console.log(' Cleaned stalled jobs');
 
       // Get stats after cleanup
       const stats = await this.getQueueStats();
-      console.log('📊 Post-cleanup stats:', stats?.counts);
+      console.log(' Post-cleanup stats:', stats?.counts);
 
       return { success: true };
     } catch (error) {
-      console.error('❌ Emergency cleanup failed:', error);
+      console.error(' Emergency cleanup failed:', error);
       return { success: false, error: error.message };
     }
   }

@@ -197,7 +197,7 @@ const ListingCard = ({ name, price, slug, smallImage, expiresAt }: IProps) => {
             {/* Debug info - remove in production */}
             {process.env.NODE_ENV === 'development' && (
               <StyledDebugInfo>
-                {smallImage ? '🖼️' : '❌'} {imageError ? 'ERR' : 'OK'}
+                {smallImage ? '🖼️' : ''} {imageError ? 'ERR' : 'OK'}
               </StyledDebugInfo>
             )}
             

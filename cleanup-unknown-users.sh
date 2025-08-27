@@ -11,11 +11,11 @@ LISTINGS_DB_CONTAINER=$(docker ps --filter "name=listings-mysql" --format "{{.ID
 PAYMENTS_DB_CONTAINER=$(docker ps --filter "name=payments-mysql" --format "{{.ID}}")
 PROFILE_DB_CONTAINER=$(docker ps --filter "name=profile-mysql" --format "{{.ID}}")
 
-echo "📊 Checking for 'Unknown User' entries..."
+echo " Checking for 'Unknown User' entries..."
 
 # Cleanup bid database
 if [ ! -z "$BID_DB_CONTAINER" ]; then
-    echo "🔧 Cleaning bid database..."
+    echo " Cleaning bid database..."
     docker exec $BID_DB_CONTAINER mysql -u root -ppassword -e "
         USE bid_db;
         SELECT COUNT(*) as unknown_users FROM users WHERE name = 'Unknown User';
@@ -27,7 +27,7 @@ fi
 
 # Cleanup listings database  
 if [ ! -z "$LISTINGS_DB_CONTAINER" ]; then
-    echo "🔧 Cleaning listings database..."
+    echo " Cleaning listings database..."
     docker exec $LISTINGS_DB_CONTAINER mysql -u root -ppassword -e "
         USE listings_db;
         SELECT COUNT(*) as unknown_users FROM users WHERE name = 'Unknown User';
@@ -38,7 +38,7 @@ fi
 
 # Cleanup payments database
 if [ ! -z "$PAYMENTS_DB_CONTAINER" ]; then
-    echo "🔧 Cleaning payments database..."
+    echo " Cleaning payments database..."
     docker exec $PAYMENTS_DB_CONTAINER mysql -u root -ppassword -e "
         USE payments_db;
         SELECT COUNT(*) as unknown_users FROM users WHERE name = 'Unknown User';
@@ -47,6 +47,6 @@ if [ ! -z "$PAYMENTS_DB_CONTAINER" ]; then
     "
 fi
 
-echo "✅ Database cleanup completed!"
+echo " Database cleanup completed!"
 echo "🚀 Restart the bid service to apply the fix:"
 echo "   docker-compose restart bid"
