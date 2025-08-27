@@ -19,16 +19,23 @@ const BidDashboardTableRow = ({ bid, onDelete }) => {
         listingId: bid.listing.id,
         token: id,
       });
-      toast.success('Sucessfully signed in!');
+      toast.success('Payment completed successfully!');
     } catch (err) {
       err.response.data.errors.forEach((err) => toast.error(err.message));
     }
   };
 
   const requiresPayment = () => {
+    console.log('Debug requiresPayment:', {
+      status: bid.listing.status,
+      currentWinnerId: bid.listing.currentWinnerId,
+      currentUserId: auth.currentUser?.id,
+      listingData: bid.listing
+    });
+    
     return (
       bid.listing.status === ListingStatus.AwaitingPayment &&
-      bid.listing.currentWinnerId === auth.currentUser.id
+      bid.listing.currentWinnerId === auth.currentUser?.id
     );
   };
 
@@ -98,6 +105,10 @@ const BidDashboardTableRow = ({ bid, onDelete }) => {
           <StripeCheckout
             token={createPayment}
             stripeKey="pk_test_51I7NJ5LQOU4SKz9IV9bdjUwPlGAb9UDKlwjKLxdmu52uQpPHfKn6KvpBIpEIIbI1XISEaFRmIpHgnpIGVFlwmKu300buDGjcwL"
+            amount={bid.listing.currentPrice}
+            name="Auction Payment"
+            description={`Payment for ${bid.listing.title}`}
+            email={auth.currentUser?.email}
           />
         ) : bid.listing.status === ListingStatus.Active ? (
           <button
