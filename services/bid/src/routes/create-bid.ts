@@ -9,7 +9,7 @@ import express, { Request, Response } from 'express';
 
 import { BidCreatedPublisher } from '../events/publishers/bid-created-publisher';
 import { Bid, Listing, User, db } from '../models';
-import { natsWrapper } from '../nats-wrapper';
+import { natsWrapper } from '../nats-wrapper-circuit-breaker';
 
 const router = express.Router();
 

@@ -11,7 +11,7 @@ import { Op } from 'sequelize';
 import { BidDeletedPublisher } from '../events/publishers/bid-deleted-publisher';
 import { Bid, Listing, db } from '../models';
 import { BidAttributes, BidModel } from '../models/bid';
-import { natsWrapper } from '../nats-wrapper';
+import { natsWrapper } from '../nats-wrapper-circuit-breaker';
 
 const router = express.Router();
 
