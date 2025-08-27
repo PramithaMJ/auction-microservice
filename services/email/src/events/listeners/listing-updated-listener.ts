@@ -47,14 +47,14 @@ export class ListingUpdatedListener extends Listener<ListingUpdatedEvent> {
 
       Your payment is now required to complete the purchase. Please visit your dashboard to complete the payment process.
 
-      👉 Visit your bids dashboard: http://localhost:3000/dashboard/bids
+      👉 Visit your bids dashboard: http://${process.env.FRONTEND_URL}:3000/dashboard/bids
 
       You have 48 hours to complete payment. After this time, the auction may be offered to the next highest bidder.
 
       Thank you for participating!
 
       Best regards,
-      The JJ Auction Team
+      The AuctionHub Team
     `;
 
     await transporter.sendMail({
@@ -79,12 +79,12 @@ export class ListingUpdatedListener extends Listener<ListingUpdatedEvent> {
 
       The winner has been notified and has 48 hours to complete payment. You'll receive another notification once payment is completed.
 
-      You can monitor the status in your dashboard: http://localhost:3000/dashboard/sold
+      You can monitor the status in your dashboard: http://${process.env.FRONTEND_URL}:3000/dashboard/sold
 
       Happy selling!
 
       Best regards,
-      The JJ Auction Team
+      The AuctionHub Team
     `;
 
     await transporter.sendMail({

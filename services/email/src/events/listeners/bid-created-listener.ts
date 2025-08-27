@@ -67,7 +67,7 @@ export class BidCreatedListener extends Listener<BidCreatedEvent> {
       Happy selling!
 
       Best regards,
-      The JJ Auction Team
+      The AuctionHub Team
     `;
 
     await transporter.sendMail({
