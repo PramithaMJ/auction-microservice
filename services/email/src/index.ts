@@ -1,6 +1,7 @@
 import { EmailCreatedListener } from './events/listeners/email-created-listener';
 import { ProfileCreatedListener } from './events/listeners/profile-created-listener';
 import { BidCreatedListener } from './events/listeners/bid-created-listener';
+import { ListingUpdatedListener } from './events/listeners/listing-updated-listener';
 import { natsWrapper } from './nats-wrapper-circuit-breaker';
 import { app } from './app';
 
@@ -45,6 +46,7 @@ import { app } from './app';
     await new EmailCreatedListener(natsWrapper.client).listen();
     await new ProfileCreatedListener(natsWrapper.client).listen();
     await new BidCreatedListener(natsWrapper.client).listen();
+    await new ListingUpdatedListener(natsWrapper.client).listen();
 
     app.listen(3106, () => {
       console.log('Email service listening on port 3106');

@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   # Infrastructure Services
   nats-streaming:
@@ -44,7 +46,7 @@ services:
     image: mysql:8.0
     container_name: auction-auth-mysql
     environment:
-      MYSQL_ROOT_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-password}
       MYSQL_DATABASE: auth
     ports:
       - "3306:3306"
@@ -55,7 +57,7 @@ services:
       - auction-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-ppassword"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-password}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -65,7 +67,7 @@ services:
     image: mysql:8.0
     container_name: auction-bid-mysql
     environment:
-      MYSQL_ROOT_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-password}
       MYSQL_DATABASE: bid
     ports:
       - "3307:3306"
@@ -76,7 +78,7 @@ services:
       - auction-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-ppassword"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-password}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -86,7 +88,7 @@ services:
     image: mysql:8.0
     container_name: auction-listings-mysql
     environment:
-      MYSQL_ROOT_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-password}
       MYSQL_DATABASE: listings
     ports:
       - "3308:3306"
@@ -97,7 +99,7 @@ services:
       - auction-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-ppassword"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-password}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -107,7 +109,7 @@ services:
     image: mysql:8.0
     container_name: auction-payments-mysql
     environment:
-      MYSQL_ROOT_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-password}
       MYSQL_DATABASE: payments
     ports:
       - "3309:3306"
@@ -118,7 +120,7 @@ services:
       - auction-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-ppassword"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-password}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -128,7 +130,7 @@ services:
     image: mysql:8.0
     container_name: auction-profile-mysql
     environment:
-      MYSQL_ROOT_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-password}
       MYSQL_DATABASE: profile
     ports:
       - "3310:3306"
@@ -139,7 +141,7 @@ services:
       - auction-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-ppassword"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-password}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -150,10 +152,10 @@ services:
     image: pramithamj/auction-website-api-gateway:${IMAGE_TAG:-latest}
     container_name: auction-api-gateway
     ports:
-      - "3001:3001"
+      - "${API_GATEWAY_PORT:-3001}:3001"
     environment:
       - PORT=3001
-      - NODE_ENV=${NODE_ENV:-development}
+      - NODE_ENV=${NODE_ENV:-production}
       - AUTH_SERVICE_URL=http://auth:3101
       - BID_SERVICE_URL=http://bid:3102
       - LISTINGS_SERVICE_URL=http://listings:3103
@@ -161,7 +163,8 @@ services:
       - PROFILE_SERVICE_URL=http://profile:3105
       - EMAIL_SERVICE_URL=http://email:3106
       - SAGA_ORCHESTRATOR_URL=http://saga-orchestrator:3108
-      - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost:3000,http://localhost:3001,http://${SERVER_IP:-localhost}:3000,http://${SERVER_IP:-localhost}:3001,http://${SERVER_IP:-localhost}}
+      - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost:3000,http://localhost:3001}
+      - JWT_KEY=${JWT_KEY:-qLYn6wQ9vy8HS0LwuEsNyWgG3oYc8Mk1yRLotUXgrR/uEbEN9I6mdjnLAcjWiVuR}
     depends_on:
       nats-streaming:
         condition: service_started
@@ -192,9 +195,9 @@ services:
       - "3101:3101"
     environment:
       - PORT=3101
-      - NODE_ENV=development
-      - JWT_KEY=qLYn6wQ9vy8HS0LwuEsNyWgG3oYc8Mk1yRLotUXgrR/uEbEN9I6mdjnLAcjWiVuR
-      - AUTH_MYSQL_URI=mysql://root:password@auth-mysql:3306/auth
+      - NODE_ENV=${NODE_ENV:-production}
+      - JWT_KEY=${JWT_KEY:-qLYn6wQ9vy8HS0LwuEsNyWgG3oYc8Mk1yRLotUXgrR/uEbEN9I6mdjnLAcjWiVuR}
+      - AUTH_MYSQL_URI=mysql://root:${MYSQL_ROOT_PASSWORD:-password}@auth-mysql:3306/auth
       - NATS_URL=nats://nats-streaming:4222
       - NATS_CLUSTER_ID=auction
       - NATS_CLIENT_ID=auth-service
@@ -215,9 +218,9 @@ services:
       - "3102:3102"
     environment:
       - PORT=3102
-      - NODE_ENV=development
-      - JWT_KEY=qLYn6wQ9vy8HS0LwuEsNyWgG3oYc8Mk1yRLotUXgrR/uEbEN9I6mdjnLAcjWiVuR
-      - BID_MYSQL_URI=mysql://root:password@bid-mysql:3306/bid
+      - NODE_ENV=${NODE_ENV:-production}
+      - JWT_KEY=${JWT_KEY:-qLYn6wQ9vy8HS0LwuEsNyWgG3oYc8Mk1yRLotUXgrR/uEbEN9I6mdjnLAcjWiVuR}
+      - BID_MYSQL_URI=mysql://root:${MYSQL_ROOT_PASSWORD:-password}@bid-mysql:3306/bid
       - NATS_URL=nats://nats-streaming:4222
       - NATS_CLUSTER_ID=auction
       - NATS_CLIENT_ID=bid-service
@@ -225,6 +228,8 @@ services:
       bid-mysql:
         condition: service_healthy
       nats-streaming:
+        condition: service_started
+      listings:
         condition: service_started
     networks:
       - auction-network
@@ -237,16 +242,16 @@ services:
       - "3103:3103"
     environment:
       - PORT=3103
-      - NODE_ENV=development
-      - JWT_KEY=qLYn6wQ9vy8HS0LwuEsNyWgG3oYc8Mk1yRLotUXgrR/uEbEN9I6mdjnLAcjWiVuR
-      - LISTINGS_MYSQL_URI=mysql://root:password@listings-mysql:3306/listings
+      - NODE_ENV=${NODE_ENV:-production}
+      - JWT_KEY=${JWT_KEY:-qLYn6wQ9vy8HS0LwuEsNyWgG3oYc8Mk1yRLotUXgrR/uEbEN9I6mdjnLAcjWiVuR}
+      - LISTINGS_MYSQL_URI=mysql://root:${MYSQL_ROOT_PASSWORD:-password}@listings-mysql:3306/listings
       - NATS_URL=nats://nats-streaming:4222
       - NATS_CLUSTER_ID=auction
       - NATS_CLIENT_ID=listings-service
-      - AWS_ACCESS_KEY_ID=AKIA4T4OB53TUHLNSNBB
-      - AWS_SECRET_ACCESS_KEY=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
-      - AWS_REGION=us-east-1
-      - AWS_S3_BUCKET_NAME=cloud-storage-new123
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=${AWS_REGION:-us-east-1}
+      - AWS_S3_BUCKET_NAME=${AWS_S3_BUCKET_NAME}
     depends_on:
       listings-mysql:
         condition: service_healthy
@@ -263,13 +268,13 @@ services:
       - "3104:3104"
     environment:
       - PORT=3104
-      - NODE_ENV=development
-      - JWT_KEY=qLYn6wQ9vy8HS0LwuEsNyWgG3oYc8Mk1yRLotUXgrR/uEbEN9I6mdjnLAcjWiVuR
-      - PAYMENTS_MYSQL_URI=mysql://root:password@payments-mysql:3306/payments
+      - NODE_ENV=${NODE_ENV:-production}
+      - JWT_KEY=${JWT_KEY:-qLYn6wQ9vy8HS0LwuEsNyWgG3oYc8Mk1yRLotUXgrR/uEbEN9I6mdjnLAcjWiVuR}
+      - PAYMENTS_MYSQL_URI=mysql://root:${MYSQL_ROOT_PASSWORD:-password}@payments-mysql:3306/payments
       - NATS_URL=nats://nats-streaming:4222
       - NATS_CLUSTER_ID=auction
       - NATS_CLIENT_ID=payments-service
-      - STRIPE_KEY=sk_test_your_stripe_secret_key_here
+      - STRIPE_KEY=${STRIPE_KEY}
     depends_on:
       payments-mysql:
         condition: service_healthy
@@ -286,9 +291,9 @@ services:
       - "3105:3105"
     environment:
       - PORT=3105
-      - NODE_ENV=development
-      - JWT_KEY=qLYn6wQ9vy8HS0LwuEsNyWgG3oYc8Mk1yRLotUXgrR/uEbEN9I6mdjnLAcjWiVuR
-      - PROFILE_MYSQL_URI=mysql://root:password@profile-mysql:3306/profile
+      - NODE_ENV=${NODE_ENV:-production}
+      - JWT_KEY=${JWT_KEY:-qLYn6wQ9vy8HS0LwuEsNyWgG3oYc8Mk1yRLotUXgrR/uEbEN9I6mdjnLAcjWiVuR}
+      - PROFILE_MYSQL_URI=mysql://root:${MYSQL_ROOT_PASSWORD:-password}@profile-mysql:3306/profile
       - NATS_URL=nats://nats-streaming:4222
       - NATS_CLUSTER_ID=auction
       - NATS_CLIENT_ID=profile-service
@@ -308,13 +313,15 @@ services:
       - "3106:3106"
     environment:
       - PORT=3106
-      - NODE_ENV=development
-      - JWT_KEY=qLYn6wQ9vy8HS0LwuEsNyWgG3oYc8Mk1yRLotUXgrR/uEbEN9I6mdjnLAcjWiVuR
+      - NODE_ENV=${NODE_ENV:-production}
+      - JWT_KEY=${JWT_KEY:-qLYn6wQ9vy8HS0LwuEsNyWgG3oYc8Mk1yRLotUXgrR/uEbEN9I6mdjnLAcjWiVuR}
       - NATS_URL=nats://nats-streaming:4222
       - NATS_CLUSTER_ID=auction
       - NATS_CLIENT_ID=email-service
-      - EMAIL=your_email@gmail.com
-      - EMAIL_PASSWORD=your_app_specific_password
+      - EMAIL=${EMAIL}
+      - EMAIL_PASSWORD=${EMAIL_PASSWORD}
+      - AUTH_SERVICE_URL=http://auth:3101
+      - LISTINGS_SERVICE_URL=http://listings:3103
     depends_on:
       nats-streaming:
         condition: service_started
@@ -329,13 +336,14 @@ services:
       - "3108:3108"
     environment:
       - PORT=3108
-      - NODE_ENV=development
-      - JWT_KEY=qLYn6wQ9vy8HS0LwuEsNyWgG3oYc8Mk1yRLotUXgrR/uEbEN9I6mdjnLAcjWiVuR
+      - NODE_ENV=${NODE_ENV:-production}
+      - JWT_KEY=${JWT_KEY:-qLYn6wQ9vy8HS0LwuEsNyWgG3oYc8Mk1yRLotUXgrR/uEbEN9I6mdjnLAcjWiVuR}
       - NATS_URL=nats://nats-streaming:4222
       - NATS_CLUSTER_ID=auction
       - NATS_CLIENT_ID=saga-orchestrator-service
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+      - REDIS_URL=redis://redis:6379
     depends_on:
       redis:
         condition: service_healthy
@@ -352,13 +360,14 @@ services:
       - "3107:3107"
     environment:
       - PORT=3107
-      - NODE_ENV=development
-      - JWT_KEY=qLYn6wQ9vy8HS0LwuEsNyWgG3oYc8Mk1yRLotUXgrR/uEbEN9I6mdjnLAcjWiVuR
+      - NODE_ENV=${NODE_ENV:-production}
+      - JWT_KEY=${JWT_KEY:-qLYn6wQ9vy8HS0LwuEsNyWgG3oYc8Mk1yRLotUXgrR/uEbEN9I6mdjnLAcjWiVuR}
       - NATS_URL=nats://nats-streaming:4222
       - NATS_CLUSTER_ID=auction
       - NATS_CLIENT_ID=expiration-service
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+      - REDIS_URL=redis://redis:6379
     depends_on:
       redis:
         condition: service_healthy
@@ -390,12 +399,21 @@ services:
 
 volumes:
   redis-data:
+    driver: local
   auth-mysql-data:
+    driver: local
   bid-mysql-data:
+    driver: local
   listings-mysql-data:
+    driver: local
   payments-mysql-data:
+    driver: local
   profile-mysql-data:
+    driver: local
 
 networks:
   auction-network:
     driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

@@ -50,7 +50,7 @@ build_service() {
 }
 
 # Build common package
-echo -e "${BLUE}🔧 Building Common Package...${NC}"
+echo -e "${BLUE} Building Common Package...${NC}"
 build_service "common" "./common" "./common/Dockerfile"
 
 # Build services

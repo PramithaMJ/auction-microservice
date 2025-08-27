@@ -40,7 +40,7 @@ pull_images() {
     for service in "${services[@]}"; do
         echo -e "  Pulling pramithamj/auction-website-ms-${service}:${VERSION}"
         if ! docker pull "pramithamj/auction-website-ms-${service}:${VERSION}" 2>/dev/null; then
-            echo -e "${YELLOW}⚠️  Failed to pull ${service}:${VERSION}, will try to build locally${NC}"
+            echo -e "${YELLOW}  Failed to pull ${service}:${VERSION}, will try to build locally${NC}"
         fi
     done
     
@@ -83,7 +83,7 @@ start_services() {
 # Function to show status
 show_status() {
     echo ""
-    echo -e "${BLUE}📊 Service Status:${NC}"
+    echo -e "${BLUE} Service Status:${NC}"
     docker-compose ps
     
     echo ""
@@ -136,7 +136,7 @@ main() {
 }
 
 # Handle interruption
-trap 'echo -e "\n${YELLOW}⚠️  Deployment interrupted${NC}"; exit 1' INT
+trap 'echo -e "\n${YELLOW}  Deployment interrupted${NC}"; exit 1' INT
 
 # Run main function
 main

@@ -155,7 +155,7 @@ const Navbar = () => {
                     className="flex items-center px-3 py-2 rounded-lg text-base font-medium text-gray-700 hover:text-amber-700 hover:bg-amber-50"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    <span className="mr-3">📊</span>
+                    <span className="mr-3"></span>
                     Dashboard
                   </a>
                 </Link>

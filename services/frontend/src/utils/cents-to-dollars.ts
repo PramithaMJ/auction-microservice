@@ -1,9 +1,12 @@
-const centsToDollars = (cents: number) => {
-  const dollars = cents / 100;
-  return dollars.toLocaleString('en-US', {
+const centsToLKR = (cents: number) => {
+  const amount = cents / 100;
+  return amount.toLocaleString('en-LK', {
     style: 'currency',
-    currency: 'USD',
+    currency: 'LKR',
   });
 };
 
-export { centsToDollars };
+// Keep the old function name for backward compatibility
+const centsToDollars = centsToLKR;
+
+export { centsToDollars, centsToLKR };

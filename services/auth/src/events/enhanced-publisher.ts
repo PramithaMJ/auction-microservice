@@ -31,7 +31,7 @@ export abstract class PublisherWithCircuitBreaker<T extends Event> {
       if (options.fallback !== false) {
         // Log the failed event for potential replay
         const fallbackData = this.createFallback(data, error);
-        console.log(`📝 Event fallback logged:`, fallbackData);
+        console.log(` Event fallback logged:`, fallbackData);
         
         // In a production environment, you might want to store this in a database
         // or message queue for later processing

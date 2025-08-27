@@ -84,7 +84,7 @@ const sampleListings = [
 ];
 
 async function createSampleListings() {
-  console.log('🚀 Creating sample auction listings...');
+  console.log(' Creating sample auction listings...');
   
   try {
     for (let i = 0; i < sampleListings.length; i++) {
@@ -109,20 +109,20 @@ async function createSampleListings() {
             'Content-Type': 'multipart/form-data',
           },
         });
-        console.log(`✅ Created: ${listing.title}`);
+        console.log(` Created: ${listing.title}`);
       } catch (error) {
-        console.log(`❌ Failed to create: ${listing.title} - ${error.message}`);
+        console.log(` Failed to create: ${listing.title} - ${error.message}`);
       }
       
       // Add small delay to avoid overwhelming the server
       await new Promise(resolve => setTimeout(resolve, 1000));
     }
     
-    console.log('🎉 Sample listings creation completed!');
+    console.log(' Sample listings creation completed!');
     console.log('💡 Visit http://localhost:3000/listings to see the new auction items with emoji icons!');
     
   } catch (error) {
-    console.error('❌ Error creating sample listings:', error.message);
+    console.error(' Error creating sample listings:', error.message);
   }
 }
 

@@ -60,7 +60,7 @@ start_services() {
 # Function to show status
 show_status() {
     echo ""
-    echo -e "${BLUE}📊 Service Status:${NC}"
+    echo -e "${BLUE} Service Status:${NC}"
     docker-compose -f docker-compose.pull-only.yml ps
     
     echo ""
@@ -112,7 +112,7 @@ main() {
 }
 
 # Handle interruption
-trap 'echo -e "\n${YELLOW}⚠️  Deployment interrupted${NC}"; exit 1' INT
+trap 'echo -e "\n${YELLOW}  Deployment interrupted${NC}"; exit 1' INT
 
 # Run main function
 main

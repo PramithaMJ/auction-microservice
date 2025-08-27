@@ -19,16 +19,23 @@ const BidDashboardTableRow = ({ bid, onDelete }) => {
         listingId: bid.listing.id,
         token: id,
       });
-      toast.success('Sucessfully signed in!');
+      toast.success('Payment completed successfully!');
     } catch (err) {
       err.response.data.errors.forEach((err) => toast.error(err.message));
     }
   };
 
   const requiresPayment = () => {
+    console.log('Debug requiresPayment:', {
+      status: bid.listing.status,
+      currentWinnerId: bid.listing.currentWinnerId,
+      currentUserId: auth.currentUser?.id,
+      listingData: bid.listing
+    });
+    
     return (
       bid.listing.status === ListingStatus.AwaitingPayment &&
-      bid.listing.currentWinnerId === auth.currentUser.id
+      bid.listing.currentWinnerId === auth.currentUser?.id
     );
   };
 
@@ -58,7 +65,10 @@ const BidDashboardTableRow = ({ bid, onDelete }) => {
           </a>
         </Link>
         <div className="text-sm text-gray-500">
-          <Countdown expiresAt={bid.listing.expiresAt} />
+          <Countdown 
+            expiresAt={bid.listing.expiresAt}
+            showExpiredMessage={true}
+          />
         </div>
       </td>
       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -68,23 +78,71 @@ const BidDashboardTableRow = ({ bid, onDelete }) => {
         {centsToDollars(bid.listing.currentPrice)}
       </td>
       <td className="px-6 py-4 whitespace-nowrap">
-        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-          Active
-        </span>
+        {bid.listing.status === ListingStatus.Active ? (
+          <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+            Active
+          </span>
+        ) : bid.listing.status === ListingStatus.Expired ? (
+          <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+            Expired
+          </span>
+        ) : bid.listing.status === ListingStatus.AwaitingPayment ? (
+          <span className="px-3 py-1 inline-flex items-center text-xs leading-5 font-semibold rounded-full bg-amber-100 text-amber-800">
+            <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+            </svg>
+            Payment Due
+          </span>
+        ) : bid.listing.status === ListingStatus.Complete ? (
+          <span className="px-3 py-1 inline-flex items-center text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+            <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+            </svg>
+            Complete
+          </span>
+        ) : (
+          <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+            {bid.listing.status}
+          </span>
+        )}
       </td>
       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
         {requiresPayment() ? (
-          <StripeCheckout
-            token={createPayment}
-            stripeKey="pk_test_51I7NJ5LQOU4SKz9IV9bdjUwPlGAb9UDKlwjKLxdmu52uQpPHfKn6KvpBIpEIIbI1XISEaFRmIpHgnpIGVFlwmKu300buDGjcwL"
-          />
-        ) : (
+          <div className="inline-block">
+            <StripeCheckout
+              token={createPayment}
+              stripeKey="pk_test_51I7NJ5LQOU4SKz9IV9bdjUwPlGAb9UDKlwjKLxdmu52uQpPHfKn6KvpBIpEIIbI1XISEaFRmIpHgnpIGVFlwmKu300buDGjcwL"
+              amount={bid.listing.currentPrice}
+              name="Auction Payment"
+              description={`Payment for ${bid.listing.title}`}
+              email={auth.currentUser?.email}
+              panelLabel="Pay Now"
+              allowRememberMe={false}
+              bitcoin={false}
+              zipCode={false}
+              billingAddress={false}
+              shippingAddress={false}
+            >
+              <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 transition-all duration-200 transform hover:scale-105">
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                </svg>
+                Pay {centsToDollars(bid.listing.currentPrice)}
+              </button>
+            </StripeCheckout>
+          </div>
+        ) : bid.listing.status === ListingStatus.Active ? (
           <button
             onClick={onDelete}
-            className="text-indigo-600 hover:text-indigo-900"
+            className="text-amber-600 hover:text-amber-900 font-medium transition-colors"
           >
             Delete
           </button>
+        ) : (
+          <span className="text-gray-400 text-sm">
+            {bid.listing.status === ListingStatus.Expired ? 'Auction Ended' : 
+             bid.listing.status === ListingStatus.Complete ? 'Completed' : 'Cannot Delete'}
+          </span>
         )}
       </td>
     </tr>
