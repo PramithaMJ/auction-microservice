@@ -13,7 +13,8 @@ const db =
 const Listing = ListingFactory(db);
 const User = UserFactory(db);
 
-User.hasMany(Listing);
-Listing.belongsTo(User);
+// Set up associations with explicit foreign key
+User.hasMany(Listing, { foreignKey: 'userId', as: 'listings' });
+Listing.belongsTo(User, { foreignKey: 'userId', as: 'User' });
 
 export { db, Listing, User };

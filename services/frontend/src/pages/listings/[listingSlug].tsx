@@ -162,28 +162,31 @@ const Listing = ({ listingData }) => {
   const [imageLoading, setImageLoading] = useState(true);
   const [imageError, setImageError] = useState(false);
 
+  // Reset image state when listing data changes
+  useEffect(() => {
+    if (listing?.imageUrl) {
+      console.log('Image URL changed, resetting state:', listing.imageUrl);
+      setImageLoading(true);
+      setImageError(false);
+    }
+  }, [listing?.imageUrl]);
+
   // Get emoji icon for this listing
   const emojiIcon = listing ? getEmojiForListing(listing.title) : '🎁';
 
   // Image component with loading and error handling
   const ListingImage = () => {
     if (!listing?.imageUrl) {
+      console.log('No imageUrl available');
       return (
         <StyledEmojiDisplay>
           <StyledLargeEmoji>{emojiIcon}</StyledLargeEmoji>
         </StyledEmojiDisplay>
-      );
-    }
-
-    if (imageLoading) {
-      return (
-        <StyledLoadingContainer>
-          <StyledLoadingSpinner />
-        </StyledLoadingContainer>
       );
     }
 
     if (imageError) {
+      console.log('Image error, showing emoji fallback');
       return (
         <StyledEmojiDisplay>
           <StyledLargeEmoji>{emojiIcon}</StyledLargeEmoji>
@@ -191,16 +194,37 @@ const Listing = ({ listingData }) => {
       );
     }
 
+    console.log('Rendering image:', {
+      imageUrl: listing.imageUrl,
+      imageLoading,
+      imageError
+    });
+
     return (
-      <StyledImage
-        src={listing.imageUrl}
-        alt={listing.title}
-        onLoad={() => setImageLoading(false)}
-        onError={() => {
-          setImageLoading(false);
-          setImageError(true);
-        }}
-      />
+      <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+        <StyledImage
+          src={listing.imageUrl}
+          alt={listing.title}
+          onLoad={() => {
+            console.log('Image loaded successfully');
+            setImageLoading(false);
+          }}
+          onError={() => {
+            console.log('Image failed to load');
+            setImageLoading(false);
+            setImageError(true);
+          }}
+          style={{ 
+            opacity: imageLoading ? 0 : 1,
+            transition: 'opacity 0.3s ease-in-out'
+          }}
+        />
+        {imageLoading && (
+          <StyledLoadingContainer style={{ position: 'absolute', top: 0, left: 0 }}>
+            <StyledLoadingSpinner />
+          </StyledLoadingContainer>
+        )}
+      </div>
     );
   };
 
@@ -317,11 +341,17 @@ const Listing = ({ listingData }) => {
               </StyledTableRow>
               <StyledTableRow>
                 <StyledTableRowName>Seller</StyledTableRowName>
-                <Link href={`/profile/${listing.user.name}`}>
-                  <StyledAnchorTableRowValue>
-                    {listing.user.name}
-                  </StyledAnchorTableRowValue>
-                </Link>
+                {listing.user?.name ? (
+                  <Link href={`/profile/${listing.user.name}`}>
+                    <StyledAnchorTableRowValue>
+                      {listing.user.name}
+                    </StyledAnchorTableRowValue>
+                  </Link>
+                ) : (
+                  <StyledTableRowValue>
+                    Loading seller info...
+                  </StyledTableRowValue>
+                )}
               </StyledTableRow>
               <StyledTableRow>
                 <StyledTableRowName>Time Left</StyledTableRowName>
@@ -410,6 +440,12 @@ Listing.getInitialProps = async (context: NextPageContext, client: any) => {
   try {
     const { listingSlug } = context.query;
     const { data } = await client.get(`/api/listings/${listingSlug}`);
+    
+    // Normalize the user data field for frontend compatibility
+    if (data && data.User && !data.user) {
+      data.user = data.User;
+    }
+    
     return { listingData: data };
   } catch (err) {
     console.error(err);
