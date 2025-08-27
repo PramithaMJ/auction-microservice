@@ -6,6 +6,7 @@ import {
   validateRequest,
 } from '@jjmauction/common';
 import express, { Request, Response } from 'express';
+import { body } from 'express-validator';
 
 import { BidCreatedPublisher } from '../events/publishers/bid-created-publisher';
 import { Bid, Listing, User, db } from '../models';
@@ -16,6 +17,13 @@ const router = express.Router();
 router.post(
   '/api/bids/:listingId',
   requireAuth,
+  [
+    body('amount')
+      .isNumeric()
+      .withMessage('Amount must be a number')
+      .isFloat({ min: 0.01 })
+      .withMessage('Amount must be greater than 0'),
+  ],
   validateRequest,
   async (req: Request, res: Response) => {
     await db.transaction(async (transaction) => {
@@ -50,7 +58,7 @@ router.post(
         defaults: {
           id: req.currentUser!.id,
           name: `User-${req.currentUser!.id}`, // Unique placeholder - will be updated when user events arrive
-          email: 'unknown@email.com',
+          email: `user-${req.currentUser!.id}@placeholder.com`, // Make email unique per user
           avatar: '',
           version: 0,
         },
