@@ -48,5 +48,5 @@ if [ ! -z "$PAYMENTS_DB_CONTAINER" ]; then
 fi
 
 echo " Database cleanup completed!"
-echo "🚀 Restart the bid service to apply the fix:"
+echo " Restart the bid service to apply the fix:"
 echo "   docker-compose restart bid"

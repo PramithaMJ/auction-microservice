@@ -80,7 +80,7 @@ const attemptReconnection = async (): Promise<boolean> => {
 // Main startup function
 (async () => {
   try {
-    console.log('🚀 Starting Expiration Service...');
+    console.log(' Starting Expiration Service...');
     
     // Validate environment variables
     if (!process.env.NATS_URL) {

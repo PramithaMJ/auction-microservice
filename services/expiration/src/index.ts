@@ -3,7 +3,7 @@ import { natsWrapper } from './nats-wrapper-circuit-breaker';
 
 const start = async () => {
   try {
-    console.log('🚀 Starting Expiration Service...');
+    console.log(' Starting Expiration Service...');
     
     if (!process.env.NATS_URL) {
       throw new Error('NATS_URL must be defined');
@@ -38,9 +38,9 @@ const start = async () => {
     process.on('SIGTERM', () => natsWrapper.client.close());
 
     new ListingCreatedListener(natsWrapper.client).listen();
-    console.log('👂 Listening for listing created events');
+    console.log(' Listening for listing created events');
     
-    console.log('🎉 Expiration Service started successfully');
+    console.log(' Expiration Service started successfully');
   } catch (err) {
     console.error('💥 Failed to start Expiration Service:', err);
     process.exit(1);

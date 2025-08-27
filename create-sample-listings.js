@@ -84,7 +84,7 @@ const sampleListings = [
 ];
 
 async function createSampleListings() {
-  console.log('🚀 Creating sample auction listings...');
+  console.log(' Creating sample auction listings...');
   
   try {
     for (let i = 0; i < sampleListings.length; i++) {
