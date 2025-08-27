@@ -36,7 +36,7 @@ export class BidCreatedListener extends Listener<BidCreatedEvent> {
 
   private async sendBidNotificationEmail(listing: ListingData, bidder: UserData, bidAmount: number) {
     // Get seller email from user service
-    const authServiceUrl = process.env.AUTH_SERVICE_URL || 'http://auth:3102';
+    const authServiceUrl = process.env.AUTH_SERVICE_URL || 'http://auth:3101';
     let sellerEmail: string;
     
     try {
@@ -91,6 +91,17 @@ export class BidCreatedListener extends Listener<BidCreatedEvent> {
       const listingResponse = await axios.get(`${listingsServiceUrl}/internal/api/listings/${listingId}`);
       const listing: ListingData = listingResponse.data;
 
+      // Check if listing exists and has valid user data
+      if (!listing) {
+        console.log(`[EMAIL] Listing ${listingId} not found, skipping email`);
+        return msg.ack();
+      }
+
+      if (!listing.user || !listing.user.id) {
+        console.log(`[EMAIL] Invalid user data for listing ${listingId}, skipping email`);
+        return msg.ack();
+      }
+
       // Only send email if the bidder is not the seller
       if (listing.user.id === userId) {
         console.log(`[EMAIL] Skipping notification - user is bidding on their own listing`);
@@ -98,7 +109,7 @@ export class BidCreatedListener extends Listener<BidCreatedEvent> {
       }
 
       // Get bidder information
-      const authServiceUrl = process.env.AUTH_SERVICE_URL || 'http://auth:3100';
+      const authServiceUrl = process.env.AUTH_SERVICE_URL || 'http://auth:3101';
       let bidderResponse;
       try {
         bidderResponse = await axios.get(`${authServiceUrl}/api/users/${userId}`);

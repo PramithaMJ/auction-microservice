@@ -340,6 +340,8 @@ services:
       - NATS_CLIENT_ID=email-service
       - EMAIL=pramithamj3990@gmail.com
       - EMAIL_PASSWORD=nejqsceaqopfsjry
+      - AUTH_SERVICE_URL=http://auth:3101
+      - LISTINGS_SERVICE_URL=http://listings:3103
     depends_on:
       nats-streaming:
         condition: service_started
