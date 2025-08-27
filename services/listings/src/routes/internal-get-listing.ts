@@ -17,6 +17,7 @@ router.get(
     const listing = await Listing.findOne({
       include: {
         model: User,
+        as: 'User', // Use the alias defined in the association
         attributes: ['id', 'name', 'email'], // Include email field
         required: false, // LEFT JOIN instead of INNER JOIN
       },
