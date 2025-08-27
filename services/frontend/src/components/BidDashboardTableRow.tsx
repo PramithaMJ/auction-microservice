@@ -87,12 +87,18 @@ const BidDashboardTableRow = ({ bid, onDelete }) => {
             Expired
           </span>
         ) : bid.listing.status === ListingStatus.AwaitingPayment ? (
-          <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-amber-100 text-amber-800">
-            🏆 Payment Due
+          <span className="px-3 py-1 inline-flex items-center text-xs leading-5 font-semibold rounded-full bg-amber-100 text-amber-800">
+            <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+            </svg>
+            Payment Due
           </span>
         ) : bid.listing.status === ListingStatus.Complete ? (
-          <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-            ✅ Complete
+          <span className="px-3 py-1 inline-flex items-center text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+            <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+            </svg>
+            Complete
           </span>
         ) : (
           <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
@@ -107,7 +113,7 @@ const BidDashboardTableRow = ({ bid, onDelete }) => {
               token={createPayment}
               stripeKey="pk_test_51I7NJ5LQOU4SKz9IV9bdjUwPlGAb9UDKlwjKLxdmu52uQpPHfKn6KvpBIpEIIbI1XISEaFRmIpHgnpIGVFlwmKu300buDGjcwL"
               amount={bid.listing.currentPrice}
-              name="🏆 Auction Payment"
+              name="Auction Payment"
               description={`Payment for ${bid.listing.title}`}
               email={auth.currentUser?.email}
               panelLabel="Pay Now"
@@ -121,7 +127,7 @@ const BidDashboardTableRow = ({ bid, onDelete }) => {
                 <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                 </svg>
-                Pay ${centsToDollars(bid.listing.currentPrice)}
+                Pay {centsToDollars(bid.listing.currentPrice)}
               </button>
             </StripeCheckout>
           </div>

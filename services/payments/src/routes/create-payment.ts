@@ -42,7 +42,7 @@ router.post(
     }
 
     const charge = await stripe.charges.create({
-      currency: 'usd',
+      currency: 'lkr',
       amount: listing.amount,
       source: token,
     });
