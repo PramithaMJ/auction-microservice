@@ -49,7 +49,7 @@ router.post(
         where: { id: req.currentUser!.id },
         defaults: {
           id: req.currentUser!.id,
-          name: 'Unknown User', // Placeholder - will be updated when user events arrive
+          name: `User-${req.currentUser!.id}`, // Unique placeholder - will be updated when user events arrive
           email: 'unknown@email.com',
           avatar: '',
           version: 0,

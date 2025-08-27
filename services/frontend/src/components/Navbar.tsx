@@ -79,7 +79,7 @@ const Navbar = () => {
                     Dashboard
                   </a>
                 </Link>
-                <Link href="/profile">
+                <Link href={`/profile/${auth.currentUser?.name || 'settings'}`}>
                   <a className="text-gray-700 hover:text-yellow-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors">
                     Profile
                   </a>
@@ -159,7 +159,7 @@ const Navbar = () => {
                     Dashboard
                   </a>
                 </Link>
-                <Link href="/profile">
+                <Link href={`/profile/${auth.currentUser?.name || 'settings'}`}>
                   <a
                     className="flex items-center px-3 py-2 rounded-lg text-base font-medium text-gray-700 hover:text-yellow-700 hover:bg-yellow-50"
                     onClick={() => setIsMobileMenuOpen(false)}
