@@ -259,8 +259,8 @@ services:
       - NATS_URL=nats://nats-streaming:4222
       - NATS_CLUSTER_ID=auction
       - NATS_CLIENT_ID=listings-service
-      - AWS_ACCESS_KEY_ID=AKIA4T4OB53TUHLNSNBB
-      - AWS_SECRET_ACCESS_KEY=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
+      - AWS_ACCESS_KEY_ID=AKIA4T4OB53T6NMZHHGY
+      - AWS_SECRET_ACCESS_KEY=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
       - AWS_REGION=us-east-1
       - AWS_S3_BUCKET_NAME=cloud-storage-new123
     depends_on:
