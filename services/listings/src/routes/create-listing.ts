@@ -3,7 +3,7 @@ import express, { Request, Response } from 'express';
 
 import { ListingCreatedPublisher } from '../events/publishers/listing-created-publisher';
 import { Listing, User, db } from '../models';
-import { natsWrapper } from '../nats-wrapper';
+import { natsWrapper } from '../nats-wrapper-circuit-breaker';
 import { generateImageUrls, uploadToS3 } from '../utils/s3-config';
 
 // Define S3 file interface

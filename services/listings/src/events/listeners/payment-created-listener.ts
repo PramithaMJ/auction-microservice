@@ -8,7 +8,7 @@ import {
 import { Message } from 'node-nats-streaming';
 
 import { Listing } from '../../models';
-import { natsWrapper } from '../../nats-wrapper';
+import { natsWrapper } from '../../nats-wrapper-circuit-breaker';
 import { ListingUpdatedPublisher } from '../publishers/listing-updated-publisher';
 import { queueGroupName } from './queue-group-name';
 
