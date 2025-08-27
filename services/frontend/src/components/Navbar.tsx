@@ -22,7 +22,7 @@ const Navbar = () => {
 
   const signOut = async () => {
     try {
-      await buildClient().post('/api/users/signout');
+      await buildClient().post('/api/auth/signout');
       setAuth({ isAuthenticated: false, currentUser: null });
       router.push('/');
     } catch (err) {
