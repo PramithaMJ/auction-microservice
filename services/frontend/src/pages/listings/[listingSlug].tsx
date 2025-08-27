@@ -317,11 +317,17 @@ const Listing = ({ listingData }) => {
               </StyledTableRow>
               <StyledTableRow>
                 <StyledTableRowName>Seller</StyledTableRowName>
-                <Link href={`/profile/${listing.user.name}`}>
-                  <StyledAnchorTableRowValue>
-                    {listing.user.name}
-                  </StyledAnchorTableRowValue>
-                </Link>
+                {listing.user?.name ? (
+                  <Link href={`/profile/${listing.user.name}`}>
+                    <StyledAnchorTableRowValue>
+                      {listing.user.name}
+                    </StyledAnchorTableRowValue>
+                  </Link>
+                ) : (
+                  <StyledTableRowValue>
+                    Loading seller info...
+                  </StyledTableRowValue>
+                )}
               </StyledTableRow>
               <StyledTableRow>
                 <StyledTableRowName>Time Left</StyledTableRowName>
