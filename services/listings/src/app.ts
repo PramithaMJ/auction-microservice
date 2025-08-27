@@ -12,6 +12,7 @@ import { getListingRouter } from './routes/get-listing';
 import { getListingsRouter } from './routes/get-listings';
 import { getSoldListingsRouter } from './routes/get-sold-listings';
 import { getUserListingsRouter } from './routes/get-users-listings';
+import { internalGetListingRouter } from './routes/internal-get-listing';
 import { natsWrapper } from './nats-wrapper-circuit-breaker';
 
 const app = express();
@@ -33,6 +34,7 @@ app.use(getSoldListingsRouter);
 app.use(getExpiredListingsRouter);
 app.use(getUserListingsRouter);
 app.use(getListingRouter);
+app.use(internalGetListingRouter);
 
 
 // NATS Circuit Breaker endpoints
