@@ -61,16 +61,17 @@ jobs:
     strategy:
       matrix:
         service:
-          - { name: "common", context: "./common", dockerfile: "./common/Dockerfile" }
-          - { name: "auth", context: "./services/auth", dockerfile: "./services/auth/Dockerfile" }
-          - { name: "bid", context: "./services/bid", dockerfile: "./services/bid/Dockerfile" }
-          - { name: "listing", context: "./services/listings", dockerfile: "./services/listings/Dockerfile" }
-          - { name: "payment", context: "./services/payments", dockerfile: "./services/payments/Dockerfile" }
-          - { name: "profile", context: "./services/profile", dockerfile: "./services/profile/Dockerfile" }
-          - { name: "email", context: "./services/email", dockerfile: "./services/email/Dockerfile" }
-          - { name: "expiration", context: "./services/expiration", dockerfile: "./services/expiration/Dockerfile" }
-          - { name: "api-gateway", context: "./services/api-gateway", dockerfile: "./services/api-gateway/Dockerfile" }
-          - { name: "frontend", context: "./services/frontend", dockerfile: "./services/frontend/Dockerfile.dev" }
+          - { name: "common", context: ".", dockerfile: "./common/Dockerfile" }
+          - { name: "auth", context: ".", dockerfile: "./services/auth/Dockerfile" }
+          - { name: "bid", context: ".", dockerfile: "./services/bid/Dockerfile" }
+          - { name: "listing", context: ".", dockerfile: "./services/listings/Dockerfile" }
+          - { name: "payment", context: ".", dockerfile: "./services/payments/Dockerfile" }
+          - { name: "profile", context: ".", dockerfile: "./services/profile/Dockerfile" }
+          - { name: "email", context: ".", dockerfile: "./services/email/Dockerfile" }
+          - { name: "expiration", context: ".", dockerfile: "./services/expiration/Dockerfile" }
+          - { name: "saga-orchestrator", context: ".", dockerfile: "./services/saga-orchestrator/Dockerfile" }
+          - { name: "api-gateway", context: ".", dockerfile: "./services/api-gateway/Dockerfile" }
+          - { name: "frontend", context: ".", dockerfile: "./services/frontend/Dockerfile.dev" }
     
     steps:
     - name: Checkout code
