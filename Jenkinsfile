@@ -4,11 +4,8 @@ pipeline {
     environment {
         DOCKER_REGISTRY = "docker.io"
         DOCKER_USERNAME = "pramithamj"
-        DOCKER_PASSWORD = credentials('dockerhub-password') // store in Jenkins credentials
-    }
-
-    options {
-        skipStagesAfterUnstable()
+        DOCKER_PASSWORD = credentials('dockerhub-password-pramitha')
+        SSH_KEY = credentials('ec2-ssh-key')
     }
 
     stages {
@@ -18,122 +15,61 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies & Test') {
+        stage('Provision EC2') {
             steps {
                 sh '''
-                    # Install common dependencies
-                    cd common && npm ci && cd ..
-
-                    # Install service dependencies
-                    for service in services/*/; do
-                      if [ -f "$service/package.json" ]; then
-                        echo "Installing dependencies for $service"
-                        cd "$service" && npm ci && cd ../..
-                      fi
-                    done
-
-                    # Run common tests
-                    cd common && npm test && cd ..
-
-                    # Run service tests
-                    for service in services/*/; do
-                      if [ -f "$service/package.json" ] && [ -d "$service/tests" ]; then
-                        echo "Running tests for $service"
-                        cd "$service" && npm test && cd ../..
-                      fi
-                    done
+                cd terraform
+                terraform init -input=false
+                terraform apply -auto-approve -input=false
                 '''
             }
         }
 
-        stage('Build & Push Docker Images') {
-            when {
-                anyOf {
-                    branch 'main'
-                    expression { return env.GIT_BRANCH?.startsWith("origin/tags/v") }
+        stage('Get EC2 IP') {
+            steps {
+                script {
+                    EC2_IP = sh(
+                        script: "cd terraform && terraform output -raw ec2_public_ip",
+                        returnStdout: true
+                    ).trim()
+                    echo "EC2 Public IP: ${EC2_IP}"
                 }
             }
-            matrix {
-                axes {
-                    axis {
-                        name 'SERVICE'
-                        values 'common', 'auth', 'bid', 'listing', 'payment', 'profile', 'email', 'expiration', 'api-gateway', 'frontend'
-                    }
-                }
-                stages {
-                    stage('Docker Build & Push') {
-                        steps {
-                            script {
-                                def contexts = [
-                                    "common"      : "./common",
-                                    "auth"        : "./services/auth",
-                                    "bid"         : "./services/bid",
-                                    "listing"     : "./services/listings",
-                                    "payment"     : "./services/payments",
-                                    "profile"     : "./services/profile",
-                                    "email"       : "./services/email",
-                                    "expiration"  : "./services/expiration",
-                                    "api-gateway" : "./services/api-gateway",
-                                    "frontend"    : "./services/frontend"
-                                ]
+        }
 
-                                def dockerfiles = [
-                                    "common"      : "./common/Dockerfile",
-                                    "auth"        : "./services/auth/Dockerfile",
-                                    "bid"         : "./services/bid/Dockerfile",
-                                    "listing"     : "./services/listings/Dockerfile",
-                                    "payment"     : "./services/payments/Dockerfile",
-                                    "profile"     : "./services/profile/Dockerfile",
-                                    "email"       : "./services/email/Dockerfile",
-                                    "expiration"  : "./services/expiration/Dockerfile",
-                                    "api-gateway" : "./services/api-gateway/Dockerfile",
-                                    "frontend"    : "./services/frontend/Dockerfile.dev"
-                                ]
+        stage('Docker Build & Push on EC2') {
+            steps {
+                script {
+                    def services = ['common','auth','bid','listing','payment','profile','email','expiration','api-gateway','frontend']
 
-                                def imageName = "${DOCKER_USERNAME}/auction-website-ms-${SERVICE}"
-                                def imageTag  = "v1.0.${BUILD_NUMBER}"
+                    for (svc in services) {
+                        sh """
+                        # Copy service code to EC2
+                        scp -o StrictHostKeyChecking=no -i ${SSH_KEY} -r ./services/${svc} ubuntu@${EC2_IP}:/home/ubuntu/${svc}
 
-                                sh """
-                                    echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
-                                    docker buildx build \
-                                        --platform linux/amd64,linux/arm64 \
-                                        -t ${imageName}:${imageTag} \
-                                        -t ${imageName}:latest \
-                                        -f ${dockerfiles[SERVICE]} \
-                                        ${contexts[SERVICE]} \
-                                        --push
-                                """
-                            }
-                        }
+                        # Build & push Docker image
+                        ssh -o StrictHostKeyChecking=no -i ${SSH_KEY} ubuntu@${EC2_IP} '
+                          cd /home/ubuntu/${svc}
+                          echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin
+                          docker buildx build \
+                              --platform linux/amd64,linux/arm64 \
+                              -t ${DOCKER_USERNAME}/auction-website-ms-${svc}:v1.0.${BUILD_NUMBER} \
+                              -t ${DOCKER_USERNAME}/auction-website-ms-${svc}:latest \
+                              -f Dockerfile \
+                              . \
+                              --push
+                        '
+                        """
                     }
                 }
             }
         }
 
-        stage('Deploy Staging') {
-            when {
-                branch 'main'
-            }
+        stage('Destroy EC2') {
             steps {
                 sh '''
-                  echo "Deploying to staging environment"
-                  echo "Version: v1.0.${BUILD_NUMBER}"
-                  # kubectl apply -f k8s/ --namespace=staging
-                  # helm upgrade auction-website ./charts --namespace=staging
-                '''
-            }
-        }
-
-        stage('Deploy Production') {
-            when {
-                expression { return env.GIT_BRANCH?.startsWith("origin/tags/v") }
-            }
-            steps {
-                sh '''
-                  echo "Deploying to production environment"
-                  echo "Version: ${GIT_BRANCH}"
-                  # kubectl apply -f k8s/ --namespace=production
-                  # helm upgrade auction-website ./charts --namespace=production
+                cd terraform
+                terraform destroy -auto-approve -input=false
                 '''
             }
         }
@@ -141,12 +77,10 @@ pipeline {
 
     post {
         success {
-            echo "✅ CI/CD Pipeline completed successfully!"
-            echo "All Docker images built & pushed"
-            echo "Version: v1.0.${BUILD_NUMBER}"
+            echo "✅ Docker images built & pushed on ephemeral EC2."
         }
         failure {
-            echo "❌ CI/CD Pipeline failed! Check logs."
+            echo "❌ Pipeline failed."
         }
     }
 }

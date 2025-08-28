@@ -23,3 +23,7 @@ user_data = <<-EOF
     apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
   EOF
 }
+
+output "ec2_public_ip" {
+  value = aws_instance.docker_builder.public_ip
+}
