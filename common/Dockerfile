@@ -4,6 +4,7 @@ WORKDIR /app
 
 # Copy package.json and package-lock.json (if available)
 COPY ./common/package*.json ./
+COPY ./common/tsconfig.json ./
 
 # Install ALL dependencies (needed for tsc build)
 RUN npm install
