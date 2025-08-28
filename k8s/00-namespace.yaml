@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: auction-system
+  labels:
+    name: auction-system
+    app: auction-website
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: auction-infrastructure
+  labels:
+    name: auction-infrastructure
+    app: auction-website

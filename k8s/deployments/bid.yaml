@@ -1,0 +1,88 @@
+# Bid Service Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bid
+  namespace: auction-system
+  labels:
+    app: bid
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: bid
+  template:
+    metadata:
+      labels:
+        app: bid
+    spec:
+      containers:
+      - name: bid
+        image: pramithamj/auction-website-ms-bid:latest
+        ports:
+        - containerPort: 3102
+        env:
+        - name: PORT
+          value: "3102"
+        - name: NODE_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: NODE_ENV
+        - name: JWT_KEY
+          valueFrom:
+            secretKeyRef:
+              name: auction-secrets
+              key: JWT_KEY
+        - name: BID_MYSQL_URI
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: BID_MYSQL_URI
+        - name: NATS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: NATS_URL
+        - name: NATS_CLUSTER_ID
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: NATS_CLUSTER_ID
+        - name: NATS_CLIENT_ID
+          value: "bid-service"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "250m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3102
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 3102
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          failureThreshold: 3
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bid-service
+  namespace: auction-system
+spec:
+  selector:
+    app: bid
+  ports:
+  - port: 3102
+    targetPort: 3102
+    name: http
+  type: ClusterIP

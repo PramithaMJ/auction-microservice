@@ -1,0 +1,64 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Base configuration
+resources:
+  - ../../
+
+# Production-specific configurations
+namespace: auction-system
+
+# Production environment labels
+commonLabels:
+  environment: production
+
+# Production-specific patches
+patchesStrategicMerge:
+  - prod-resources.yaml
+  - prod-hpa.yaml
+
+# Production image tags
+images:
+  - name: pramithamj/auction-website-ms-api-gateway
+    newTag: latest
+  - name: pramithamj/auction-website-ms-auth
+    newTag: latest
+  - name: pramithamj/auction-website-ms-bid
+    newTag: latest
+  - name: pramithamj/auction-website-ms-listing
+    newTag: latest
+  - name: pramithamj/auction-website-ms-payment
+    newTag: latest
+  - name: pramithamj/auction-website-ms-profile
+    newTag: latest
+  - name: pramithamj/auction-website-ms-email
+    newTag: latest
+  - name: pramithamj/auction-website-ms-saga-orchestrator
+    newTag: latest
+  - name: pramithamj/auction-website-ms-expiration
+    newTag: latest
+  - name: pramithamj/auction-website-ms-frontend
+    newTag: latest
+
+# Higher replica counts for production
+replicas:
+  - name: api-gateway
+    count: 3
+  - name: auth
+    count: 3
+  - name: bid
+    count: 2
+  - name: listings
+    count: 2
+  - name: payments
+    count: 2
+  - name: profile
+    count: 2
+  - name: email
+    count: 2
+  - name: saga-orchestrator
+    count: 2
+  - name: expiration
+    count: 1
+  - name: frontend
+    count: 3

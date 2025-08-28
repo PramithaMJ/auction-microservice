@@ -1,0 +1,127 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Default namespace for all resources (except those with explicit namespaces)
+namespace: auction-system
+
+resources:
+  # Namespaces (these must be applied first)
+  - 00-namespace.yaml
+  
+  # Secrets and ConfigMaps
+  - secrets/auction-secrets.yaml
+  - configmaps/auction-configmap.yaml
+  - configmaps/mysql-init-scripts.yaml
+  
+  # Infrastructure Services (databases, message queues, etc.)
+  - infrastucture/nats-streaming.yaml
+  - infrastucture/redis.yaml
+  - infrastucture/auth-mysql.yaml
+  - infrastucture/bid-mysql.yaml
+  - infrastucture/listings-mysql.yaml
+  - infrastucture/payments-mysql.yaml
+  - infrastucture/profile-mysql.yaml
+  
+  # Application Services
+  - deployments/auth.yaml
+  - deployments/bid.yaml
+  - deployments/listings.yaml
+  - deployments/payments.yaml
+  - deployments/profile.yaml
+  - deployments/email.yaml
+  - deployments/saga-orchestrator.yaml
+  - deployments/expiration.yaml
+  - deployments/api-gateway.yaml
+  - deployments/frontend.yaml
+  
+  # Ingress for external access
+  - ingress/auction-ingress.yaml
+
+# Common labels applied to all resources
+commonLabels:
+  app: auction-website
+  version: v1.0.0
+  environment: development
+
+# Patches for different environments
+patchesStrategicMerge:
+  - patches/replica-patches.yaml
+
+# Image transformations
+images:
+  - name: pramithamj/auction-website-ms-api-gateway
+    newTag: latest
+  - name: pramithamj/auction-website-ms-auth
+    newTag: latest
+  - name: pramithamj/auction-website-ms-bid
+    newTag: latest
+  - name: pramithamj/auction-website-ms-listing
+    newTag: latest
+  - name: pramithamj/auction-website-ms-payment
+    newTag: latest
+  - name: pramithamj/auction-website-ms-profile
+    newTag: latest
+  - name: pramithamj/auction-website-ms-email
+    newTag: latest
+  - name: pramithamj/auction-website-ms-saga-orchestrator
+    newTag: latest
+  - name: pramithamj/auction-website-ms-expiration
+    newTag: latest
+  - name: pramithamj/auction-website-ms-frontend
+    newTag: latest
+
+# Replica count transformations (can be overridden per environment)
+replicas:
+  - name: api-gateway
+    count: 2
+  - name: auth
+    count: 2
+  - name: bid
+    count: 2
+  - name: listings
+    count: 2
+  - name: payments
+    count: 2
+  - name: profile
+    count: 2
+  - name: email
+    count: 1
+  - name: saga-orchestrator
+    count: 1
+  - name: expiration
+    count: 1
+  - name: frontend
+    count: 2
+    newTag: latest
+  - name: pramithamj/auction-website-ms-bid
+    newTag: latest
+  - name: pramithamj/auction-website-ms-listing
+    newTag: latest
+  - name: pramithamj/auction-website-ms-payment
+    newTag: latest
+  - name: pramithamj/auction-website-ms-profile
+    newTag: latest
+  - name: pramithamj/auction-website-ms-email
+    newTag: latest
+  - name: pramithamj/auction-website-ms-saga-orchestrator
+    newTag: latest
+  - name: pramithamj/auction-website-ms-expiration
+    newTag: latest
+  - name: pramithamj/auction-website-ms-frontend
+    newTag: latest
+
+# Replica count patches (if needed for different environments)
+patchesStrategicMerge:
+  - patches/replica-patches.yaml
+
+# Resource patches for different environments
+patchesJson6902:
+  - target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: frontend
+    patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 2
