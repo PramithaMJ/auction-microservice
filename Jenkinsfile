@@ -18,8 +18,6 @@ pipeline {
         stage('Provision EC2') {
             steps {
                 sh '''
-                ls
-                pwd
                 cd terraform
                 terraform init -input=false
                 terraform apply -auto-approve -input=false
