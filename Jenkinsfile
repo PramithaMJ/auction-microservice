@@ -38,6 +38,12 @@ pipeline {
                 }
             }
         }
+        
+        stage('Debug Workspace') {
+            steps {
+                sh 'ls -R ${WORKSPACE}'
+            }
+        }
 
         stage('Docker Build & Push on EC2') {
             steps {
