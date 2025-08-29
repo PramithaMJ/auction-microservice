@@ -13,8 +13,7 @@ COPY ./services/expiration/package.json ./
 COPY ./services/expiration/package-lock.json* ./
 
 # Install dependencies, including common tarball
-RUN npm install 
-
+RUN npm install --no-package-lock --force ./jjmauction-common-*.tgz 
 # Copy source and config
 COPY ./services/expiration/src ./src
 COPY ./services/expiration/tests ./tests
