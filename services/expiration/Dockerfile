@@ -1,15 +1,27 @@
-FROM node:alpine
+FROM node:18-alpine
 
 WORKDIR /app
 
-# Copy expiration and common at the same time so npm can resolve ../common
-COPY ./services/expiration ./services/expiration
+# Copy and build common package
 COPY ./common ./common
+WORKDIR /app/common
+RUN npm install && npm run build && npm pack --pack-destination /app
 
-WORKDIR /app/services/expiration
+# Copy expiration service files
+WORKDIR /app
+COPY ./services/expiration/package.json ./
+COPY ./services/expiration/package-lock.json* ./
 
-# Install deps (will resolve ../common correctly now)
-RUN npm install --legacy-peer-deps
+# Install dependencies, including common tarball
+RUN npm install 
+
+# Copy source and config
+COPY ./services/expiration/src ./src
+COPY ./services/expiration/tests ./tests
+COPY ./services/expiration/tsconfig.json ./tsconfig.json
+
+# Build the application
+RUN npm run build 2>/dev/null || npx tsc
 
 EXPOSE 3107
 
