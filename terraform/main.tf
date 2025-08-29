@@ -36,7 +36,7 @@ data "aws_vpc" "default" {
 resource "aws_security_group" "jenkins_sg" {
   name        = "jenkins-runner-sg"
   description = "Allow SSH and Jenkins agent traffic"
-  vpc_id      = data.aws_vpc.default
+  vpc_id      = data.aws_vpc.default.id
 }
 resource "aws_vpc_security_group_ingress_rule" "allow_all_ssh"{
   security_group_id = aws_security_group.jenkins_sg.id
