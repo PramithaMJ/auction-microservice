@@ -21,7 +21,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@jjmauction/common": "file:jjmauction-common-1.0.24.tgz",
+    "@jjmauction/common": "file:../../common",
     "@types/express": "^4.17.17",
     "@types/jsonwebtoken": "^8.5.0",
     "@types/node": "^18.0.0",
