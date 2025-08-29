@@ -11,9 +11,6 @@ WORKDIR /app/services/expiration
 # Install deps (will resolve ../common correctly now)
 RUN npm install --legacy-peer-deps
 
-# Build expiration service
-RUN npm run build
-
 EXPOSE 3107
 
 CMD ["npm", "start"]
