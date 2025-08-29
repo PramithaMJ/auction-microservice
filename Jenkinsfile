@@ -4,7 +4,6 @@ pipeline {
     environment {
         DOCKER_REGISTRY = "docker.io"
         DOCKER_USERNAME = "pramithamj"
-        DOCKER_PASSWORD = credentials('dockerhub-password-pramitha')
         SSH_KEY = credentials('ec2-ssh-key')
         EC2_IP = "3.134.88.75"
     }
@@ -56,7 +55,7 @@ pipeline {
 
             withCredentials([
                 usernamePassword(credentialsId: 'Github-creds-pramitha', usernameVariable: 'GITHUB_USER', passwordVariable: 'GITHUB_TOKEN'),
-                usernamePassword(credentialsId: 'dockerhub-password-pramitha', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')
+                string(credentialsId: 'dockerhub-password-pramitha', variable: 'DOCKER_PASSWORD')
             ]) {
                 // Commands executed on EC2
                 def sshCommand = """
