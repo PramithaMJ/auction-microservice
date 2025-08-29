@@ -27,10 +27,14 @@ resource "aws_instance" "jenkins_build_agent" {
     EOF
 
 }
+data "aws_vpc" "default" {
+  default = true
+}
+
 resource "aws_security_group" "jenkins_sg" {
   name        = "jenkins-runner-sg"
   description = "Allow SSH and Jenkins agent traffic"
-  vpc_id      = aws_vpc.main.id
+  vpc_id      = data.aws_vpc.default
 }
 resource "aws_vpc_security_group_ingress_rule" "allow_all_ssh"{
   security_group_id = aws_security_group.jenkins_sg.id
@@ -54,5 +58,5 @@ resource "aws_vpc_security_group_egress_rule" "allow_all_traffic_ipv4" {
 }
 
 output "ec2_public_ip" {
-  value = aws_instance.docker_builder.public_ip
+  value = aws_instance.jenkins_build_agent.public_ip
 }
