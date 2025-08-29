@@ -15,29 +15,29 @@ pipeline {
             }
         }
 
-        stage('Provision EC2') {
-            steps {
-                   withCredentials([usernamePassword(credentialsId: 'aws-creds', usernameVariable: 'AWS_ACCESS_KEY_ID',passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
-                sh '''
-                cd terraform
-                terraform init -input=false
-                terraform apply -auto-approve -input=false
-                '''
-                }
-            }
-        }
+        // stage('Provision EC2') {
+        //     steps {
+        //            withCredentials([usernamePassword(credentialsId: 'aws-creds', usernameVariable: 'AWS_ACCESS_KEY_ID',passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+        //         sh '''
+        //         cd terraform
+        //         terraform init -input=false
+        //         terraform apply -auto-approve -input=false
+        //         '''
+        //         }
+        //     }
+        // }
 
-        stage('Get EC2 IP') {
-            steps {
-                script {
-                    EC2_IP = sh(
-                        script: "cd terraform && terraform output -raw ec2_public_ip",
-                        returnStdout: true
-                    ).trim()
-                    echo "EC2 Public IP: ${EC2_IP}"
-                }
-            }
-        }
+        // stage('Get EC2 IP') {
+        //     steps {
+        //         script {
+        //             EC2_IP = sh(
+        //                 script: "cd terraform && terraform output -raw ec2_public_ip",
+        //                 returnStdout: true
+        //             ).trim()
+        //             echo "EC2 Public IP: ${EC2_IP}"
+        //         }
+        //     }
+        // }
 
         stage('Docker Build & Push on EC2') {
             steps {
@@ -67,6 +67,9 @@ pipeline {
             }
         }
 
+    }
+
+    post {
         stage('Destroy EC2') {
             steps {
                 sh '''
@@ -75,9 +78,6 @@ pipeline {
                 '''
             }
         }
-    }
-
-    post {
         success {
             echo "✅ Docker images built & pushed on ephemeral EC2."
         }
