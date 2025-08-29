@@ -2,25 +2,18 @@ FROM node:alpine
 
 WORKDIR /app
 
-# Copy and build common package first
-COPY ./common /common
-WORKDIR /common
-RUN npm install && npm run build
+# Copy expiration and common at the same time so npm can resolve ../common
+COPY ./services/expiration ./services/expiration
+COPY ./common ./common
 
-# Go back to app directory
-WORKDIR /app
+WORKDIR /app/services/expiration
 
-# Copy package files for better layer caching
-COPY ./services/expiration/package*.json ./
+# Install deps (will resolve ../common correctly now)
+RUN npm install --legacy-peer-deps
 
-# Install dependencies using npm ci for faster, reliable installs
-RUN npm install
+# Build expiration service
+RUN npm run build
 
-# Copy application source
-COPY ./services/expiration ./
-
-# Expose port
 EXPOSE 3107
 
-# Start the application
 CMD ["npm", "start"]
