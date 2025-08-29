@@ -7,7 +7,8 @@
     "start": "ts-node src/index.ts",
     "dev": "ts-node-dev src/index.ts",
     "test": "cross-env NODE_ENV=test jest --watchAll --no-cache",
-    "coverage": "cross-env NODE_ENV=test jest --coverage"
+    "coverage": "cross-env NODE_ENV=test jest --coverage",
+    "build": "tsc"
   },
   "jest": {
     "preset": "ts-jest",
@@ -20,13 +21,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@jjmauction/common": "file:../../common",
+    "@jjmauction/common": "file:jjmauction-common-1.0.24.tgz",
+    "@types/express": "^4.17.17",
+    "@types/jsonwebtoken": "^8.5.0",
     "@types/node": "^18.0.0",
     "bull": "^3.20.0",
     "express": "^4.18.2",
-    "@types/express": "^4.17.17",
     "jsonwebtoken": "^8.5.1",
-    "@types/jsonwebtoken": "^8.5.0",
     "node-nats-streaming": "^0.3.2",
     "ts-node": "^10.9.1",
     "typescript": "^5.0.4"

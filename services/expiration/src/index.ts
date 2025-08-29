@@ -30,7 +30,7 @@ const start = async () => {
     console.log(' Connected to NATS');
 
     natsWrapper.client.on('close', () => {
-      console.log('⚠️  NATS connection closed!');
+      console.log(' NATS connection closed!');
       process.exit();
     });
 
@@ -42,9 +42,25 @@ const start = async () => {
     
     console.log(' Expiration Service started successfully');
   } catch (err) {
-    console.error('💥 Failed to start Expiration Service:', err);
+    console.error(' Failed to start Expiration Service:', err);
     process.exit(1);
   }
 };
+
+// Health status export for health-server
+export function getHealthStatus() {
+  // Use natsWrapper's health and connection info
+  const natsHealth = natsWrapper.health;
+  return {
+    healthy: natsWrapper.isConnected,
+    uptime: process.uptime(),
+    natsConnected: natsWrapper.isConnected,
+    monitor: {
+      reconnectionAttempts: natsHealth.failures,
+      totalExpiredListings: 0, // TODO: wire up real stats
+      failedExpirations: 0,    // TODO: wire up real stats
+    }
+  };
+}
 
 start();
