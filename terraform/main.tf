@@ -1,3 +1,6 @@
+provider "aws" {
+  region = var.aws_region
+}
 resource "aws_instance" "jenkins_build_agent" {
   ami             = "ami-0cfde0ea8edd312d4"
   instance_type   = "t3.medium"
