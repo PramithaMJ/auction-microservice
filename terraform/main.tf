@@ -2,7 +2,6 @@ resource "aws_instance" "jenkins_build_agent" {
   ami             = "ami-0cfde0ea8edd312d4"
   instance_type   = "t3.medium"
   key_name        = "jenkins-kp"
-  security_groups = "jenkins-sg"
   region          = "us-east-2"
   vpc_security_group_ids = [aws_security_group.jenkins_sg.id]
   tags = {
@@ -38,7 +37,7 @@ resource "aws_security_group" "jenkins_sg" {
 }
 resource "aws_vpc_security_group_ingress_rule" "allow_all_ssh"{
   security_group_id = aws_security_group.jenkins_sg.id
-  cidr_ipv4 = ["0.0.0.0/0"]
+  cidr_ipv4 = "0.0.0.0/0"
   from_port = 22
   to_port = 22
   ip_protocol = "tcp"
@@ -46,7 +45,7 @@ resource "aws_vpc_security_group_ingress_rule" "allow_all_ssh"{
 
 resource "aws_vpc_security_group_ingress_rule" "allow_jenkins_traffic"{
   security_group_id = aws_security_group.jenkins_sg.id
-  cidr_ipv4 = ["0.0.0.0/0"]
+  cidr_ipv4 = "0.0.0.0/0"
   from_port = 8080
   to_port = 8080
   ip_protocol = "tcp"
