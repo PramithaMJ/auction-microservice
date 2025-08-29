@@ -38,7 +38,7 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Debug Workspace') {
             steps {
                 sh 'ls -R ${WORKSPACE}'
@@ -50,25 +50,32 @@ pipeline {
                 script {
                     def services = ['common','auth','bid','listing','payment','profile','email','expiration','api-gateway','frontend']
 
-                    for (svc in services) {
-                        sh """
-                        # Copy service code to EC2
-                        scp -o StrictHostKeyChecking=no -i ${SSH_KEY} -r ./services/${svc} ubuntu@${EC2_IP}:/home/ubuntu/${svc}
+                    // Write SSH key to a temporary file
+                    def keyFile = "${env.WORKSPACE}/ec2_key.pem"
+                    writeFile file: keyFile, text: SSH_KEY
+                    sh "chmod 600 ${keyFile}"
 
-                        # Build & push Docker image
-                        ssh -o StrictHostKeyChecking=no -i ${SSH_KEY} ubuntu@${EC2_IP} '
-                          cd /home/ubuntu/${svc}
-                          echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin
-                          docker buildx build \
-                              --platform linux/amd64,linux/arm64 \
-                              -t ${DOCKER_USERNAME}/auction-website-ms-${svc}:v1.0.${BUILD_NUMBER} \
-                              -t ${DOCKER_USERNAME}/auction-website-ms-${svc}:latest \
-                              -f Dockerfile \
-                              . \
-                              --push
-                        '
-                        """
-                    }
+                for (svc in services) {
+                sh """
+                # Copy service code to EC2 using full workspace path
+                scp -o StrictHostKeyChecking=no -i ${SSH_KEY} -r ${WORKSPACE}/services/${svc} ubuntu@${EC2_IP}:/home/ubuntu/${svc}
+
+                # Build & push Docker image on EC2, using env vars for credentials
+                ssh -o StrictHostKeyChecking=no -i ${SSH_KEY} ubuntu@${EC2_IP} '
+                  export DOCKER_USERNAME=${DOCKER_USERNAME}
+                  export DOCKER_PASSWORD=${DOCKER_PASSWORD}
+                  cd /home/ubuntu/${svc}
+                  echo \$DOCKER_PASSWORD | docker login -u \$DOCKER_USERNAME --password-stdin
+                  docker buildx build \
+                      --platform linux/amd64,linux/arm64 \
+                      -t \$DOCKER_USERNAME/auction-website-ms-${svc}:v1.0.${BUILD_NUMBER} \
+                      -t \$DOCKER_USERNAME/auction-website-ms-${svc}:latest \
+                      -f Dockerfile \
+                      . \
+                      --push
+                '
+                """
+                 }
                 }
             }
         }
