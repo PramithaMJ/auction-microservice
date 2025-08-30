@@ -12,40 +12,6 @@ resource "aws_instance" "jenkins_build_agent" {
     Name = "jenkins-build-agent"
   }
 
-  user_data = <<-EOF
-    #!/bin/bash
-    set -ex
-
-    # Update system
-    apt-get update -y
-    apt-get upgrade -y
-
-    # Install Java (use LTS for compatibility)
-    apt-get install -y openjdk-21-jre ca-certificates curl gnupg lsb-release fontconfig
-
-    # Add Docker GPG key
-    install -m 0755 -d /etc/apt/keyrings
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
-    chmod a+r /etc/apt/keyrings/docker.asc
-
-    # Add Docker repo
-    echo \
-      "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
-      $(. /etc/os-release && echo "$${UBUNTU_CODENAME:-$$VERSION_CODENAME}") stable" | \
-      sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-
-    # Install Docker & Compose plugin
-    apt-get update -y
-    apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-
-    # Enable Docker service
-    systemctl enable docker
-    systemctl start docker
-
-    # Allow ubuntu user to use docker without sudo
-    usermod -aG docker ubuntu
-  EOF
-
 provisioner "local-exec" {
   command = "sleep 60"
 }
