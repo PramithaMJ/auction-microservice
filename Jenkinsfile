@@ -15,35 +15,35 @@ pipeline {
             }
         }
 
-        // stage('Provision EC2') {
-        //     steps {
-        //            withCredentials([usernamePassword(credentialsId: 'aws-creds', usernameVariable: 'AWS_ACCESS_KEY_ID',passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
-        //         sh '''
-        //         cd terraform
-        //         terraform init -input=false
-        //         terraform apply -auto-approve -input=false
-        //         '''
-        //         }
-        //     }
-        // }
+        stage('Provision EC2') {
+            steps {
+                   withCredentials([usernamePassword(credentialsId: 'aws-creds', usernameVariable: 'AWS_ACCESS_KEY_ID',passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+                sh '''
+                cd terraform
+                terraform init -input=false
+                terraform apply -auto-approve -input=false
+                '''
+                }
+            }
+        }
 
-        // stage('Get EC2 IP') {
-        //     steps {
-        //         script {
-        //             EC2_IP = sh(
-        //                 script: "cd terraform && terraform output -raw ec2_public_ip",
-        //                 returnStdout: true
-        //             ).trim()
-        //             echo "EC2 Public IP: ${EC2_IP}"
-        //         }
-        //     }
-        // }
+        stage('Get EC2 IP') {
+            steps {
+                script {
+                    EC2_IP = sh(
+                        script: "cd terraform && terraform output -raw ec2_public_ip",
+                        returnStdout: true
+                    ).trim()
+                    echo "EC2 Public IP: ${EC2_IP}"
+                }
+            }
+        }
 
-        // stage('Debug Workspace') {
-        //     steps {
-        //         sh "ls -R ${WORKSPACE}/services"
-        //     }
-        // }
+        stage('Debug Workspace') {
+            steps {
+                sh "ls -R ${WORKSPACE}/services"
+            }
+        }
 
     stage('Docker Compose & Push on EC2') {
     steps {
@@ -51,7 +51,7 @@ pipeline {
             withCredentials([
                 file(credentialsId: 'ec2-ssh-file', variable: 'SSH_KEY_FILE'),
                 usernamePassword(credentialsId: 'Github-creds-pramitha', usernameVariable: 'GITHUB_USER', passwordVariable: 'GITHUB_TOKEN'),
-                usernamePassword(credentialsId: 'dockerhub-password-pramitha', variable: 'DOCKER_PASSWORD')
+                string(credentialsId: 'dockerhub-password-pramitha', variable: 'DOCKER_PASSWORD')
             ]) {
                 // Ensure key file has correct permissions
                 sh "chmod 600 ${SSH_KEY_FILE}"

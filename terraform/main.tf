@@ -12,21 +12,36 @@ resource "aws_instance" "jenkins_build_agent" {
   }
 
   user_data = <<-EOF
-
     #!/bin/bash
     set -ex
+
+    # Update system
     apt-get update -y
     apt-get upgrade -y
-    apt-get install -y ca-certificates curl gnupg lsb-release fontconfig openjdk-21-jre
+
+    # Install Java (use LTS for compatibility)
+    apt-get install -y openjdk-21-jre ca-certificates curl gnupg lsb-release fontconfig
+
+    # Add Docker GPG key
     install -m 0755 -d /etc/apt/keyrings
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | tee /etc/apt/keyrings/docker.asc > /dev/null
-    chmod a+r /etc/apt/keyrings/docker.asc
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+    chmod a+r /etc/apt/keyrings/docker.gpg
 
-    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $$(. /etc/os-release && echo "$${UBUNTU_CODENAME:-$${VERSION_CODENAME}}") stable" | tee /etc/apt/sources.list.d/docker.list
+    # Add Docker repo
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \$(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
 
+    # Install Docker & Compose plugin
     apt-get update -y
     apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-    EOF
+
+    # Enable Docker service
+    systemctl enable docker
+    systemctl start docker
+
+    # Allow ubuntu user to use docker without sudo
+    usermod -aG docker ubuntu
+  EOF
+
 
 }
 data "aws_vpc" "default" {
