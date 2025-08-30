@@ -2,6 +2,7 @@ provider "aws" {
   region = var.aws_region
 }
 
+
 resource "aws_instance" "jenkins_build_agent" {
   ami             = "ami-0cfde0ea8edd312d4"
   instance_type   = "t3.medium"
@@ -10,11 +11,21 @@ resource "aws_instance" "jenkins_build_agent" {
   vpc_security_group_ids = [aws_security_group.jenkins_sg.id]
   tags = {
     Name = "jenkins-build-agent"
+
   }
+
+user_data = <<-EOF
+    #!/bin/bash
+    set -ex
+    echo "ubuntu ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/90-ubuntu-nopasswd
+    chmod 0440 /etc/sudoers.d/90-ubuntu-nopasswd
+
+  EOF
 
 provisioner "local-exec" {
   command = "sleep 60"
 }
+
 }
 data "aws_vpc" "default" {
   default = true
