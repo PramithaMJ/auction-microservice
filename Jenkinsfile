@@ -49,7 +49,7 @@ pipeline {
                 sh "chmod 600 ${SSH_KEY_FILE}"
 
                 // SSH to EC2 and run commands
-                def sshCommand =  sh """
+                def sshCommand =  """
                 #!/bin/bash
                 set -ex
 
