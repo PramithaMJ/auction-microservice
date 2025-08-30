@@ -37,29 +37,7 @@ pipeline {
             }
         }
 
-stage('Wait for SSH') {
-    steps {
-        script {
-            sh """
-                #!/bin/bash
-                set -e
 
-                echo "⏳ Waiting for SSH on ${EC2_IP}..."
-                for i in {1..20}; do
-                  if nc -z ${EC2_IP} 22; then
-                    echo "✅ SSH is up on ${EC2_IP}"
-                    exit 0
-                  fi
-                  echo "Attempt $i/20: SSH not ready yet, retrying in 15s..."
-                  sleep 15
-                done
-
-                echo "❌ SSH did not become ready after 5 minutes!"
-                exit 1
-            """
-        }
-    }
-}
     stage('Docker Compose & Push on EC2') {
     steps {
         script {

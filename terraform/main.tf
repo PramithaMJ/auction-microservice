@@ -46,7 +46,9 @@ resource "aws_instance" "jenkins_build_agent" {
     usermod -aG docker ubuntu
   EOF
 
-
+provisioner "local-exec" {
+  command = "sleep 60"
+}
 }
 data "aws_vpc" "default" {
   default = true
