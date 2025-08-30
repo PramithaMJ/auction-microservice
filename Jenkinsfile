@@ -79,6 +79,8 @@ pipeline {
 
                     # Build and push images with docker-compose
                     sudo docker-compose build --progress=plain
+
+                    sudo docker-compose push
                
                 """
 
