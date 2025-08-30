@@ -42,7 +42,7 @@ pipeline {
                 script {
                     sh """
                         echo "⏳ Waiting for SSH on ${EC2_IP}..."
-                        for i in {1..40}; do
+                        for i in {1..20}; do
                           if nc -z ${EC2_IP} 22; then
                             echo "✅ SSH is up on ${EC2_IP}"
                             exit 0
