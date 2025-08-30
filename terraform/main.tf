@@ -51,11 +51,6 @@ curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compo
   touch /var/lib/cloud/instance/boot-finished
 EOF
 
-
-provisioner "local-exec" {
-  command = "sleep 60"
-}
-
 }
 data "aws_vpc" "default" {
   default = true
