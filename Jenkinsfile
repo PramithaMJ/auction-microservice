@@ -58,6 +58,8 @@ pipeline {
                     # Clone the branch with GitHub credentials
                     git clone -b jenkins-pipeline https://${GITHUB_TOKEN}@github.com/PramithaMJ/auction-microservice.git ~/auction-microservice
                     cd ~/auction-microservice
+                    chmod +x terraform/docker-install.sh
+                    sudo ./terraform/docker-install.sh 
 
                     # Login to Docker Hub
                     echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin
