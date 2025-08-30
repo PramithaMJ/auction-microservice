@@ -47,7 +47,8 @@ curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compo
   systemctl start docker
 
   # Allow ubuntu user to use docker without sudo
-  usermod -aG docker ubuntu
+  usermod -aG docker ubuntu 
+  touch /var/lib/cloud/instance/boot-finished
 EOF
 
 
