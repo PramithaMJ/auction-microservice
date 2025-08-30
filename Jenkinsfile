@@ -4,7 +4,6 @@ pipeline {
     environment {
         DOCKER_REGISTRY = "docker.io"
         DOCKER_USERNAME = "pramithamj"
-        SSH_KEY = credentials('ec2-ssh-key')
     }
 
     stages {
