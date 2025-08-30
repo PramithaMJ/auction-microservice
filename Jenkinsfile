@@ -57,9 +57,11 @@ pipeline {
 
                     # Clone the branch with GitHub credentials
                     git clone -b jenkins-pipeline https://${GITHUB_TOKEN}@github.com/PramithaMJ/auction-microservice.git ~/auction-microservice
+                    cd ~/auction-microservice/terraform
+                    chmod +x docker-install.sh
+                    sudo ./docker-install.sh 
+
                     cd ~/auction-microservice
-                    chmod +x terraform/docker-install.sh
-                    sudo ./terraform/docker-install.sh 
 
                     # Login to Docker Hub
                     echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin
@@ -80,15 +82,15 @@ pipeline {
 }
 
 post {
-    always {
-            withCredentials([usernamePassword(credentialsId: 'aws-creds', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
-        echo "Destroying ephemeral EC2..."
-        sh '''
-            cd terraform
-            terraform destroy -auto-approve -input=false
-        '''
-    }
-    }
+    // always {
+    //         withCredentials([usernamePassword(credentialsId: 'aws-creds', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+    //     echo "Destroying ephemeral EC2..."
+    //     sh '''
+    //         cd terraform
+    //         terraform destroy -auto-approve -input=false
+    //     '''
+    // }
+    // }
     success {
         echo "✅ Docker images built & pushed on ephemeral EC2."
     }
