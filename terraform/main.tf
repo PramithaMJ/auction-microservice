@@ -29,8 +29,7 @@ resource "aws_instance" "jenkins_build_agent" {
 
   # Add Docker repo
   echo \
-    "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
-    $(. /etc/os-release && echo "$${UBUNTU_CODENAME:-$$VERSION_CODENAME}") stable" | \
+    "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu noble stable | \
     sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
   # Install Docker (without the new Compose plugin)
@@ -38,7 +37,7 @@ resource "aws_instance" "jenkins_build_agent" {
   apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin
 
   # Install specific older Docker Compose (classic binary)
-  DOCKER_COMPOSE_VERSION=1.29.2   # <--- change to your desired version
+   
 curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-Linux-x86_64" -o /usr/local/bin/docker-compose
  chmod +x /usr/local/bin/docker-compose
 
