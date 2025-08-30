@@ -14,36 +14,42 @@ resource "aws_instance" "jenkins_build_agent" {
 
   }
 
-  user_data = <<-EOF
-    #!/bin/bash
-    set -ex
+ user_data = <<-EOF
+  #!/bin/bash
+  set -ex
 
-    # Update system
-    apt-get update -y
-    apt-get upgrade -y
+  # Update system
+  apt-get update -y
+  apt-get upgrade -y
 
-    # Add Docker GPG key
-    install -m 0755 -d /etc/apt/keyrings
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
-    chmod a+r /etc/apt/keyrings/docker.asc
+  # Add Docker GPG key
+  install -m 0755 -d /etc/apt/keyrings
+  curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+  chmod a+r /etc/apt/keyrings/docker.asc
 
-    # Add Docker repo
-    echo \
-      "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
-      $(. /etc/os-release && echo "$${UBUNTU_CODENAME:-$$VERSION_CODENAME}") stable" | \
-      sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+  # Add Docker repo
+  echo \
+    "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+    $(. /etc/os-release && echo "$${UBUNTU_CODENAME:-$$VERSION_CODENAME}") stable" | \
+    sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
-    # Install Docker & Compose plugin
-    apt-get update -y
-    apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+  # Install Docker (without the new Compose plugin)
+  apt-get update -y
+  apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin
 
-    # Enable Docker service
-    systemctl enable docker
-    systemctl start docker
+  # Install specific older Docker Compose (classic binary)
+  DOCKER_COMPOSE_VERSION=1.29.2   # <--- change to your desired version
+  curl -L "https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" \
+    -o /usr/local/bin/docker-compose
+  chmod +x /usr/local/bin/docker-compose
 
-    # Allow ubuntu user to use docker without sudo
-    usermod -aG docker ubuntu
-  EOF
+  # Enable Docker service
+  systemctl enable docker
+  systemctl start docker
+
+  # Allow ubuntu user to use docker without sudo
+  usermod -aG docker ubuntu
+EOF
 
 
 provisioner "local-exec" {
