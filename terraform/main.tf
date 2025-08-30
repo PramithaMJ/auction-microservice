@@ -5,7 +5,7 @@ provider "aws" {
 
 resource "aws_spot_instance_request" "jenkins_build_agent" {
   ami           = "ami-0cfde0ea8edd312d4"
-  instance_type = "c5.2xlarge"
+  instance_type = "t3.2xlarge"
   key_name      = "jenkins-kp"
 
   vpc_security_group_ids = [aws_security_group.jenkins_sg.id]
