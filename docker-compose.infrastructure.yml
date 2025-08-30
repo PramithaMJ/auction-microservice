@@ -35,8 +35,8 @@ services:
     image: mysql:8.0
     container_name: auction-auth-mysql
     environment:
-      MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: auth
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
     ports:
       - "3306:3306"
     volumes:
@@ -49,8 +49,8 @@ services:
     image: mysql:8.0
     container_name: auction-bid-mysql
     environment:
-      MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: bid
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${BID_MYSQL_DATABASE}
     ports:
       - "3307:3306"
     volumes:
@@ -63,8 +63,8 @@ services:
     image: mysql:8.0
     container_name: auction-listings-mysql
     environment:
-      MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: listings
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${LISTINGS_MYSQL_DATABASE}
     ports:
       - "3308:3306"
     volumes:
@@ -77,8 +77,8 @@ services:
     image: mysql:8.0
     container_name: auction-payments-mysql
     environment:
-      MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: payments
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${PAYMENTS_MYSQL_DATABASE}
     ports:
       - "3309:3306"
     volumes:
@@ -91,8 +91,8 @@ services:
     image: mysql:8.0
     container_name: auction-profile-mysql
     environment:
-      MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: profile
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${PROFILE_MYSQL_DATABASE}
     ports:
       - "3310:3306"
     volumes:
