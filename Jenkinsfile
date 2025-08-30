@@ -78,9 +78,7 @@ pipeline {
                     echo ${DOCKER_PASSWORD} | sudo docker login -u ${DOCKER_USERNAME} --password-stdin
 
                     # Build and push images with docker-compose
-                    sudo docker-compose build --progress=plain
-
-                    sudo docker-compose push
+                    sudo docker-compose build --progress=plain && sudo docker-compose push
                
                 """
 
