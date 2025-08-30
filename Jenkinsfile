@@ -4,6 +4,7 @@ pipeline {
     environment {
         DOCKER_REGISTRY = "docker.io"
         DOCKER_USERNAME = "pramithamj"
+        EC2_IP = "3.144.33.75"
     }
 
     stages {
@@ -25,17 +26,17 @@ pipeline {
             }
         }
 
-        stage('Get EC2 IP') {
-            steps {
-                script {
-                    EC2_IP = sh(
-                        script: "cd terraform && terraform output -raw ec2_public_ip",
-                        returnStdout: true
-                    ).trim()
-                    echo "EC2 Public IP: ${EC2_IP}"
-                }
-            }
-        }
+        // stage('Get EC2 IP') {
+        //     steps {
+        //         script {
+        //             EC2_IP = sh(
+        //                 script: "cd terraform && terraform output -raw ec2_public_ip",
+        //                 returnStdout: true
+        //             ).trim()
+        //             echo "EC2 Public IP: ${EC2_IP}"
+        //         }
+        //     }
+        // }
 
 
 
