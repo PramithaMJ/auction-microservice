@@ -4,7 +4,7 @@ provider "aws" {
 resource "aws_instance" "jenkins_build_agent" {
   ami             = "ami-0cfde0ea8edd312d4"
   instance_type   = "t3.medium"
-  key_name        = "jenkins-kp"
+  key_name        = "jenkins-kp.pem"
   region          = "us-east-2"
   vpc_security_group_ids = [aws_security_group.jenkins_sg.id]
   tags = {
