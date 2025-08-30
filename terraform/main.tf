@@ -13,7 +13,10 @@ resource "aws_instance" "jenkins_build_agent" {
     Name = "jenkins-build-agent"
 
   }
-
+provisioner "local-exec" 
+{
+  slee  
+}
 }
 data "aws_vpc" "default" {
   default = true
