@@ -50,6 +50,17 @@ pipeline {
                 // Ensure key file has correct permissions
                 sh "chmod 600 ${SSH_KEY_FILE}"
 
+                sh """
+                echo "Waiting for SSH to be available on ${EC2_IP}..."
+                for i in {1..15}; do
+                    if nc -z -w 5 ${EC2_IP} 22; then
+                        echo "SSH is up!"
+                        break
+                    fi
+                    echo "Still waiting for SSH... (\$i/15)"
+                    sleep 10
+                done
+                """
                 // SSH to EC2 and run commands
                 def sshCommand = """
                     # Remove any existing repo folder
