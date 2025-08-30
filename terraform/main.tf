@@ -48,5 +48,5 @@ resource "aws_vpc_security_group_egress_rule" "allow_all_traffic_ipv4" {
 }
 
 output "ec2_public_ip" {
-  value = aws_instance.jenkins_build_agent.public_ip
+  value = aws_spot_instance_request.jenkins_build_agent.public_ip
 }
