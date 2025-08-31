@@ -211,7 +211,7 @@ jobs:
           Commit: ${{ steps.meta.outputs.SHORT_SHA }}
           Date: ${{ steps.meta.outputs.DATE }}
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.G_TOKEN }}
 
     - name: Summary
       run: |

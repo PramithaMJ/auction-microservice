@@ -48,8 +48,7 @@ spec:
               number: 3001
   
   # Alternative routing for development (single domain)
-  - host: "98.87.131.233"
-    http:
+  - http:
       paths:
       - path: /api
         pathType: Prefix
