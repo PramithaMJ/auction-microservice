@@ -1,0 +1,301 @@
+version: '3.8'
+
+services:
+  nats-streaming:
+    image: nats-streaming:0.24.6
+    container_name: auction-nats
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+    command: [
+      "-p", "4222",
+      "-m", "8222",
+      "-hbi", "5s",
+      "-hbt", "5s",
+      "-hbf", "2",
+      "-SD",
+      "-cid", "auction"
+    ]
+    networks:
+      - auction-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: auction-redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data
+    networks:
+      - auction-network
+
+  auth-mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+    ports:
+      - "3306:3306"
+    volumes:
+      - auth-mysql-data:/var/lib/mysql
+    networks:
+      - auction-network
+
+  bid-mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${BID_MYSQL_DATABASE}
+    ports:
+      - "3307:3306"
+    volumes:
+      - bid-mysql-data:/var/lib/mysql
+    networks:
+      - auction-network
+
+  listings-mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${LISTINGS_MYSQL_DATABASE}
+    ports:
+      - "3308:3306"
+    volumes:
+      - listings-mysql-data:/var/lib/mysql
+    networks:
+      - auction-network
+
+  payments-mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${PAYMENTS_MYSQL_DATABASE}
+    ports:
+      - "3309:3306"
+    volumes:
+      - payments-mysql-data:/var/lib/mysql
+    networks:
+      - auction-network
+
+  profile-mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${PROFILE_MYSQL_DATABASE}
+    ports:
+      - "3310:3306"
+    volumes:
+      - profile-mysql-data:/var/lib/mysql
+    networks:
+      - auction-network
+
+  api-gateway:
+    image: pramithamj/auction-website-ms-api-gateway:latest
+    ports:
+      - "${API_GATEWAY_PORT}:3001"
+    environment:
+      - PORT=${API_GATEWAY_PORT}
+      - NODE_ENV=${NODE_ENV}
+      - AUTH_SERVICE_URL=${AUTH_SERVICE_URL}
+      - BID_SERVICE_URL=${BID_SERVICE_URL}
+      - LISTINGS_SERVICE_URL=${LISTINGS_SERVICE_URL}
+      - PAYMENTS_SERVICE_URL=${PAYMENTS_SERVICE_URL}
+      - PROFILE_SERVICE_URL=${PROFILE_SERVICE_URL}
+      - EMAIL_SERVICE_URL=${EMAIL_SERVICE_URL}
+      - SAGA_ORCHESTRATOR_URL=${SAGA_ORCHESTRATOR_URL}
+      - CORS_ORIGIN=${CORS_ORIGIN}
+    depends_on:
+      - auth
+      - bid
+      - listings
+      - payments
+      - profile
+      - email
+      - saga-orchestrator
+    networks:
+      - auction-network
+
+  auth:
+    image: pramithamj/auction-website-ms-auth:latest
+    ports:
+      - "${AUTH_PORT}:3101"
+    environment:
+      - PORT=${AUTH_PORT}
+      - NODE_ENV=${NODE_ENV}
+      - JWT_KEY=${JWT_KEY}
+      - AUTH_MYSQL_URI=${AUTH_MYSQL_URI}
+      - NATS_URL=${NATS_URL}
+      - NATS_CLUSTER_ID=${NATS_CLUSTER_ID}
+      - NATS_CLIENT_ID=${NATS_CLIENT_ID_AUTH}
+      - SAGA_ORCHESTRATOR_URL=${SAGA_ORCHESTRATOR_URL}
+    depends_on:
+      - auth-mysql
+      - nats-streaming
+    networks:
+      - auction-network
+
+  bid:
+    image: pramithamj/auction-website-ms-bid:latest
+    ports:
+      - "${BID_PORT}:3102"
+    environment:
+      - PORT=${BID_PORT}
+      - NODE_ENV=${NODE_ENV}
+      - JWT_KEY=${JWT_KEY}
+      - BID_MYSQL_URI=${BID_MYSQL_URI}
+      - NATS_URL=${NATS_URL}
+      - NATS_CLUSTER_ID=${NATS_CLUSTER_ID}
+      - NATS_CLIENT_ID=${NATS_CLIENT_ID_BID}
+    depends_on:
+      - bid-mysql
+      - nats-streaming
+    networks:
+      - auction-network
+
+  listings:
+    image: pramithamj/auction-website-ms-listing:latest
+    ports:
+      - "${LISTINGS_PORT}:3103"
+    environment:
+      - PORT=${LISTINGS_PORT}
+      - NODE_ENV=${NODE_ENV}
+      - JWT_KEY=${JWT_KEY}
+      - LISTINGS_MYSQL_URI=${LISTINGS_MYSQL_URI}
+      - NATS_URL=${NATS_URL}
+      - NATS_CLUSTER_ID=${NATS_CLUSTER_ID}
+      - NATS_CLIENT_ID=${NATS_CLIENT_ID_LISTINGS}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=${AWS_REGION}
+      - AWS_S3_BUCKET_NAME=${AWS_S3_BUCKET_NAME}
+    depends_on:
+      - listings-mysql
+      - nats-streaming
+    networks:
+      - auction-network
+
+  payments:
+    image: pramithamj/auction-website-ms-payment:latest
+    ports:
+      - "${PAYMENTS_PORT}:3104"
+    environment:
+      - PORT=${PAYMENTS_PORT}
+      - NODE_ENV=${NODE_ENV}
+      - JWT_KEY=${JWT_KEY}
+      - PAYMENTS_MYSQL_URI=${PAYMENTS_MYSQL_URI}
+      - NATS_URL=${NATS_URL}
+      - NATS_CLUSTER_ID=${NATS_CLUSTER_ID}
+      - NATS_CLIENT_ID=${NATS_CLIENT_ID_PAYMENTS}
+      - STRIPE_KEY=${STRIPE_KEY}
+    depends_on:
+      - payments-mysql
+      - nats-streaming
+    networks:
+      - auction-network
+
+  profile:
+    image: pramithamj/auction-website-ms-profile:latest
+    ports:
+      - "${PROFILE_PORT}:3105"
+    environment:
+      - PORT=${PROFILE_PORT}
+      - NODE_ENV=${NODE_ENV}
+      - JWT_KEY=${JWT_KEY}
+      - PROFILE_MYSQL_URI=${PROFILE_MYSQL_URI}
+      - NATS_URL=${NATS_URL}
+      - NATS_CLUSTER_ID=${NATS_CLUSTER_ID}
+      - NATS_CLIENT_ID=${NATS_CLIENT_ID_PROFILE}
+    depends_on:
+      - profile-mysql
+      - nats-streaming
+    networks:
+      - auction-network
+
+  email:
+    image: pramithamj/auction-website-ms-email:latest
+    ports:
+      - "${EMAIL_PORT}:3106"
+    environment:
+      - PORT=${EMAIL_PORT}
+      - NODE_ENV=${NODE_ENV}
+      - JWT_KEY=${JWT_KEY}
+      - NATS_URL=${NATS_URL}
+      - NATS_CLUSTER_ID=${NATS_CLUSTER_ID}
+      - NATS_CLIENT_ID=${NATS_CLIENT_ID_EMAIL}
+      - EMAIL=${EMAIL}
+      - EMAIL_PASSWORD=${EMAIL_PASSWORD}
+      - AUTH_SERVICE_URL=${AUTH_SERVICE_URL}
+      - LISTINGS_SERVICE_URL=${LISTINGS_SERVICE_URL}
+    depends_on:
+      - nats-streaming
+    networks:
+      - auction-network
+
+  saga-orchestrator:
+    image: pramithamj/auction-website-ms-saga-orchestrator:latest
+    ports:
+      - "${SAGA_ORCHESTRATOR_PORT}:3108"
+    environment:
+      - PORT=${SAGA_ORCHESTRATOR_PORT}
+      - NODE_ENV=${NODE_ENV}
+      - JWT_KEY=${JWT_KEY}
+      - NATS_URL=${NATS_URL}
+      - NATS_CLUSTER_ID=${NATS_CLUSTER_ID}
+      - NATS_CLIENT_ID=${NATS_CLIENT_ID_SAGA}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_URL=${REDIS_URL}
+    depends_on:
+      - redis
+      - nats-streaming
+    networks:
+      - auction-network
+
+  expiration: 
+    image: pramithamj/auction-website-ms-expiration:latest
+    ports:
+      - "${EXPIRATION_PORT}:3107"
+    environment:
+      - PORT=${EXPIRATION_PORT}
+      - NODE_ENV=${NODE_ENV}
+      - JWT_KEY=${JWT_KEY}
+      - NATS_URL=${NATS_URL}
+      - NATS_CLUSTER_ID=${NATS_CLUSTER_ID}
+      - NATS_CLIENT_ID=${NATS_CLIENT_ID_EXPIRATION}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+    depends_on:
+      - redis
+      - nats-streaming
+    networks:
+      - auction-network
+
+  frontend:
+    image: pramithamj/auction-website-ms-frontend:latest
+    ports:
+      - "${FRONTEND_PORT}:3000"
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+      - NEXT_PUBLIC_API_GATEWAY_PORT=${NEXT_PUBLIC_API_GATEWAY_PORT}
+      - SERVER_API_URL=${SERVER_API_URL}
+      - NEXT_PUBLIC_SERVER_IP=${NEXT_PUBLIC_SERVER_IP}
+      - NEXT_PUBLIC_LISTINGS_SOCKET_URL=${NEXT_PUBLIC_LISTINGS_SOCKET_URL}
+      - WATCHPACK_POLLING=${WATCHPACK_POLLING}
+    depends_on:
+      - api-gateway
+    networks:
+      - auction-network
+
+volumes:
+  redis-data:
+  auth-mysql-data:
+  bid-mysql-data:
+  listings-mysql-data:
+  payments-mysql-data:
+  profile-mysql-data:
+
+networks:
+  auction-network:
+    driver: bridge
