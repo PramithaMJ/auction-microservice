@@ -219,7 +219,7 @@ export class UserRegistrationSagaOrchestrator {
         await this.triggerCompensations(sagaId, sagaState);
       }
 
-      console.log(`💥 User Registration Saga ${sagaId} failed at step: ${failedStep}`);
+      console.log(` User Registration Saga ${sagaId} failed at step: ${failedStep}`);
 
     } catch (compensationError) {
       console.error(` Failed to handle saga failure for ${sagaId}:`, compensationError);
@@ -228,7 +228,7 @@ export class UserRegistrationSagaOrchestrator {
 
   // Trigger compensation actions
   private async triggerCompensations(sagaId: string, sagaState: SagaState): Promise<void> {
-    console.log(`🔄 Starting compensations for saga: ${sagaId}`);
+    console.log(` Starting compensations for saga: ${sagaId}`);
     
     try {
       sagaState.state = UserRegistrationSagaState.COMPENSATING;
@@ -241,7 +241,7 @@ export class UserRegistrationSagaOrchestrator {
         switch (step) {
           case 'EMAIL_SENT':
             // Email compensation (usually just logging)
-            console.log(`🔄 Compensating email for saga: ${sagaId}`);
+            console.log(` Compensating email for saga: ${sagaId}`);
             break;
             
           case 'PROFILE_CREATED':
@@ -265,20 +265,20 @@ export class UserRegistrationSagaOrchestrator {
   private async triggerProfileCreation(sagaId: string, userId: string): Promise<void> {
     // This would normally send a command to the Profile Service
     // For now, we'll just log and assume it will happen via existing UserCreated event
-    console.log(`🔄 Profile creation will be triggered by UserCreated event for saga: ${sagaId}`);
+    console.log(` Profile creation will be triggered by UserCreated event for saga: ${sagaId}`);
   }
 
   // Trigger welcome email
   private async triggerWelcomeEmail(sagaId: string, userId: string, email: string, userName: string): Promise<void> {
     // This would normally send a command to the Email Service
     // For now, we'll just log and assume it will happen via existing EmailCreated event
-    console.log(`🔄 Welcome email will be triggered by EmailCreated event for saga: ${sagaId}`);
+    console.log(` Welcome email will be triggered by EmailCreated event for saga: ${sagaId}`);
   }
 
   // Compensate profile creation
   private async compensateProfileCreation(sagaId: string, userId: string): Promise<void> {
     try {
-      console.log(`🔄 Triggering profile deletion compensation for saga: ${sagaId}`);
+      console.log(` Triggering profile deletion compensation for saga: ${sagaId}`);
       
       await natsWrapper.client.publish(
         Subjects.ProfileDeleted,
@@ -297,7 +297,7 @@ export class UserRegistrationSagaOrchestrator {
   // Compensate account creation
   private async compensateAccountCreation(sagaId: string, userId: string): Promise<void> {
     try {
-      console.log(`🔄 Triggering account deletion compensation for saga: ${sagaId}`);
+      console.log(` Triggering account deletion compensation for saga: ${sagaId}`);
       
       await natsWrapper.client.publish(
         Subjects.UserAccountDeleted,

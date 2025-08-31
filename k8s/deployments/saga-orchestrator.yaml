@@ -1,0 +1,98 @@
+# Saga Orchestrator Service Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: saga-orchestrator
+  namespace: auction-system
+  labels:
+    app: saga-orchestrator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: saga-orchestrator
+  template:
+    metadata:
+      labels:
+        app: saga-orchestrator
+    spec:
+      containers:
+      - name: saga-orchestrator
+        image: pramithamj/auction-website-ms-saga-orchestrator:latest
+        ports:
+        - containerPort: 3108
+        env:
+        - name: PORT
+          value: "3108"
+        - name: NODE_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: NODE_ENV
+        - name: JWT_KEY
+          valueFrom:
+            secretKeyRef:
+              name: auction-secrets
+              key: JWT_KEY
+        - name: NATS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: NATS_URL
+        - name: NATS_CLUSTER_ID
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: NATS_CLUSTER_ID
+        - name: NATS_CLIENT_ID
+          value: "saga-orchestrator-service"
+        - name: REDIS_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: REDIS_HOST
+        - name: REDIS_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: REDIS_PORT
+        - name: REDIS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: REDIS_URL
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "200m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3108
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 3108
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          failureThreshold: 3
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: saga-orchestrator-service
+  namespace: auction-system
+spec:
+  selector:
+    app: saga-orchestrator
+  ports:
+  - port: 3108
+    targetPort: 3108
+    name: http
+  type: ClusterIP

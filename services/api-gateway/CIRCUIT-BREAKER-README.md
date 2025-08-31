@@ -130,12 +130,12 @@ curl http://localhost:3001/health
 - Clear error messages with helpful suggestions
 - Graceful degradation of features
 
-### 📊 **Enhanced Monitoring**
+###  **Enhanced Monitoring**
 - Real-time visibility into service health
 - Circuit breaker state tracking
 - Failure pattern detection
 
-### 🔧 **Operational Control**
+###  **Operational Control**
 - Manual circuit breaker reset capability
 - Service-specific configuration
 - Health check integration

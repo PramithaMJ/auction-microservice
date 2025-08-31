@@ -17,7 +17,9 @@ router.get(
     const listing = await Listing.findOne({
       include: {
         model: User,
+        as: 'User', // Use the alias defined in the association
         attributes: ['id', 'name', 'email'], // Include email field
+        required: false, // LEFT JOIN instead of INNER JOIN
       },
       where: { id: listingId },
     });
@@ -29,6 +31,15 @@ router.get(
 
     console.log(`[Internal API] Listing found: ${listing.title}`);
     console.log(`[Internal API] Listing userId: ${listing.userId}`);
+    
+    // Also try to find the user separately to debug
+    const userExists = await User.findByPk(listing.userId);
+    console.log(`[Internal API] User exists separately:`, userExists ? {
+      id: userExists.id,
+      name: userExists.name,
+      email: userExists.email
+    } : 'User not found in database');
+    
     console.log(`[Internal API] Associated user:`, listing.User ? {
       id: listing.User.id,
       name: listing.User.name,

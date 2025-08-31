@@ -67,8 +67,8 @@ services:
     image: mysql:8.0
     container_name: auction-bid-mysql
     environment:
-      MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: bid
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${BID_MYSQL_DATABASE}
     ports:
       - "3307:3306"
     volumes:
@@ -88,8 +88,8 @@ services:
     image: mysql:8.0
     container_name: auction-listings-mysql
     environment:
-      MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: listings
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${LISTINGS_MYSQL_DATABASE}
     ports:
       - "3308:3306"
     volumes:
@@ -109,8 +109,8 @@ services:
     image: mysql:8.0
     container_name: auction-payments-mysql
     environment:
-      MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: payments
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${PAYMENTS_MYSQL_DATABASE}
     ports:
       - "3309:3306"
     volumes:
@@ -130,8 +130,8 @@ services:
     image: mysql:8.0
     container_name: auction-profile-mysql
     environment:
-      MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: profile
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${PROFILE_MYSQL_DATABASE}
     ports:
       - "3310:3306"
     volumes:
@@ -159,14 +159,14 @@ services:
     environment:
       - PORT=${API_GATEWAY_PORT:-3001}
       - NODE_ENV=${NODE_ENV:-development}
-      - AUTH_SERVICE_URL=http://auth:3101
-      - BID_SERVICE_URL=http://bid:3102
-      - LISTINGS_SERVICE_URL=http://listings:3103
-      - PAYMENTS_SERVICE_URL=http://payments:3104
-      - PROFILE_SERVICE_URL=http://profile:3105
-      - EMAIL_SERVICE_URL=http://email:3106
-      - SAGA_ORCHESTRATOR_URL=http://saga-orchestrator:3108
-      - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost:3000,http://localhost:3001,http://98.87.131.233:3000,http://98.87.131.233:3001,http://98.87.131.233}
+      - AUTH_SERVICE_URL=${AUTH_SERVICE_URL}
+      - BID_SERVICE_URL=${BID_SERVICE_URL}
+      - LISTINGS_SERVICE_URL=${LISTINGS_SERVICE_URL}
+      - PAYMENTS_SERVICE_URL=${PAYMENTS_SERVICE_URL}
+      - PROFILE_SERVICE_URL=${PROFILE_SERVICE_URL}
+      - EMAIL_SERVICE_URL=${EMAIL_SERVICE_URL}
+      - SAGA_ORCHESTRATOR_URL=${SAGA_ORCHESTRATOR_URL}
+      - CORS_ORIGIN=${CORS_ORIGIN}
     depends_on:
       nats-streaming:
         condition: service_started
@@ -197,16 +197,16 @@ services:
       dockerfile: ./services/auth/Dockerfile
     container_name: auction-auth
     ports:
-      - "3101:3101"
+      - "${AUTH_PORT:-3101}:3101"
     environment:
-      - PORT=3101
-      - NODE_ENV=development
-      - JWT_KEY=qLYn6wQ9vy8HS0LwuEsNyWgG3oYc8Mk1yRLotUXgrR/uEbEN9I6mdjnLAcjWiVuR
-      - AUTH_MYSQL_URI=mysql://root:password@auth-mysql:3306/auth
-      - NATS_URL=nats://nats-streaming:4222
-      - NATS_CLUSTER_ID=auction
-      - NATS_CLIENT_ID=auth-service
-      - SAGA_ORCHESTRATOR_URL=http://saga-orchestrator:3108
+      - PORT=${AUTH_PORT}
+      - NODE_ENV=${NODE_ENV}
+      - JWT_KEY=${JWT_KEY}
+      - AUTH_MYSQL_URI=${AUTH_MYSQL_URI}
+      - NATS_URL=${NATS_URL}
+      - NATS_CLUSTER_ID=${NATS_CLUSTER_ID}
+      - NATS_CLIENT_ID=${NATS_CLIENT_ID_AUTH}
+      - SAGA_ORCHESTRATOR_URL=${SAGA_ORCHESTRATOR_URL}
     depends_on:
       auth-mysql:
         condition: service_healthy
@@ -223,15 +223,15 @@ services:
       dockerfile: ./services/bid/Dockerfile
     container_name: auction-bid
     ports:
-      - "3102:3102"
+      - "${BID_PORT:-3102}:3102"
     environment:
-      - PORT=3102
-      - NODE_ENV=development
-      - JWT_KEY=qLYn6wQ9vy8HS0LwuEsNyWgG3oYc8Mk1yRLotUXgrR/uEbEN9I6mdjnLAcjWiVuR
-      - BID_MYSQL_URI=mysql://root:password@bid-mysql:3306/bid
-      - NATS_URL=nats://nats-streaming:4222
-      - NATS_CLUSTER_ID=auction
-      - NATS_CLIENT_ID=bid-service
+      - PORT=${BID_PORT}
+      - NODE_ENV=${NODE_ENV}
+      - JWT_KEY=${JWT_KEY}
+      - BID_MYSQL_URI=${BID_MYSQL_URI}
+      - NATS_URL=${NATS_URL}
+      - NATS_CLUSTER_ID=${NATS_CLUSTER_ID}
+      - NATS_CLIENT_ID=${NATS_CLIENT_ID_BID}
     depends_on:
       bid-mysql:
         condition: service_healthy
@@ -250,19 +250,19 @@ services:
       dockerfile: ./services/listings/Dockerfile
     container_name: auction-listings
     ports:
-      - "3103:3103"
+      - "${LISTINGS_PORT:-3103}:3103"
     environment:
-      - PORT=3103
-      - NODE_ENV=development
-      - JWT_KEY=qLYn6wQ9vy8HS0LwuEsNyWgG3oYc8Mk1yRLotUXgrR/uEbEN9I6mdjnLAcjWiVuR
-      - LISTINGS_MYSQL_URI=mysql://root:password@listings-mysql:3306/listings
-      - NATS_URL=nats://nats-streaming:4222
-      - NATS_CLUSTER_ID=auction
-      - NATS_CLIENT_ID=listings-service
-      - AWS_ACCESS_KEY_ID=AKIA4T4OB53T6NMZHHGY
-      - AWS_SECRET_ACCESS_KEY=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
-      - AWS_REGION=us-east-1
-      - AWS_S3_BUCKET_NAME=cloud-storage-new123
+      - PORT=${LISTINGS_PORT}
+      - NODE_ENV=${NODE_ENV}
+      - JWT_KEY=${JWT_KEY}
+      - LISTINGS_MYSQL_URI=${LISTINGS_MYSQL_URI}
+      - NATS_URL=${NATS_URL}
+      - NATS_CLUSTER_ID=${NATS_CLUSTER_ID}
+      - NATS_CLIENT_ID=${NATS_CLIENT_ID_LISTINGS}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=${AWS_REGION}
+      - AWS_S3_BUCKET_NAME=${AWS_S3_BUCKET_NAME}
     depends_on:
       listings-mysql:
         condition: service_healthy
@@ -279,16 +279,16 @@ services:
       dockerfile: ./services/payments/Dockerfile
     container_name: auction-payments
     ports:
-      - "3104:3104"
+      - "${PAYMENTS_PORT:-3104}:3104"
     environment:
-      - PORT=3104
-      - NODE_ENV=development
-      - JWT_KEY=qLYn6wQ9vy8HS0LwuEsNyWgG3oYc8Mk1yRLotUXgrR/uEbEN9I6mdjnLAcjWiVuR
-      - PAYMENTS_MYSQL_URI=mysql://root:password@payments-mysql:3306/payments
-      - NATS_URL=nats://nats-streaming:4222
-      - NATS_CLUSTER_ID=auction
-      - NATS_CLIENT_ID=payments-service
-      - STRIPE_KEY=sk_test_your_stripe_secret_key_here
+      - PORT=${PAYMENTS_PORT}
+      - NODE_ENV=${NODE_ENV}
+      - JWT_KEY=${JWT_KEY}
+      - PAYMENTS_MYSQL_URI=${PAYMENTS_MYSQL_URI}
+      - NATS_URL=${NATS_URL}
+      - NATS_CLUSTER_ID=${NATS_CLUSTER_ID}
+      - NATS_CLIENT_ID=${NATS_CLIENT_ID_PAYMENTS}
+      - STRIPE_KEY=${STRIPE_KEY}
     depends_on:
       payments-mysql:
         condition: service_healthy
@@ -305,15 +305,15 @@ services:
       dockerfile: ./services/profile/Dockerfile
     container_name: auction-profile
     ports:
-      - "3105:3105"
+      - "${PROFILE_PORT:-3105}:3105"
     environment:
-      - PORT=3105
-      - NODE_ENV=development
-      - JWT_KEY=qLYn6wQ9vy8HS0LwuEsNyWgG3oYc8Mk1yRLotUXgrR/uEbEN9I6mdjnLAcjWiVuR
-      - PROFILE_MYSQL_URI=mysql://root:password@profile-mysql:3306/profile
-      - NATS_URL=nats://nats-streaming:4222
-      - NATS_CLUSTER_ID=auction
-      - NATS_CLIENT_ID=profile-service
+      - PORT=${PROFILE_PORT}
+      - NODE_ENV=${NODE_ENV}
+      - JWT_KEY=${JWT_KEY}
+      - PROFILE_MYSQL_URI=${PROFILE_MYSQL_URI}
+      - NATS_URL=${NATS_URL}
+      - NATS_CLUSTER_ID=${NATS_CLUSTER_ID}
+      - NATS_CLIENT_ID=${NATS_CLIENT_ID_PROFILE}
     depends_on:
       profile-mysql:
         condition: service_healthy
@@ -330,18 +330,18 @@ services:
       dockerfile: ./services/email/Dockerfile
     container_name: auction-email
     ports:
-      - "3106:3106"
+      - "${EMAIL_PORT:-3106}:3106"
     environment:
-      - PORT=3106
-      - NODE_ENV=development
-      - JWT_KEY=qLYn6wQ9vy8HS0LwuEsNyWgG3oYc8Mk1yRLotUXgrR/uEbEN9I6mdjnLAcjWiVuR
-      - NATS_URL=nats://nats-streaming:4222
-      - NATS_CLUSTER_ID=auction
-      - NATS_CLIENT_ID=email-service
-      - EMAIL=pramithamj3990@gmail.com
-      - EMAIL_PASSWORD=nejqsceaqopfsjry
-      - AUTH_SERVICE_URL=http://auth:3101
-      - LISTINGS_SERVICE_URL=http://listings:3103
+      - PORT=${EMAIL_PORT}
+      - NODE_ENV=${NODE_ENV}
+      - JWT_KEY=${JWT_KEY}
+      - NATS_URL=${NATS_URL}
+      - NATS_CLUSTER_ID=${NATS_CLUSTER_ID}
+      - NATS_CLIENT_ID=${NATS_CLIENT_ID_EMAIL}
+      - EMAIL=${EMAIL}
+      - EMAIL_PASSWORD=${EMAIL_PASSWORD}
+      - AUTH_SERVICE_URL=${AUTH_SERVICE_URL}
+      - LISTINGS_SERVICE_URL=${LISTINGS_SERVICE_URL}
     depends_on:
       nats-streaming:
         condition: service_started
@@ -356,17 +356,17 @@ services:
       dockerfile: ./services/saga-orchestrator/Dockerfile
     container_name: auction-saga-orchestrator
     ports:
-      - "3108:3108"
+      - "${SAGA_ORCHESTRATOR_PORT:-3108}:3108"
     environment:
-      - PORT=3108
-      - NODE_ENV=development
-      - JWT_KEY=qLYn6wQ9vy8HS0LwuEsNyWgG3oYc8Mk1yRLotUXgrR/uEbEN9I6mdjnLAcjWiVuR
-      - NATS_URL=nats://nats-streaming:4222
-      - NATS_CLUSTER_ID=auction
-      - NATS_CLIENT_ID=saga-orchestrator-service
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - REDIS_URL=redis://redis:6379
+      - PORT=${SAGA_ORCHESTRATOR_PORT}
+      - NODE_ENV=${NODE_ENV}
+      - JWT_KEY=${JWT_KEY}
+      - NATS_URL=${NATS_URL}
+      - NATS_CLUSTER_ID=${NATS_CLUSTER_ID}
+      - NATS_CLIENT_ID=${NATS_CLIENT_ID_SAGA}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_URL=${REDIS_URL}
     depends_on:
       redis:
         condition: service_healthy
@@ -383,16 +383,16 @@ services:
       dockerfile: ./services/expiration/Dockerfile
     container_name: auction-expiration
     ports:
-      - "3107:3107"
+      - "${EXPIRATION_PORT:-3107}:3107"
     environment:
-      - PORT=3107
-      - NODE_ENV=development
-      - JWT_KEY=qLYn6wQ9vy8HS0LwuEsNyWgG3oYc8Mk1yRLotUXgrR/uEbEN9I6mdjnLAcjWiVuR
-      - NATS_URL=nats://nats-streaming:4222
-      - NATS_CLUSTER_ID=auction
-      - NATS_CLIENT_ID=expiration-service
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
+      - PORT=${EXPIRATION_PORT}
+      - NODE_ENV=${NODE_ENV}
+      - JWT_KEY=${JWT_KEY}
+      - NATS_URL=${NATS_URL}
+      - NATS_CLUSTER_ID=${NATS_CLUSTER_ID}
+      - NATS_CLIENT_ID=${NATS_CLIENT_ID_EXPIRATION}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
     depends_on:
       redis:
         condition: service_healthy
@@ -412,12 +412,12 @@ services:
       - "${FRONTEND_PORT:-3000}:3000"
     environment:
       - NODE_ENV=${NODE_ENV:-development}
-      - NEXT_PUBLIC_API_URL=http://98.87.131.233:3001
-      - NEXT_PUBLIC_API_GATEWAY_PORT=3001
-      - SERVER_API_URL=http://98.87.131.233:3001
-      - NEXT_PUBLIC_SERVER_IP=${SERVER_IP:-98.87.131.233}
-      - NEXT_PUBLIC_LISTINGS_SOCKET_URL=http://98.87.131.233:3103/socket
-      - WATCHPACK_POLLING=true
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+      - NEXT_PUBLIC_API_GATEWAY_PORT=${NEXT_PUBLIC_API_GATEWAY_PORT}
+      - SERVER_API_URL=${SERVER_API_URL}
+      - NEXT_PUBLIC_SERVER_IP=${NEXT_PUBLIC_SERVER_IP}
+      - NEXT_PUBLIC_LISTINGS_SOCKET_URL=${NEXT_PUBLIC_LISTINGS_SOCKET_URL}
+      - WATCHPACK_POLLING=${WATCHPACK_POLLING}
     depends_on:
       api-gateway:
         condition: service_started

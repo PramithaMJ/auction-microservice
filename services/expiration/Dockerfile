@@ -1,26 +1,27 @@
-FROM node:alpine
+FROM node:18-alpine
 
 WORKDIR /app
 
-# Copy and build common package first
-COPY ./common /common
-WORKDIR /common
-RUN npm install && npm run build
+# Copy and build common package
+COPY ./common ./common
+WORKDIR /app/common
+RUN npm install && npm run build && npm pack --pack-destination /app
 
-# Go back to app directory
+# Copy expiration service files
 WORKDIR /app
+COPY ./services/expiration/package.json ./
+COPY ./services/expiration/package-lock.json* ./
 
-# Copy package files for better layer caching
-COPY ./services/expiration/package*.json ./
+# Install dependencies, including common tarball
+RUN npm install --no-package-lock --force ./jjmauction-common-*.tgz 
+# Copy source and config
+COPY ./services/expiration/src ./src
+COPY ./services/expiration/tests ./tests
+COPY ./services/expiration/tsconfig.json ./tsconfig.json
 
-# Install dependencies using npm ci for faster, reliable installs
-RUN npm install
+# Build the application
+RUN npm run build 2>/dev/null || npx tsc
 
-# Copy application source
-COPY ./services/expiration ./
-
-# Expose port
 EXPOSE 3107
 
-# Start the application
 CMD ["npm", "start"]

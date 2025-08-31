@@ -1,0 +1,93 @@
+# Auth Service Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth
+  namespace: auction-system
+  labels:
+    app: auth
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: auth
+  template:
+    metadata:
+      labels:
+        app: auth
+    spec:
+      containers:
+      - name: auth
+        image: pramithamj/auction-website-ms-auth:latest
+        ports:
+        - containerPort: 3101
+        env:
+        - name: PORT
+          value: "3101"
+        - name: NODE_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: NODE_ENV
+        - name: JWT_KEY
+          valueFrom:
+            secretKeyRef:
+              name: auction-secrets
+              key: JWT_KEY
+        - name: AUTH_MYSQL_URI
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: AUTH_MYSQL_URI
+        - name: NATS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: NATS_URL
+        - name: NATS_CLUSTER_ID
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: NATS_CLUSTER_ID
+        - name: NATS_CLIENT_ID
+          value: "auth-service"
+        - name: SAGA_ORCHESTRATOR_URL
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: SAGA_ORCHESTRATOR_URL
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "250m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3101
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 3101
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          failureThreshold: 3
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-service
+  namespace: auction-system
+spec:
+  selector:
+    app: auth
+  ports:
+  - port: 3101
+    targetPort: 3101
+    name: http
+  type: ClusterIP

@@ -33,15 +33,17 @@ const StyledInput = styled.input`${tw`
     py-2 
     border 
     border-gray-300 
-    rounded-md 
+    rounded-lg 
     leading-5 
     bg-white 
     placeholder-gray-500 
     focus:outline-none 
     focus:placeholder-gray-400 
-    focus:ring-1 
-    focus:ring-indigo-500 
-    focus:border-indigo-500 
+    focus:ring-2 
+    focus:ring-amber-500 
+    focus:border-amber-500 
+    transition-all
+    duration-200
     sm:text-sm
 `}`;
 

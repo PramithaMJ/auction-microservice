@@ -8,7 +8,7 @@ COPY ./common ./common
 
 # Build common package
 WORKDIR /app/common
-RUN npm install && npm run build
+RUN npm install && npm run build && npm pack --pack-destination /app
 
 # Main application stage
 FROM node:18-alpine
@@ -24,18 +24,14 @@ RUN apk add --no-cache \
     libc-dev \
     && ln -sf python3 /usr/bin/python
 
-# Copy the entire common package first (built version)
-COPY --from=common-builder /app/common ./common
+# Copy the built common tarball
+COPY --from=common-builder /app/jjmauction-common-*.tgz ./
 
 # Copy frontend package files
 COPY ./services/frontend/package*.json ./
 
-# Create node_modules symlink for common package
-RUN mkdir -p node_modules/@jjmauction && \
-    ln -sf /app/common node_modules/@jjmauction/common
-
-# Install frontend dependencies AFTER linking common
-RUN npm install --production=false
+# Install frontend dependencies and common tarball
+RUN npm install ./jjmauction-common-*.tgz && npm install --production=false
 
 # Copy application source
 COPY ./services/frontend/src ./src
@@ -45,9 +41,6 @@ COPY ./services/frontend/.babelrc ./
 COPY ./services/frontend/tsconfig.json ./
 COPY ./services/frontend/tailwind.config.js ./
 COPY ./services/frontend/postcss.config.js ./
-
-# Ensure the symlink persists after volume mount
-RUN mkdir -p /app/node_modules/.bin
 
 # Expose port
 EXPOSE 3000

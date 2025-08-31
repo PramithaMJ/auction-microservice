@@ -67,7 +67,7 @@ export class BidCreatedListener extends Listener<BidCreatedEvent> {
       Happy selling!
 
       Best regards,
-      The JJ Auction Team
+      The AuctionHub Team
     `;
 
     await transporter.sendMail({
@@ -123,7 +123,7 @@ export class BidCreatedListener extends Listener<BidCreatedEvent> {
       if (listing.user && listing.user.id !== userId) {
         // Don't send email if the bidder is the listing owner
         await this.sendBidNotificationEmail(listing, bidder, amount);
-        console.log('✅ [BidCreatedListener] Email notification sent successfully');
+        console.log(' [BidCreatedListener] Email notification sent successfully');
       } else {
         console.log('⏭️ [BidCreatedListener] Skipping email - bidder is listing owner');
       }

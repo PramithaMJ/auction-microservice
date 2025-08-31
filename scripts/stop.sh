@@ -10,7 +10,7 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-echo -e "${BLUE}🛑 Stopping Auction Website Services${NC}"
+echo -e "${BLUE} Stopping Auction Website Services${NC}"
 
 # Stop all services
 echo -e "${YELLOW}Stopping containers...${NC}"

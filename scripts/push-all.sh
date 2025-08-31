@@ -14,7 +14,7 @@ NC='\033[0m' # No Color
 
 # Check if logged in to Docker Hub
 if ! docker info | grep -q "Username"; then
-    echo -e "${YELLOW}⚠️  Not logged in to Docker Hub. Please run:${NC}"
+    echo -e "${YELLOW}  Not logged in to Docker Hub. Please run:${NC}"
     echo -e "  docker login"
     exit 1
 fi

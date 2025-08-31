@@ -14,8 +14,9 @@ const StyledListings = styled.div`${tw`
   lg:grid-cols-3 
   xl:grid-cols-4
   2xl:grid-cols-5
-  gap-8
+  gap-6
   py-8
+  auto-rows-fr
 `}`;
 
 const Listings = ({ listings, search }) => {
