@@ -200,6 +200,19 @@ jobs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
+    - name: Create Git Tag and Release
+      if: github.ref == 'refs/heads/main'
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: ${{ steps.meta.outputs.VERSION }}
+        name: Release ${{ steps.meta.outputs.VERSION }}
+        body: |
+          Automated release for ${{ steps.meta.outputs.VERSION }}
+          Commit: ${{ steps.meta.outputs.SHORT_SHA }}
+          Date: ${{ steps.meta.outputs.DATE }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
     - name: Summary
       run: |
         echo " Build and Push Completed!"
