@@ -1,4 +1,4 @@
-# Persistent Volume Claims for MySQL databases
+# Persistent Volume Claims for MySQL databases - Minikube Configuration
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -7,10 +7,10 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
-  storageClassName: auction-fast-ssd
+  storageClassName: auction-storage
   resources:
     requests:
-      storage: 5Gi
+      storage: 2Gi
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -20,10 +20,10 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
-  storageClassName: auction-fast-ssd
+  storageClassName: auction-storage
   resources:
     requests:
-      storage: 5Gi
+      storage: 2Gi
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -33,10 +33,10 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
-  storageClassName: auction-fast-ssd
+  storageClassName: auction-storage
   resources:
     requests:
-      storage: 5Gi
+      storage: 2Gi
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -46,10 +46,10 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
-  storageClassName: auction-fast-ssd
+  storageClassName: auction-storage
   resources:
     requests:
-      storage: 5Gi
+      storage: 2Gi
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -59,7 +59,7 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
-  storageClassName: auction-fast-ssd
+  storageClassName: auction-storage
   resources:
     requests:
-      storage: 5Gi
+      storage: 2Gi

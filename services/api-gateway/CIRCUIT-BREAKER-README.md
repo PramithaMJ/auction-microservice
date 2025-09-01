@@ -147,8 +147,8 @@ The circuit breaker provides detailed logging:
 ```
  Proxying GET /api/auth/currentuser → auth (Circuit: CLOSED)
  Circuit breaker failure recorded for auth: 5/5
-🚫 Circuit breaker for auth is now OPEN. Next attempt at 2025-08-26T...
-🚫 Circuit breaker blocked request to auth: Service auth is temporarily unavailable
+ Circuit breaker for auth is now OPEN. Next attempt at 2025-08-26T...
+ Circuit breaker blocked request to auth: Service auth is temporarily unavailable
  Circuit breaker for auth transitioning to HALF_OPEN
  Circuit breaker for auth transitioning to CLOSED (service recovered)
 ```

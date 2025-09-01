@@ -99,15 +99,3 @@ spec:
   - port: 3306
     targetPort: 3306
   type: ClusterIP
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: bid-mysql-pvc
-  namespace: auction-infrastructure
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 5Gi
