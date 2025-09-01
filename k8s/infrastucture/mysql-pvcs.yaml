@@ -7,6 +7,7 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
+  storageClassName: auction-fast-ssd
   resources:
     requests:
       storage: 5Gi
@@ -19,6 +20,7 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
+  storageClassName: auction-fast-ssd
   resources:
     requests:
       storage: 5Gi
@@ -31,6 +33,7 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
+  storageClassName: auction-fast-ssd
   resources:
     requests:
       storage: 5Gi
@@ -43,6 +46,7 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
+  storageClassName: auction-fast-ssd
   resources:
     requests:
       storage: 5Gi
@@ -55,6 +59,7 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
+  storageClassName: auction-fast-ssd
   resources:
     requests:
       storage: 5Gi
