@@ -24,7 +24,7 @@ data:
   PROFILE_MYSQL_HOST: "profile-mysql.auction-infrastructure.svc.cluster.local"
   MYSQL_PORT: "3306"
   
-  # Service URLs
+  # Service URLs - Using internal cluster DNS
   AUTH_SERVICE_URL: "http://auth-service.auction-system.svc.cluster.local:3101"
   BID_SERVICE_URL: "http://bid-service.auction-system.svc.cluster.local:3102"
   LISTINGS_SERVICE_URL: "http://listings-service.auction-system.svc.cluster.local:3103"
@@ -36,8 +36,8 @@ data:
   # AWS Configuration
   AWS_REGION: "us-east-1"
   
-  # CORS Configuration
-  CORS_ORIGIN: "http://localhost:3000,http://localhost:3001,http://34.229.99.72:3000,http://34.229.99.72:3001,http://34.229.99.72"
+  # CORS Configuration - Updated for Minikube
+  CORS_ORIGIN: "http://localhost:3000,http://auction.local,http://api.auction.local"
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -45,9 +45,10 @@ metadata:
   name: frontend-config
   namespace: auction-system
 data:
-  NEXT_PUBLIC_API_URL: "http://34.229.99.72:3001"
-  NEXT_PUBLIC_API_GATEWAY_PORT: "3001"
-  SERVER_API_URL: "http://34.229.99.72:3001"
-  NEXT_PUBLIC_SERVER_IP: "34.229.99.72"
-  NEXT_PUBLIC_LISTINGS_SOCKET_URL: "ws://34.229.99.72:3103"
+  # Frontend configuration for Minikube
+  NEXT_PUBLIC_API_URL: "http://api.auction.local"
+  NEXT_PUBLIC_API_GATEWAY_PORT: "80"
+  SERVER_API_URL: "http://api-gateway-service.auction-system.svc.cluster.local:3001"
+  NEXT_PUBLIC_SERVER_IP: "auction.local"
+  NEXT_PUBLIC_LISTINGS_SOCKET_URL: "ws://api.auction.local/socket.io"
   WATCHPACK_POLLING: "true"
