@@ -69,7 +69,7 @@ app.post('/cleanup', async (req, res) => {
       console.log(' Manual emergency cleanup requested');
       result = await QueueCleanup.emergencyCleanup();
     } else {
-      console.log('🧹 Manual cleanup requested');
+      console.log(' Manual cleanup requested');
       result = await QueueCleanup.cleanupAndRetry({
         removeCompletedJobs,
         removeFailedJobs,

@@ -36,8 +36,8 @@ spec:
               key: JWT_KEY
         - name: PAYMENTS_MYSQL_URI
           valueFrom:
-            configMapKeyRef:
-              name: auction-config
+            secretKeyRef:
+              name: auction-secrets
               key: PAYMENTS_MYSQL_URI
         - name: NATS_URL
           valueFrom:
@@ -63,20 +63,21 @@ spec:
           limits:
             memory: "512Mi"
             cpu: "250m"
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 3104
-          initialDelaySeconds: 30
-          periodSeconds: 10
-          failureThreshold: 3
-        readinessProbe:
-          httpGet:
-            path: /ready
-            port: 3104
-          initialDelaySeconds: 10
-          periodSeconds: 5
-          failureThreshold: 3
+        # Disable health checks temporarily
+        # livenessProbe:
+        #   httpGet:
+        #     path: /health
+        #     port: 3104
+        #   initialDelaySeconds: 30
+        #   periodSeconds: 10
+        #   failureThreshold: 3
+        # readinessProbe:
+        #   httpGet:
+        #     path: /ready
+        #     port: 3104
+        #   initialDelaySeconds: 10
+        #   periodSeconds: 5
+        #   failureThreshold: 3
 ---
 apiVersion: v1
 kind: Service

@@ -1,0 +1,15 @@
+# StorageClass for Auction Website deployment
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: auction-fast-ssd
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "false"
+provisioner: kubernetes.io/aws-ebs
+parameters:
+  type: gp3
+  fsType: ext4
+  iopsPerGB: "10"
+volumeBindingMode: WaitForFirstConsumer
+allowVolumeExpansion: true
+reclaimPolicy: Delete

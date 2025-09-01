@@ -1,0 +1,65 @@
+# Persistent Volume Claims for MySQL databases
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: auth-mysql-pvc
+  namespace: auction-infrastructure
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: auction-fast-ssd
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: bid-mysql-pvc
+  namespace: auction-infrastructure
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: auction-fast-ssd
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: listings-mysql-pvc
+  namespace: auction-infrastructure
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: auction-fast-ssd
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: payments-mysql-pvc
+  namespace: auction-infrastructure
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: auction-fast-ssd
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: profile-mysql-pvc
+  namespace: auction-infrastructure
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: auction-fast-ssd
+  resources:
+    requests:
+      storage: 5Gi

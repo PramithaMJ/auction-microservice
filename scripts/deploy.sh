@@ -33,7 +33,7 @@ check_docker() {
 
 # Function to pull all images
 pull_images() {
-    echo -e "${YELLOW}📥 Pulling Docker images...${NC}"
+    echo -e "${YELLOW} Pulling Docker images...${NC}"
     
     services=("common" "auth" "bid" "listing" "payment" "profile" "email" "expiration" "api-gateway" "frontend")
     
@@ -49,7 +49,7 @@ pull_images() {
 
 # Function to start services
 start_services() {
-    echo -e "${YELLOW}🏗️  Starting services...${NC}"
+    echo -e "${YELLOW}  Starting services...${NC}"
     
     # Stop any existing containers
     docker-compose down --remove-orphans
@@ -99,7 +99,7 @@ show_status() {
     echo -e "  Expiration:  ${GREEN}http://localhost:3107${NC}"
     
     echo ""
-    echo -e "${BLUE}🗃️  Database Ports:${NC}"
+    echo -e "${BLUE}  Database Ports:${NC}"
     echo -e "  Auth MySQL:     ${GREEN}localhost:3306${NC}"
     echo -e "  Bid MySQL:      ${GREEN}localhost:3307${NC}"
     echo -e "  Listings MySQL: ${GREEN}localhost:3308${NC}"
@@ -112,7 +112,7 @@ show_status() {
 # Function to show logs
 show_logs() {
     echo ""
-    echo -e "${YELLOW}💡 To view logs:${NC}"
+    echo -e "${YELLOW} To view logs:${NC}"
     echo -e "  All services: ${GREEN}docker-compose logs -f${NC}"
     echo -e "  Specific:     ${GREEN}docker-compose logs -f [service-name]${NC}"
     echo -e "  Example:      ${GREEN}docker-compose logs -f frontend${NC}"

@@ -12,13 +12,11 @@ data:
     SET NAMES utf8mb4;
     SET CHARACTER SET utf8mb4;
 
-    -- Create auction user if it doesn't exist (Docker creates the database automatically)
-    -- The MYSQL_USER and MYSQL_PASSWORD environment variables handle this
-    -- But we ensure the user has the right permissions
-
-    -- Create auction user first, then grant privileges
-    CREATE USER IF NOT EXISTS 'auction'@'%' IDENTIFIED BY 'password';
-    GRANT ALL PRIVILEGES ON *.* TO 'auction'@'%';
+    -- Create auction user with limited privileges (principle of least privilege)
+    CREATE USER IF NOT EXISTS 'auctionuser'@'%' IDENTIFIED BY 'auction_secure_pass_2024';
+    
+    -- Grant only necessary privileges on the specific database
+    GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, INDEX, ALTER ON ${MYSQL_DATABASE}.* TO 'auctionuser'@'%';
     FLUSH PRIVILEGES;
 
     -- Set session variables for better MySQL compatibility

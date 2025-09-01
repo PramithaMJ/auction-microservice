@@ -1,472 +1,455 @@
-# Auction Website Kubernetes Deployment
+# Kubernetes Deployment Guide for Auction Website
 
-This directory contains Kubernetes manifests for deploying the auction website microservices using **Kustomize** for better organization and environment-specific configurations.
-
-## 📁 Directory Structure
-
-```
-k8s/
-├── 00-namespace.yaml                 # Namespace definitions
-├── kustomization.yaml               # Base kustomization
-├── deploy-kustomize.sh              # Enhanced deployment script
-├── cleanup-kustomize.sh             # Cleanup script
-├── status-enhanced.sh               # Status monitoring script
-├── configmaps/                      # Configuration maps
-│   ├── auction-configmap.yaml
-│   └── mysql-init-scripts.yaml
-├── secrets/                         # Secret configurations
-│   ├── auction-secrets.yaml
-│   └── dev-secrets.yaml
-├── deployments/                     # Application deployments
-│   ├── api-gateway.yaml
-│   ├── auth.yaml
-│   ├── bid.yaml
-│   ├── email.yaml
-│   ├── expiration.yaml
-│   ├── frontend.yaml
-│   ├── listings.yaml
-│   ├── payments.yaml
-│   ├── profile.yaml
-│   └── saga-orchestrator.yaml
-├── infrastucture/                   # Infrastructure services
-│   ├── nats-streaming.yaml
-│   ├── redis.yaml
-│   ├── auth-mysql.yaml
-│   ├── bid-mysql.yaml
-│   ├── listings-mysql.yaml
-│   ├── payments-mysql.yaml
-│   └── profile-mysql.yaml
-├── ingress/                         # Ingress configurations
-│   └── auction-ingress.yaml
-├── services/                        # Service definitions
-├── overlays/                        # Environment-specific overlays
-│   ├── development/
-│   │   ├── kustomization.yaml
-│   │   └── dev-resources.yaml
-│   ├── staging/
-│   │   ├── kustomization.yaml
-│   │   └── staging-resources.yaml
-│   └── production/
-│       ├── kustomization.yaml
-│       ├── prod-resources.yaml
-│       └── prod-hpa.yaml
-└── patches/                         # Common patches
-    └── replica-patches.yaml
+This guide provides comprehensive instructions for deploying the Auction Website micr```bash
+# Apply configuration
+kubectl apply -f configmaps/auction-configmap.yaml
+kubectl apply -f configmaps/mysql-init-scripts.yaml
 ```
 
-## 🚀 Quick Start
-
-### Prerequisites
-
-- **Kubernetes cluster** (v1.20+)
-- **kubectl** installed and configured
-- **kustomize** (built into kubectl v1.14+)
-- Sufficient cluster resources (see [Resource Requirements](#resource-requirements))
-
-### 1. Deploy to Development
+#### 3.2 Secrets
 
 ```bash
-# Deploy with default settings (development environment)
-./deploy-kustomize.sh
+# ⚠️ IMPORTANT: Update secrets before applying
+# Edit secrets/auction-secrets.yaml with your actual values
+kubectl apply -f secrets/auction-secrets.yamlchitecture on Kubernetes.
 
-# Or with explicit environment
-./deploy-kustomize.sh -e development
-```
+## Table of Contents
 
-### 2. Deploy to Staging
+- [Prerequisites](#prerequisites)
+- [Architecture Overview](#architecture-overview)
+- [Quick Start](#quick-start)
+- [Detailed Deployment Steps](#detailed-deployment-steps)
+- [Configuration](#configuration)
+- [Monitoring and Troubleshooting](#monitoring-and-troubleshooting)
+- [Scaling](#scaling)
+- [Cleanup](#cleanup)
 
-```bash
-./deploy-kustomize.sh -e staging
-```
+## Prerequisites
 
-### 3. Deploy to Production
+### Required Tools
 
-```bash
-./deploy-kustomize.sh -e production
-```
+- **Kubernetes Cluster** (v1.20+)
+  - Local: Minikube, Kind, or Docker Desktop
+  - Cloud: EKS, GKE, AKS
+- **kubectl** CLI tool
+- **Docker** (for building images)
+- **NGINX Ingress Controller**
 
-### 4. Check Status
+### System Requirements
 
-```bash
-# Basic status
-./status-enhanced.sh
+- **CPU**: 4+ cores
+- **Memory**: 8GB+ RAM
+- **Storage**: 20GB+ available space
 
-# Detailed status with resource usage
-./status-enhanced.sh -d
-
-# Watch mode (continuous updates)
-./status-enhanced.sh -w
-
-# Show logs for specific service
-./status-enhanced.sh -l api-gateway
-```
-
-### 5. Cleanup
+### Verify Prerequisites
 
 ```bash
-# Clean development environment
-./cleanup-kustomize.sh
+# Check kubectl
+kubectl version --client
 
-# Clean production (with confirmation)
-./cleanup-kustomize.sh -e production
+# Check cluster access
+kubectl cluster-info
 
-# Force clean without confirmation
-./cleanup-kustomize.sh -e staging -f
-
-# Clean and delete persistent data
-./cleanup-kustomize.sh -e development -p
+# Verify nodes
+kubectl get nodes
 ```
 
-## 🛠️ Deployment Options
+## Architecture Overview
 
-### Command Line Options
+The auction website consists of:
 
-#### Deploy Script (`deploy-kustomize.sh`)
+### Microservices (auction-system namespace)
+
+- **API Gateway** (Port 3001) - Entry point and routing
+- **Auth Service** (Port 3101) - Authentication and authorization
+- **Bid Service** (Port 3102) - Bid management
+- **Listings Service** (Port 3103) - Auction listings
+- **Payments Service** (Port 3104) - Payment processing
+- **Profile Service** (Port 3105) - User profiles
+- **Email Service** (Port 3106) - Email notifications
+- **Expiration Service** (Port 3107) - Auction expiry handling
+- **Saga Orchestrator** (Port 3108) - Distributed transactions
+- **Frontend** (Port 3000) - Next.js web application
+
+### Infrastructure (auction-infrastructure namespace)
+
+- **MySQL Databases** (5 instances for different services)
+- **NATS Streaming** - Message broker
+- **Redis** - Caching and session storage
+
+## Quick Start
+
+### Option 1: One-Command Deployment
 
 ```bash
-Options:
-  -e, --environment ENV    Environment (development|staging|production) [default: development]
-  -n, --namespace NS       Namespace [default: auction-system]
-  -f, --force             Force apply resources (recreate if exists)
-  -d, --dry-run           Show what would be applied without applying
-  -h, --help              Show help message
-
-Examples:
-  ./deploy-kustomize.sh                                    # Deploy to development
-  ./deploy-kustomize.sh -e production                     # Deploy to production
-  ./deploy-kustomize.sh -e staging -n auction-staging     # Deploy to staging with custom namespace
-  ./deploy-kustomize.sh -d                                # Dry run
+# From the project root directory
+./k8s/deploy-all.sh
 ```
 
-#### Status Script (`status-enhanced.sh`)
+### Option 2: Manual Step-by-Step Deployment
+
+Follow the [Detailed Deployment Steps](#detailed-deployment-steps) below.
+
+## Detailed Deployment Steps
+
+### Step 1: Create Namespaces
 
 ```bash
-Options:
-  -e, --environment ENV    Environment [default: development]
-  -d, --detailed          Show detailed information including resource usage
-  -w, --watch             Watch mode - continuously update status
-  -l, --logs SERVICE      Show logs for a specific service
-  -h, --help              Show help message
+# Create namespaces
+kubectl create namespace auction-infrastructure
+kubectl create namespace auction-system
 ```
 
-#### Cleanup Script (`cleanup-kustomize.sh`)
+### Step 2: Deploy Infrastructure Components
+
+#### 2.1 Storage Classes and Persistent Volumes
 
 ```bash
-Options:
-  -e, --environment ENV    Environment [default: development]
-  -f, --force             Force delete resources (skip confirmation)
-  -p, --delete-pvcs       Also delete PersistentVolumeClaims (data will be lost!)
-  -h, --help              Show help message
+kubectl apply -f infrastucture/storageclass.yaml
+kubectl apply -f infrastucture/mysql-pvcs.yaml
 ```
 
-## 🌍 Environment Configurations
+#### 2.2 MySQL Databases
 
-### Development
-- **Namespace**: `auction-system`
-- **Replicas**: 1 per service
-- **Resources**: Low (128Mi/50m CPU)
-- **Image Tag**: `dev`
-- **Purpose**: Local development and testing
+```bash
+# Deploy MySQL instances for each service
+kubectl apply -f infrastucture/auth-mysql.yaml
+kubectl apply -f infrastucture/bid-mysql.yaml
+kubectl apply -f infrastucture/listings-mysql.yaml
+kubectl apply -f infrastucture/payments-mysql.yaml
+kubectl apply -f infrastucture/profile-mysql.yaml
 
-### Staging
-- **Namespace**: `auction-system`
-- **Replicas**: 1-2 per service
-- **Resources**: Medium (256Mi/100m CPU)
-- **Image Tag**: `staging`
-- **Purpose**: Pre-production testing
+# Wait for MySQL pods to be ready
+kubectl wait --for=condition=ready pod -l app=auth-mysql -n auction-infrastructure --timeout=300s
+kubectl wait --for=condition=ready pod -l app=bid-mysql -n auction-infrastructure --timeout=300s
+kubectl wait --for=condition=ready pod -l app=listings-mysql -n auction-infrastructure --timeout=300s
+kubectl wait --for=condition=ready pod -l app=payments-mysql -n auction-infrastructure --timeout=300s
+kubectl wait --for=condition=ready pod -l app=profile-mysql -n auction-infrastructure --timeout=300s
+```
 
-### Production
-- **Namespace**: `auction-system`
-- **Replicas**: 2-3 per service
-- **Resources**: High (512Mi/200m CPU)
-- **Image Tag**: `latest`
-- **HPA**: Enabled for auto-scaling
-- **Purpose**: Production workloads
+#### 2.3 NATS Streaming Server
 
-## 📊 Resource Requirements
+```bash
+kubectl apply -f infrastucture/nats-streaming.yaml
+kubectl wait --for=condition=ready pod -l app=nats-streaming -n auction-infrastructure --timeout=300s
+```
 
-### Minimum Cluster Requirements
+#### 2.4 Redis
 
-| Environment | Nodes | CPU Cores | Memory | Storage |
-|-------------|-------|-----------|---------|---------|
-| Development | 1 | 4 cores | 8 GB | 50 GB |
-| Staging | 2 | 8 cores | 16 GB | 100 GB |
-| Production | 3+ | 16+ cores | 32+ GB | 200+ GB |
+```bash
+kubectl apply -f infrastucture/redis.yaml
+kubectl wait --for=condition=ready pod -l app=redis -n auction-infrastructure --timeout=300s
+```
 
-### Per-Service Resource Allocation
+### Step 3: Configure Application
+
+#### 3.1 ConfigMaps
+
+```bash
+# Apply configuration
+kubectl apply -f k8s/configmaps/auction-configmap.yaml
+kubectl apply -f k8s/configmaps/mysql-init-scripts.yaml
+```
+
+#### 3.2 Secrets
+
+```bash
+# IMPORTANT: Update secrets before applying
+# Edit k8s/secrets/auction-secrets.yaml with your actual values
+kubectl apply -f k8s/secrets/auction-secrets.yaml
+```
+
+### Step 4: Deploy Microservices
+
+#### 4.1 Core Services
+
+```bash
+# Deploy all microservices
+kubectl apply -f deployments/auth.yaml
+kubectl apply -f deployments/bid.yaml
+kubectl apply -f deployments/listings.yaml
+kubectl apply -f deployments/payments.yaml
+kubectl apply -f deployments/profile.yaml
+kubectl apply -f deployments/email.yaml
+kubectl apply -f deployments/expiration.yaml
+kubectl apply -f deployments/saga-orchestrator.yaml
+
+# Wait for services to be ready
+kubectl wait --for=condition=ready pod -l app=auth -n auction-system --timeout=300s
+kubectl wait --for=condition=ready pod -l app=bid -n auction-system --timeout=300s
+kubectl wait --for=condition=ready pod -l app=listings -n auction-system --timeout=300s
+kubectl wait --for=condition=ready pod -l app=payments -n auction-system --timeout=300s
+kubectl wait --for=condition=ready pod -l app=profile -n auction-system --timeout=300s
+```
+
+#### 4.2 API Gateway
+
+```bash
+kubectl apply -f deployments/api-gateway.yaml
+kubectl wait --for=condition=ready pod -l app=api-gateway -n auction-system --timeout=300s
+```
+
+#### 4.3 Frontend
+
+```bash
+kubectl apply -f deployments/frontend.yaml
+kubectl wait --for=condition=ready pod -l app=frontend -n auction-system --timeout=300s
+```
+
+### Step 5: Create Services
+
+```bash
+# Create all services
+kubectl apply -f services/api-gateway-service.yaml
+kubectl apply -f services/frontend-service.yaml
+kubectl apply -f services/microservices-services.yaml
+```
+
+### Step 6: Setup Ingress
+
+#### 6.1 Install NGINX Ingress Controller (if not installed)
+
+```bash
+# For Minikube
+minikube addons enable ingress
+
+# For other clusters
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.8.1/deploy/static/provider/cloud/deploy.yaml
+```
+
+#### 6.2 Apply Ingress Rules
+
+```bash
+kubectl apply -f ingress/auction-ingress.yaml
+```
+
+### Step 7: Verify Deployment
+
+```bash
+# Check all pods
+kubectl get pods -n auction-infrastructure
+kubectl get pods -n auction-system
+
+# Check services
+kubectl get svc -n auction-infrastructure
+kubectl get svc -n auction-system
+
+# Check ingress
+kubectl get ingress -n auction-system
+```
+
+## Configuration
+
+### Environment-Specific Configurations
 
 #### Development
-```yaml
-resources:
-  requests:
-    memory: "128Mi"
-    cpu: "50m"
-  limits:
-    memory: "256Mi"
-    cpu: "100m"
+
+```bash
+# Update configmap for development
+kubectl patch configmap auction-config -n auction-system --patch '{"data":{"NODE_ENV":"development"}}'
 ```
 
 #### Production
-```yaml
-resources:
-  requests:
-    memory: "512Mi"
-    cpu: "200m"
-  limits:
-    memory: "1Gi"
-    cpu: "500m"
-```
 
-## 🔧 Customization
-
-### Adding New Environments
-
-1. Create overlay directory:
 ```bash
-mkdir -p overlays/my-environment
+# Update configmap for production
+kubectl patch configmap auction-config -n auction-system --patch '{"data":{"NODE_ENV":"production"}}'
 ```
 
-2. Create `kustomization.yaml`:
+### External Access Configuration
+
+#### 1. Update External IP/Domain
+
+Edit `configmaps/auction-configmap.yaml`:
+
 ```yaml
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-
-resources:
-  - ../../
-
-commonLabels:
-  environment: my-environment
-
-# Add your customizations here
+# Replace with your actual domain or IP
+NEXT_PUBLIC_SERVER_IP: "your-domain.com"
+NEXT_PUBLIC_API_URL: "http://your-domain.com:3001"
 ```
 
-### Modifying Resources
+#### 2. Update CORS Settings
 
-1. **CPU/Memory**: Edit overlay-specific resource files
-2. **Replicas**: Modify `replicas` section in `kustomization.yaml`
-3. **Images**: Update `images` section for different tags
-4. **Environment Variables**: Edit configmaps or secrets
-
-### Custom Patches
-
-Create patches in the `patches/` directory:
+Edit `configmaps/auction-configmap.yaml`:
 
 ```yaml
-# patches/custom-patch.yaml
-apiVersion: apps/v1
-kind: Deployment
+CORS_ORIGIN: "http://your-domain.com:3000,http://your-domain.com:3001"
+```
+
+#### 3. Update Ingress
+
+Edit `ingress/auction-ingress.yaml`:
+
+```yaml
 metadata:
-  name: api-gateway
-spec:
-  template:
-    spec:
-      containers:
-      - name: api-gateway
-        env:
-        - name: CUSTOM_VAR
-          value: "custom-value"
+  annotations:
+    nginx.ingress.kubernetes.io/cors-allow-origin: "http://your-domain.com:3000"
 ```
 
-Add to kustomization:
-```yaml
-patchesStrategicMerge:
-  - ../../patches/custom-patch.yaml
-```
+### Secret Management
 
-## 🔍 Monitoring and Troubleshooting
+#### Update Database Credentials
 
-### Health Checks
-
-All deployments include:
-- **Liveness Probes**: Restart unhealthy containers
-- **Readiness Probes**: Remove from service until ready
-- **Resource Limits**: Prevent resource starvation
-
-### Common Issues
-
-#### 1. Pods Stuck in Pending
 ```bash
-# Check resource availability
-kubectl describe nodes
-kubectl top nodes
-
-# Check PVC status
-kubectl get pvc -n auction-infrastructure
+# Create new secret with your credentials
+kubectl create secret generic auction-secrets \
+  --from-literal=MYSQL_ROOT_PASSWORD=your_root_password \
+  --from-literal=MYSQL_PASSWORD=your_user_password \
+  --from-literal=JWT_KEY=your_jwt_secret \
+  -n auction-system --dry-run=client -o yaml | kubectl apply -f -
 ```
 
-#### 2. Image Pull Errors
+#### AWS Configuration
+
 ```bash
-# Check image availability
+# Update AWS credentials in secrets
+kubectl patch secret auction-secrets -n auction-system --patch '{"stringData":{"AWS_ACCESS_KEY_ID":"your_access_key","AWS_SECRET_ACCESS_KEY":"your_secret_key"}}'
+```
+
+## Monitoring and Troubleshooting
+
+### Check Pod Status
+
+```bash
+# View all pods
+kubectl get pods -A
+
+# Check pod logs
+kubectl logs -f deployment/api-gateway -n auction-system
+kubectl logs -f deployment/auth -n auction-system
+
+# Describe problematic pods
+kubectl describe pod <pod-name> -n <namespace>
+```
+
+### Database Connectivity
+
+```bash
+# Test MySQL connection
+kubectl exec -it deployment/auth-mysql -n auction-infrastructure -- mysql -u root -p
+
+# Check database initialization
+kubectl logs deployment/auth-mysql -n auction-infrastructure
+```
+
+### Service Connectivity
+
+```bash
+# Test service connectivity
+kubectl exec -it deployment/api-gateway -n auction-system -- curl http://auth-service:3101/health
+
+# Port forward for debugging
+kubectl port-forward svc/api-gateway-service 3001:3001 -n auction-system
+```
+
+### Common Issues and Solutions
+
+#### 1. ImagePullBackOff
+
+```bash
+# Check if images exist
 docker pull pramithamj/auction-website-ms-auth:latest
 
-# Check imagePullSecrets if using private registry
-kubectl get secrets -n auction-system
+# Update image policy
+kubectl patch deployment auth -n auction-system --patch '{"spec":{"template":{"spec":{"containers":[{"name":"auth","imagePullPolicy":"Always"}]}}}}'
 ```
 
-#### 3. Database Connection Issues
-```bash
-# Check MySQL pods
-kubectl get pods -n auction-infrastructure
-kubectl logs deployment/auth-mysql -n auction-infrastructure
-
-# Test connectivity
-kubectl exec -it deployment/auth -n auction-system -- curl auth-mysql.auction-infrastructure.svc.cluster.local:3306
-```
-
-#### 4. Service Discovery Issues
-```bash
-# Check services and endpoints
-kubectl get services -n auction-system
-kubectl get endpoints -n auction-system
-
-# Check DNS resolution
-kubectl exec -it deployment/auth -n auction-system -- nslookup bid-service.auction-system.svc.cluster.local
-```
-
-### Debugging Commands
+#### 2. Database Connection Issues
 
 ```bash
-# Get pod logs
-kubectl logs -f deployment/api-gateway -n auction-system
+# Check MySQL service
+kubectl get svc -n auction-infrastructure | grep mysql
 
-# Execute into container
-kubectl exec -it deployment/auth -n auction-system -- /bin/bash
-
-# Port forward for local access
-kubectl port-forward service/api-gateway-service 3001:3001 -n auction-system
-
-# Check resource usage
-kubectl top pods -n auction-system
-kubectl top nodes
+# Verify environment variables
+kubectl exec deployment/auth -n auction-system -- env | grep MYSQL
 ```
 
-## 🔒 Security Considerations
+#### 3. NATS Connection Issues
 
-### Secrets Management
-- All sensitive data is stored in Kubernetes secrets
-- Secrets are base64 encoded (consider external secret management for production)
-- Database passwords should be rotated regularly
-
-### Network Policies
-Consider implementing network policies to restrict pod-to-pod communication:
-
-```yaml
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: auction-network-policy
-spec:
-  podSelector: {}
-  policyTypes:
-  - Ingress
-  - Egress
-  ingress:
-  - from:
-    - namespaceSelector:
-        matchLabels:
-          name: auction-system
-```
-
-### RBAC
-The manifests assume cluster-admin privileges. For production, create specific service accounts with minimal required permissions.
-
-## 🔄 CI/CD Integration
-
-### GitOps Workflow
 ```bash
-# Build and push images
-docker build -t pramithamj/auction-website-ms-auth:v1.2.3 .
-docker push pramithamj/auction-website-ms-auth:v1.2.3
+# Check NATS logs
+kubectl logs deployment/nats-streaming -n auction-infrastructure
 
-# Update kustomization
-cd overlays/production
-kustomize edit set image pramithamj/auction-website-ms-auth:v1.2.3
-
-# Deploy
-kubectl apply -k overlays/production
+# Test NATS connectivity
+kubectl exec -it deployment/auth -n auction-system -- nc -zv nats-streaming.auction-infrastructure.svc.cluster.local 4222
 ```
 
-### Automated Deployment
-```yaml
-# .github/workflows/deploy.yml
-name: Deploy to Kubernetes
-on:
-  push:
-    branches: [main]
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Deploy to Production
-        run: |
-          cd k8s
-          ./deploy-kustomize.sh -e production
-```
+## Scaling
 
-## 📈 Scaling
+### Horizontal Pod Autoscaling
+
+```bash
+# Enable HPA for API Gateway
+kubectl autoscale deployment api-gateway --cpu-percent=70 --min=2 --max=10 -n auction-system
+
+# Enable HPA for other services
+kubectl autoscale deployment auth --cpu-percent=70 --min=1 --max=5 -n auction-system
+kubectl autoscale deployment bid --cpu-percent=70 --min=1 --max=5 -n auction-system
+kubectl autoscale deployment listings --cpu-percent=70 --min=1 --max=5 -n auction-system
+```
 
 ### Manual Scaling
+
 ```bash
-# Scale specific deployment
-kubectl scale deployment api-gateway --replicas=5 -n auction-system
-
-# Scale multiple deployments
-kubectl scale deployment api-gateway auth bid --replicas=3 -n auction-system
+# Scale specific services
+kubectl scale deployment api-gateway --replicas=3 -n auction-system
+kubectl scale deployment frontend --replicas=2 -n auction-system
 ```
 
-### Auto-scaling (Production)
-Production environment includes HPA (Horizontal Pod Autoscaler):
+### Resource Monitoring
 
-```yaml
-apiVersion: autoscaling/v2
-kind: HorizontalPodAutoscaler
-metadata:
-  name: api-gateway-hpa
-spec:
-  scaleTargetRef:
-    apiVersion: apps/v1
-    kind: Deployment
-    name: api-gateway
-  minReplicas: 3
-  maxReplicas: 10
-  metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: 70
-```
-
-## 🆘 Support
-
-### Getting Help
-1. Check pod status: `./status-enhanced.sh -d`
-2. View logs: `./status-enhanced.sh -l <service-name>`
-3. Check events: `kubectl get events -n auction-system`
-4. Describe resources: `kubectl describe deployment <name> -n auction-system`
-
-### Common Commands Reference
 ```bash
-# Quick status check
-kubectl get all -n auction-system
+# Check resource usage
+kubectl top pods -n auction-system
+kubectl top pods -n auction-infrastructure
 
-# Restart deployment
-kubectl rollout restart deployment/api-gateway -n auction-system
-
-# Check rollout status
-kubectl rollout status deployment/api-gateway -n auction-system
-
-# View deployment history
-kubectl rollout history deployment/api-gateway -n auction-system
-
-# Rollback deployment
-kubectl rollout undo deployment/api-gateway -n auction-system
+# Monitor HPA status
+kubectl get hpa -n auction-system
 ```
 
----
+## Cleanup
 
-**Happy Deploying! 🚀**
+### Remove Everything
 
-For more detailed information about the auction website architecture, see the main project documentation.
+```bash
+# Delete application
+kubectl delete namespace auction-system
+
+# Delete infrastructure
+kubectl delete namespace auction-infrastructure
+
+# Delete persistent volumes (optional)
+kubectl delete pv --all
+```
+
+### Partial Cleanup
+
+```bash
+# Remove only deployments
+kubectl delete deployments --all -n auction-system
+
+# Remove only services
+kubectl delete services --all -n auction-system
+```
+
+## Advanced Configuration
+
+### Custom Domain Setup
+
+1. Update DNS records to point to your cluster's ingress IP
+2. Update configmaps with your domain
+3. Consider SSL/TLS certificates for HTTPS
+
+### Production Hardening
+
+1. Use secrets management (e.g., HashiCorp Vault)
+2. Enable pod security policies
+3. Configure network policies
+4. Set up monitoring (Prometheus + Grafana)
+5. Configure log aggregation (ELK stack)
+
+### Backup Strategy
+
+1. Database backups using MySQL operators
+2. Persistent volume snapshots
+3. Configuration backups

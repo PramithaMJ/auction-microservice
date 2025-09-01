@@ -119,7 +119,7 @@ restart_service() {
 
 # Function to clean up failed jobs
 cleanup_failed_jobs() {
-    print_status $YELLOW "🧹 Cleaning up failed expiration jobs..."
+    print_status $YELLOW " Cleaning up failed expiration jobs..."
     
     # Use the health endpoint to trigger cleanup
     local cleanup_response
