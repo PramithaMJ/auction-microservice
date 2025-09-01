@@ -27,11 +27,11 @@ print_status() {
 }
 
 print_warning() {
-    echo -e "${YELLOW}⚠️  $1${NC}"
+    echo -e "${YELLOW}  $1${NC}"
 }
 
 print_error() {
-    echo -e "${RED}❌ $1${NC}"
+    echo -e "${RED} $1${NC}"
 }
 
 # Function to check if command exists
@@ -40,7 +40,7 @@ command_exists() {
 }
 
 # Check prerequisites
-echo -e "${BLUE}📋 Checking prerequisites...${NC}"
+echo -e "${BLUE} Checking prerequisites...${NC}"
 
 if ! command_exists kubectl; then
     print_error "kubectl is not installed. Please install kubectl first."
@@ -60,7 +60,7 @@ fi
 print_status "All prerequisites are installed"
 
 # Check if Minikube is running
-echo -e "${BLUE}🔍 Checking Minikube status...${NC}"
+echo -e "${BLUE} Checking Minikube status...${NC}"
 
 if ! minikube status -p $MINIKUBE_PROFILE >/dev/null 2>&1; then
     echo -e "${YELLOW}Starting Minikube cluster...${NC}"
@@ -88,7 +88,7 @@ minikube addons enable default-storageclass -p $MINIKUBE_PROFILE
 print_status "Minikube addons enabled"
 
 # Wait for ingress controller to be ready
-echo -e "${BLUE}⏳ Waiting for ingress controller to be ready...${NC}"
+echo -e "${BLUE} Waiting for ingress controller to be ready...${NC}"
 kubectl wait --namespace ingress-nginx \
   --for=condition=ready pod \
   --selector=app.kubernetes.io/component=controller \
@@ -101,7 +101,7 @@ MINIKUBE_IP=$(minikube ip -p $MINIKUBE_PROFILE)
 print_status "Minikube IP: $MINIKUBE_IP"
 
 # Deploy Kubernetes resources
-echo -e "${BLUE}📦 Deploying Kubernetes resources...${NC}"
+echo -e "${BLUE} Deploying Kubernetes resources...${NC}"
 
 # 1. Create namespaces
 echo "Creating namespaces..."
@@ -143,7 +143,7 @@ kubectl apply -f k8s/infrastucture/profile-mysql.yaml
 print_status "Infrastructure services deployed"
 
 # Wait for infrastructure to be ready
-echo -e "${BLUE}⏳ Waiting for infrastructure services to be ready...${NC}"
+echo -e "${BLUE} Waiting for infrastructure services to be ready...${NC}"
 kubectl wait --for=condition=ready pod -l app=redis -n $NAMESPACE_INFRA --timeout=300s
 kubectl wait --for=condition=ready pod -l app=nats-streaming -n $NAMESPACE_INFRA --timeout=300s
 
@@ -170,7 +170,7 @@ kubectl apply -f k8s/ingress/auction-ingress.yaml
 print_status "Ingress deployed"
 
 # Wait for application services to be ready
-echo -e "${BLUE}⏳ Waiting for application services to be ready...${NC}"
+echo -e "${BLUE} Waiting for application services to be ready...${NC}"
 kubectl wait --for=condition=ready pod -l app=auth -n $NAMESPACE_APP --timeout=300s
 kubectl wait --for=condition=ready pod -l app=frontend -n $NAMESPACE_APP --timeout=300s
 kubectl wait --for=condition=ready pod -l app=api-gateway -n $NAMESPACE_APP --timeout=300s
@@ -196,7 +196,7 @@ echo "Frontend URL: http://auction.local"
 echo "API Gateway URL: http://api.auction.local"
 echo ""
 
-echo -e "${BLUE}📋 Next Steps:${NC}"
+echo -e "${BLUE} Next Steps:${NC}"
 echo "1. Add the following to your /etc/hosts file:"
 echo "   $MINIKUBE_IP auction.local"
 echo "   $MINIKUBE_IP api.auction.local"
@@ -214,7 +214,7 @@ echo "Minikube dashboard: minikube dashboard -p $MINIKUBE_PROFILE"
 echo "View logs: kubectl logs -f deployment/[service-name] -n $NAMESPACE_APP"
 echo ""
 
-echo -e "${BLUE}🔍 Troubleshooting:${NC}"
+echo -e "${BLUE} Troubleshooting:${NC}"
 echo "Check ingress: kubectl describe ingress auction-ingress -n $NAMESPACE_APP"
 echo "Check services: kubectl get endpoints -n $NAMESPACE_APP"
 echo "Restart deployment: kubectl rollout restart deployment/[service-name] -n $NAMESPACE_APP"

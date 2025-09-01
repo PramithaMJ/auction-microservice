@@ -308,7 +308,7 @@ if pgrep -f "kubectl port-forward" > /dev/null; then
     echo "Active port forwards:"
     ps aux | grep "kubectl port-forward" | grep -v grep
 else
-    echo "❌ Port forwarding is not active"
+    echo " Port forwarding is not active"
     echo "Run ./scripts/start-external-access.sh to start"
 fi
 
@@ -324,14 +324,14 @@ SERVER_IP="SERVER_IP_PLACEHOLDER"
 if curl -s --max-time 5 "http://${SERVER_IP}:3000" > /dev/null; then
     echo " Frontend accessible at http://${SERVER_IP}:3000"
 else
-    echo "❌ Frontend not accessible at http://${SERVER_IP}:3000"
+    echo " Frontend not accessible at http://${SERVER_IP}:3000"
 fi
 
 # Test API Gateway
 if curl -s --max-time 5 "http://${SERVER_IP}:3001/health" > /dev/null; then
     echo " API Gateway accessible at http://${SERVER_IP}:3001"
 else
-    echo "❌ API Gateway not accessible at http://${SERVER_IP}:3001"
+    echo " API Gateway not accessible at http://${SERVER_IP}:3001"
 fi
 
 echo ""
@@ -372,7 +372,7 @@ echo ""
 cd k8s
 
 # Create namespaces
-echo "📦 Creating namespaces..."
+echo " Creating namespaces..."
 kubectl apply -f namespaces.yaml
 
 # Deploy infrastructure
@@ -380,7 +380,7 @@ echo "🏗️ Deploying infrastructure..."
 kubectl apply -f infrastucture/
 
 # Wait for infrastructure
-echo "⏳ Waiting for infrastructure to be ready..."
+echo " Waiting for infrastructure to be ready..."
 kubectl wait --for=condition=ready pod -l app=nats-streaming -n auction-infrastructure --timeout=300s || true
 kubectl wait --for=condition=ready pod -l app=redis -n auction-infrastructure --timeout=300s || true
 
@@ -411,7 +411,7 @@ kubectl apply -f ingress/auction-external-ingress.yaml
 echo ""
 echo " Deployment completed!"
 echo ""
-echo "📋 Next steps:"
+echo " Next steps:"
 echo "1. Wait for all pods to be ready: kubectl get pods --all-namespaces"
 echo "2. Start external access: ./scripts/start-external-access.sh"
 echo "3. Check status: ./scripts/check-external-access.sh"
@@ -492,7 +492,7 @@ main() {
     echo ""
     echo -e "${GREEN} Configuration completed successfully!${NC}"
     echo ""
-    echo -e "${CYAN}📋 Next steps:${NC}"
+    echo -e "${CYAN} Next steps:${NC}"
     echo -e "1. ${YELLOW}Deploy the application:${NC} ./scripts/deploy-external-access.sh"
     echo -e "2. ${YELLOW}Start external access:${NC} ./scripts/start-external-access.sh"
     echo -e "3. ${YELLOW}Check status:${NC} ./scripts/check-external-access.sh"

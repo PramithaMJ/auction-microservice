@@ -25,11 +25,11 @@ print_status() {
 }
 
 print_warning() {
-    echo -e "${YELLOW}⚠️  $1${NC}"
+    echo -e "${YELLOW}  $1${NC}"
 }
 
 print_error() {
-    echo -e "${RED}❌ $1${NC}"
+    echo -e "${RED} $1${NC}"
 }
 
 # Check if kubectl is available
@@ -107,7 +107,7 @@ echo " Cleanup completed successfully!"
 echo "=============================================="
 echo -e "${NC}"
 
-echo -e "${BLUE}📋 Next Steps:${NC}"
+echo -e "${BLUE} Next Steps:${NC}"
 echo "1. To stop Minikube completely:"
 echo "   minikube stop -p $MINIKUBE_PROFILE"
 echo ""

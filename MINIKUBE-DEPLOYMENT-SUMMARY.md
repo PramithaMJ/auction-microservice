@@ -4,7 +4,7 @@
 
 This guide helps you deploy the Auction Website on Minikube with external access from Ubuntu server.
 
-## 📋 Prerequisites Checklist
+##  Prerequisites Checklist
 
 - [ ] Ubuntu Server 20.04+ with 8GB RAM, 4 CPUs
 - [ ] Docker installed and user added to docker group

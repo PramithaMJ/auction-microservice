@@ -90,7 +90,7 @@ async function createSampleListings() {
     for (let i = 0; i < sampleListings.length; i++) {
       const listing = sampleListings[i];
       
-      console.log(`📦 Creating listing ${i + 1}/${sampleListings.length}: ${listing.title}`);
+      console.log(` Creating listing ${i + 1}/${sampleListings.length}: ${listing.title}`);
       
       // Create a simple form data (note: this won't actually upload images, but will use emoji icons)
       const formData = new FormData();

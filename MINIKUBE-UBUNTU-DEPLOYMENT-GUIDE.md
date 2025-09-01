@@ -1,6 +1,6 @@
 #  Auction Website - Minikube Ubuntu Server Deployment Guide
 
-## 📋 Complete Guide for External Access
+##  Complete Guide for External Access
 
 This guide will help you deploy the auction website on Ubuntu server using Minikube with external access from anywhere.
 
@@ -13,7 +13,7 @@ After following this guide:
 -  Real-time bidding and all features working
 -  Production-ready setup with monitoring
 
-## 📋 Prerequisites
+##  Prerequisites
 
 ### Server Requirements
 

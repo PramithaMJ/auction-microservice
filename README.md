@@ -6,7 +6,7 @@
 
 This repository contains a full-featured auction platform built with a microservices architecture. It leverages Docker for containerization and Kubernetes for orchestration, supporting local development and production deployments.
 
-## 📋 Table of Contents
+##  Table of Contents
 
 - [Architecture Overview](#architecture-overview)
 - [Deployment Options](#deployment-options)
@@ -172,7 +172,7 @@ cd services/api-gateway && npm run dev
 ./scripts/pull-and-run.sh
 ```
 
-## 🔍 Monitoring
+##  Monitoring
 
 ### Health Checks
 ```bash
