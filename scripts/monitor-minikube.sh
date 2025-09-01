@@ -31,7 +31,7 @@ print_subheader() {
 
 # Function to print status
 print_status() {
-    echo -e "${GREEN}✅ $1${NC}"
+    echo -e "${GREEN} $1${NC}"
 }
 
 print_warning() {
@@ -62,7 +62,7 @@ print_header "🔍 Auction Website - Minikube Status"
 
 # Get Minikube IP
 MINIKUBE_IP=$(minikube ip -p $MINIKUBE_PROFILE)
-echo -e "${BLUE}🌐 Minikube IP: ${YELLOW}$MINIKUBE_IP${NC}"
+echo -e "${BLUE} Minikube IP: ${YELLOW}$MINIKUBE_IP${NC}"
 echo ""
 
 # Check cluster status

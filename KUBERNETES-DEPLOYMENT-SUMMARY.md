@@ -1,4 +1,4 @@
-# 🚀 Auction Website Kubernetes Deployment - Complete Guide
+#  Auction Website Kubernetes Deployment - Complete Guide
 
 ## 📋 Summary of Issues Found and Fixed
 
@@ -10,12 +10,12 @@
 5. ❌ **Missing Setup Scripts**: No automated configuration
 
 ### Fixes Applied:
-1. ✅ **Created namespace definitions**: `k8s/namespaces.yaml`
-2. ✅ **Added configuration script**: `k8s/configure-deployment.sh`
-3. ✅ **Fixed deployment script**: Updated `k8s/deploy-all.sh`
-4. ✅ **Created setup script**: `setup-server.sh`
-5. ✅ **Updated configs**: Placeholder system for server IPs
-6. ✅ **Created comprehensive guide**: `k8s/DEPLOYMENT-GUIDE.md`
+1.  **Created namespace definitions**: `k8s/namespaces.yaml`
+2.  **Added configuration script**: `k8s/configure-deployment.sh`
+3.  **Fixed deployment script**: Updated `k8s/deploy-all.sh`
+4.  **Created setup script**: `setup-server.sh`
+5.  **Updated configs**: Placeholder system for server IPs
+6.  **Created comprehensive guide**: `k8s/DEPLOYMENT-GUIDE.md`
 
 ## 🛠️ Complete Deployment Process
 
@@ -106,7 +106,7 @@ After successful deployment:
     └───────────────────┘
 ```
 
-## 🔧 Troubleshooting Quick Reference
+##  Troubleshooting Quick Reference
 
 ### Common Issues & Solutions:
 
@@ -166,7 +166,7 @@ minikube addons enable ingress
 minikube ip
 ```
 
-## 📊 Monitoring Commands
+##  Monitoring Commands
 
 ```bash
 # Check resource usage
@@ -181,7 +181,7 @@ kubectl get all -n auction-system
 kubectl get all -n auction-infrastructure
 ```
 
-## 🚨 Production Checklist
+##  Production Checklist
 
 Before going to production:
 
@@ -218,20 +218,20 @@ kubectl port-forward -n auction-system svc/frontend-service 3000:3000
 ./cleanup-all.sh
 ```
 
-## 🎉 Success Indicators
+##  Success Indicators
 
 Your deployment is successful when:
 
-1. ✅ All pods show `Running` status
-2. ✅ Services have endpoints assigned
-3. ✅ Ingress shows an IP address
-4. ✅ Frontend loads at `http://YOUR_SERVER_IP`
-5. ✅ API Gateway responds at `http://YOUR_SERVER_IP:3001/health`
-6. ✅ You can register/login users
-7. ✅ You can create auction listings
-8. ✅ Real-time bidding works
+1.  All pods show `Running` status
+2.  Services have endpoints assigned
+3.  Ingress shows an IP address
+4.  Frontend loads at `http://YOUR_SERVER_IP`
+5.  API Gateway responds at `http://YOUR_SERVER_IP:3001/health`
+6.  You can register/login users
+7.  You can create auction listings
+8.  Real-time bidding works
 
-## 📞 Need Help?
+##  Need Help?
 
 1. Check the detailed `DEPLOYMENT-GUIDE.md`
 2. Review logs: `kubectl logs <pod-name> -n <namespace>`
@@ -241,4 +241,4 @@ Your deployment is successful when:
 
 ---
 
-**🚀 Ready to deploy? Start with: `./setup-server.sh`**
+** Ready to deploy? Start with: `./setup-server.sh`**

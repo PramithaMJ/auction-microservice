@@ -1,4 +1,4 @@
-# 🚀 Minikube Deployment Summary
+#  Minikube Deployment Summary
 
 ## Quick Start Guide
 
@@ -12,7 +12,7 @@ This guide helps you deploy the Auction Website on Minikube with external access
 - [ ] Minikube installed
 - [ ] Ports 3000, 3001, 30000-32767 open in firewall
 
-## 🚀 Deployment Steps
+##  Deployment Steps
 
 ### 1. Quick Deployment (Automated)
 
@@ -45,7 +45,7 @@ cd auction-website
 - Frontend: `http://YOUR_SERVER_IP:3000`
 - API Gateway: `http://YOUR_SERVER_IP:3001`
 
-## 🔧 Key Scripts
+##  Key Scripts
 
 | Script | Purpose |
 |--------|---------|
@@ -68,7 +68,7 @@ External Traffic
    Infrastructure (MySQL, Redis, NATS)
 ```
 
-## 📊 Key Components
+##  Key Components
 
 ### Infrastructure Services
 - **MySQL Databases**: 5 instances (auth, bid, listings, payments, profile)
@@ -88,7 +88,7 @@ External Traffic
 - **Saga Orchestrator**: Transaction coordination
 - **Expiration Service**: Auction timer management
 
-## 🌐 External Access Methods
+##  External Access Methods
 
 ### Method 1: NodePort (Recommended)
 - Direct access via `SERVER_IP:30000/30001`
@@ -138,7 +138,7 @@ kubectl logs -f deployment/frontend -n auction-system
 kubectl top pods -A
 ```
 
-## 🔧 Troubleshooting
+##  Troubleshooting
 
 ### Common Issues
 
@@ -197,7 +197,7 @@ kubectl set image deployment/frontend frontend=new-image:tag -n auction-system
 kubectl rollout undo deployment/frontend -n auction-system
 ```
 
-## 🔐 Security Notes
+##  Security Notes
 
 - Change default passwords in `k8s/secrets/auction-secrets.yaml`
 - Configure proper firewall rules
@@ -214,14 +214,14 @@ kubectl rollout undo deployment/frontend -n auction-system
 
 ## 🎯 Success Indicators
 
-✅ All pods show `Running` status  
-✅ Frontend accessible at `http://SERVER_IP:30000`  
-✅ API Gateway responds at `http://SERVER_IP:30001`  
-✅ User registration works  
-✅ Auction creation works  
-✅ Real-time bidding works  
+ All pods show `Running` status  
+ Frontend accessible at `http://SERVER_IP:30000`  
+ API Gateway responds at `http://SERVER_IP:30001`  
+ User registration works  
+ Auction creation works  
+ Real-time bidding works  
 
-## 📞 Getting Help
+##  Getting Help
 
 1. Check deployment status: `./scripts/monitor-minikube.sh`
 2. View pod logs: `kubectl logs <pod-name> -n <namespace>`
@@ -230,4 +230,4 @@ kubectl rollout undo deployment/frontend -n auction-system
 
 ---
 
-**🎉 Ready to go live?** Your auction website is now running on Minikube with external access!
+** Ready to go live?** Your auction website is now running on Minikube with external access!

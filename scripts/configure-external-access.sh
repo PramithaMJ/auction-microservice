@@ -304,7 +304,7 @@ echo ""
 
 # Check if port forwards are running
 if pgrep -f "kubectl port-forward" > /dev/null; then
-    echo "✅ Port forwarding is active"
+    echo " Port forwarding is active"
     echo "Active port forwards:"
     ps aux | grep "kubectl port-forward" | grep -v grep
 else
@@ -315,21 +315,21 @@ fi
 echo ""
 
 # Check if services are accessible
-echo "🌐 Testing external access..."
+echo " Testing external access..."
 echo ""
 
 SERVER_IP="SERVER_IP_PLACEHOLDER"
 
 # Test frontend
 if curl -s --max-time 5 "http://${SERVER_IP}:3000" > /dev/null; then
-    echo "✅ Frontend accessible at http://${SERVER_IP}:3000"
+    echo " Frontend accessible at http://${SERVER_IP}:3000"
 else
     echo "❌ Frontend not accessible at http://${SERVER_IP}:3000"
 fi
 
 # Test API Gateway
 if curl -s --max-time 5 "http://${SERVER_IP}:3001/health" > /dev/null; then
-    echo "✅ API Gateway accessible at http://${SERVER_IP}:3001"
+    echo " API Gateway accessible at http://${SERVER_IP}:3001"
 else
     echo "❌ API Gateway not accessible at http://${SERVER_IP}:3001"
 fi
@@ -364,7 +364,7 @@ create_deployment_script() {
 # Deploy Auction Website with External Access Configuration
 set -e
 
-echo "🚀 Deploying Auction Website with External Access..."
+echo " Deploying Auction Website with External Access..."
 echo "Server IP: ${SERVER_IP}"
 echo ""
 
@@ -385,7 +385,7 @@ kubectl wait --for=condition=ready pod -l app=nats-streaming -n auction-infrastr
 kubectl wait --for=condition=ready pod -l app=redis -n auction-infrastructure --timeout=300s || true
 
 # Deploy secrets
-echo "🔐 Deploying secrets..."
+echo " Deploying secrets..."
 kubectl apply -f secrets/
 
 # Deploy external access ConfigMaps
@@ -393,7 +393,7 @@ echo "⚙️ Deploying external access configuration..."
 kubectl apply -f configmaps/auction-configmap-external.yaml
 
 # Deploy services
-echo "🌐 Deploying services..."
+echo " Deploying services..."
 kubectl apply -f services/
 
 # Deploy external access services
@@ -401,7 +401,7 @@ echo "🌍 Deploying external access services..."
 kubectl apply -f services/frontend-external-service.yaml
 
 # Deploy deployments
-echo "🚀 Deploying applications..."
+echo " Deploying applications..."
 kubectl apply -f deployments/
 
 # Deploy external access ingress
@@ -409,14 +409,14 @@ echo "🔗 Deploying external access ingress..."
 kubectl apply -f ingress/auction-external-ingress.yaml
 
 echo ""
-echo "✅ Deployment completed!"
+echo " Deployment completed!"
 echo ""
 echo "📋 Next steps:"
 echo "1. Wait for all pods to be ready: kubectl get pods --all-namespaces"
 echo "2. Start external access: ./scripts/start-external-access.sh"
 echo "3. Check status: ./scripts/check-external-access.sh"
 echo ""
-echo "🌐 Your application will be accessible at:"
+echo " Your application will be accessible at:"
 echo "Frontend: http://${SERVER_IP}:3000"
 echo "API Gateway: http://${SERVER_IP}:3001"
 
@@ -463,7 +463,7 @@ for script in scripts/start-external-access.sh scripts/check-external-access.sh;
     fi
 done
 
-echo "✅ Server IP updated successfully!"
+echo " Server IP updated successfully!"
 EOF
 
     chmod +x scripts/update-server-ip.sh
@@ -490,14 +490,14 @@ main() {
     update_server_ip
     
     echo ""
-    echo -e "${GREEN}🎉 Configuration completed successfully!${NC}"
+    echo -e "${GREEN} Configuration completed successfully!${NC}"
     echo ""
     echo -e "${CYAN}📋 Next steps:${NC}"
     echo -e "1. ${YELLOW}Deploy the application:${NC} ./scripts/deploy-external-access.sh"
     echo -e "2. ${YELLOW}Start external access:${NC} ./scripts/start-external-access.sh"
     echo -e "3. ${YELLOW}Check status:${NC} ./scripts/check-external-access.sh"
     echo ""
-    echo -e "${CYAN}🌐 Your application will be accessible at:${NC}"
+    echo -e "${CYAN} Your application will be accessible at:${NC}"
     echo -e "Frontend: ${GREEN}http://${SERVER_IP}:3000${NC}"
     echo -e "API Gateway: ${GREEN}http://${SERVER_IP}:3001${NC}"
     echo ""

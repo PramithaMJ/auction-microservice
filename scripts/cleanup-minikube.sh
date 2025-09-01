@@ -21,7 +21,7 @@ echo -e "${BLUE}🧹 Starting Minikube Cleanup for Auction Website${NC}"
 
 # Function to print status
 print_status() {
-    echo -e "${GREEN}✅ $1${NC}"
+    echo -e "${GREEN} $1${NC}"
 }
 
 print_warning() {
@@ -103,7 +103,7 @@ print_status "Namespaces removed"
 
 echo -e "${GREEN}"
 echo "=============================================="
-echo "🎉 Cleanup completed successfully!"
+echo " Cleanup completed successfully!"
 echo "=============================================="
 echo -e "${NC}"
 

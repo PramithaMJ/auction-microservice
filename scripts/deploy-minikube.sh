@@ -19,11 +19,11 @@ MINIKUBE_PROFILE="auction-cluster"
 MINIKUBE_MEMORY="6144"  # Reduced from 8192 to 6144MB (6GB) for systems with limited RAM
 MINIKUBE_CPUS="4"
 
-echo -e "${BLUE}🚀 Starting Minikube Deployment for Auction Website${NC}"
+echo -e "${BLUE} Starting Minikube Deployment for Auction Website${NC}"
 
 # Function to print status
 print_status() {
-    echo -e "${GREEN}✅ $1${NC}"
+    echo -e "${GREEN} $1${NC}"
 }
 
 print_warning() {
@@ -80,7 +80,7 @@ fi
 kubectl config use-context $MINIKUBE_PROFILE
 
 # Enable required addons
-echo -e "${BLUE}🔧 Enabling Minikube addons...${NC}"
+echo -e "${BLUE} Enabling Minikube addons...${NC}"
 minikube addons enable ingress -p $MINIKUBE_PROFILE
 minikube addons enable ingress-dns -p $MINIKUBE_PROFILE
 minikube addons enable storage-provisioner -p $MINIKUBE_PROFILE
@@ -178,7 +178,7 @@ kubectl wait --for=condition=ready pod -l app=api-gateway -n $NAMESPACE_APP --ti
 print_status "Application services are ready"
 
 # Configure local DNS (add entries to /etc/hosts)
-echo -e "${BLUE}🌐 Configuring local DNS...${NC}"
+echo -e "${BLUE} Configuring local DNS...${NC}"
 print_warning "You may need to add the following entries to your /etc/hosts file:"
 echo "$MINIKUBE_IP auction.local"
 echo "$MINIKUBE_IP api.auction.local"
@@ -186,7 +186,7 @@ echo "$MINIKUBE_IP api.auction.local"
 # Display access information
 echo -e "${GREEN}"
 echo "=============================================="
-echo "🎉 Deployment completed successfully!"
+echo " Deployment completed successfully!"
 echo "=============================================="
 echo -e "${NC}"
 
@@ -206,7 +206,7 @@ echo "   Frontend: http://auction.local"
 echo "   API: http://api.auction.local"
 echo ""
 
-echo -e "${BLUE}🔧 Useful Commands:${NC}"
+echo -e "${BLUE} Useful Commands:${NC}"
 echo "View pods: kubectl get pods -A"
 echo "View services: kubectl get svc -A"
 echo "View ingress: kubectl get ingress -n $NAMESPACE_APP"

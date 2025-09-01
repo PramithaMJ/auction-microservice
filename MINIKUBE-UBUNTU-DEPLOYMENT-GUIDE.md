@@ -1,4 +1,4 @@
-# 🚀 Auction Website - Minikube Ubuntu Server Deployment Guide
+#  Auction Website - Minikube Ubuntu Server Deployment Guide
 
 ## 📋 Complete Guide for External Access
 
@@ -7,14 +7,16 @@ This guide will help you deploy the auction website on Ubuntu server using Minik
 ## 🎯 What You'll Achieve
 
 After following this guide:
-- ✅ Auction website running on Minikube in Ubuntu server
-- ✅ External access from any device/location
-- ✅ Real-time bidding and all features working
-- ✅ Production-ready setup with monitoring
+
+-  Auction website running on Minikube in Ubuntu server
+-  External access from any device/location
+-  Real-time bidding and all features working
+-  Production-ready setup with monitoring
 
 ## 📋 Prerequisites
 
 ### Server Requirements
+
 - **Ubuntu Server 20.04+ or 22.04+**
 - **4GB+ RAM** (8GB recommended)
 - **2+ CPU cores** (4 cores recommended)
@@ -22,11 +24,12 @@ After following this guide:
 - **Stable internet connection**
 
 ### Network Requirements
+
 - **Server IP address** (static preferred)
 - **Ports to open**: 80, 443, 3000, 3001, 6443, 30000-32767
 - **SSH access** to the server
 
-## 🚀 Phase 1: Server Preparation
+##  Phase 1: Server Preparation
 
 ### Step 1: Connect to Your Ubuntu Server
 
@@ -73,13 +76,13 @@ kubectl version --client
 minikube version
 ```
 
-## 🚀 Phase 2: Project Setup
+##  Phase 2: Project Setup
 
 ### Step 1: Clone the Repository
 
 ```bash
 # Clone your repository
-git clone https://github.com/your-username/auction-website.git
+git clone https://github.com/pramithamj/auction-microservice.git
 cd auction-website
 
 # Or if you're uploading files, create directory
@@ -98,7 +101,7 @@ chmod +x scripts/configure-external-access.sh
 ./scripts/configure-external-access.sh
 ```
 
-## 🚀 Phase 3: Minikube Setup for External Access
+##  Phase 3: Minikube Setup for External Access
 
 ### Step 1: Start Minikube with External Configuration
 
@@ -133,7 +136,7 @@ nohup kubectl port-forward --address 0.0.0.0 -n auction-system svc/frontend-serv
 nohup kubectl port-forward --address 0.0.0.0 -n auction-system svc/api-gateway-service 3001:3001 &
 ```
 
-## 🚀 Phase 4: Application Deployment
+##  Phase 4: Application Deployment
 
 ### Step 1: Update Configuration for Your Server
 
@@ -193,7 +196,7 @@ kubectl get svc -n auction-system
 kubectl get ingress -n auction-system
 ```
 
-## 🌐 Phase 5: External Access Configuration
+##  Phase 5: External Access Configuration
 
 ### Step 1: NodePort Services for External Access
 
@@ -243,7 +246,7 @@ sudo ufw allow 30000:32767/tcp
 sudo ufw reload
 ```
 
-## 🚀 Phase 6: Access and Testing
+##  Phase 6: Access and Testing
 
 ### Step 1: Start Port Forwarding
 
@@ -255,6 +258,7 @@ sudo ufw reload
 ### Step 2: Access Your Application
 
 Open your web browser and navigate to:
+
 - **Main Application**: `http://YOUR_SERVER_IP:3000`
 - **API Gateway**: `http://YOUR_SERVER_IP:3001`
 - **API Documentation**: `http://YOUR_SERVER_IP:3001/api-docs`
@@ -267,7 +271,7 @@ Open your web browser and navigate to:
 4. **Place Bids**: Test the bidding functionality
 5. **Real-time Updates**: Open multiple browser tabs to test real-time bidding
 
-## 🔧 Management Commands
+##  Management Commands
 
 ### Monitoring and Maintenance
 
@@ -301,11 +305,12 @@ kubectl set image deployment/frontend frontend=pramithamj/auction-website-ms-fro
 kubectl set image deployment/api-gateway api-gateway=pramithamj/auction-website-ms-api-gateway:latest -n auction-system
 ```
 
-## 🚨 Troubleshooting
+##  Troubleshooting
 
 ### Common Issues and Solutions
 
 #### 1. Pods Not Starting
+
 ```bash
 # Check pod status and events
 kubectl describe pod <pod-name> -n <namespace>
@@ -313,6 +318,7 @@ kubectl get events -n <namespace> --sort-by='.lastTimestamp'
 ```
 
 #### 2. External Access Not Working
+
 ```bash
 # Check port forwarding is running
 ps aux | grep "kubectl port-forward"
@@ -326,6 +332,7 @@ sudo ufw status
 ```
 
 #### 3. Database Connection Issues
+
 ```bash
 # Check MySQL pods
 kubectl get pods -n auction-infrastructure | grep mysql
@@ -338,6 +345,7 @@ kubectl exec -it -n auction-infrastructure deployment/auth-mysql -- mysql -u roo
 ```
 
 #### 4. Memory or CPU Issues
+
 ```bash
 # Check resource usage
 kubectl top pods --all-namespaces
@@ -348,7 +356,7 @@ kubectl scale deployment frontend -n auction-system --replicas=1
 kubectl scale deployment api-gateway -n auction-system --replicas=1
 ```
 
-## 🔄 Auto-Start Setup
+##  Auto-Start Setup
 
 ### Create Systemd Service for Auto-Start
 
@@ -396,7 +404,7 @@ sudo systemctl enable minikube.service
 sudo systemctl enable auction-port-forward.service
 ```
 
-## 📊 Monitoring and Logs
+##  Monitoring and Logs
 
 ### Setup Log Monitoring
 
@@ -429,32 +437,32 @@ EOF
 chmod +x ~/monitor-logs.sh
 ```
 
-## 🌟 Success Indicators
+##  Success Indicators
 
 Your deployment is successful when:
 
-1. ✅ All pods show `Running` status: `kubectl get pods --all-namespaces`
-2. ✅ Frontend accessible at: `http://YOUR_SERVER_IP:3000`
-3. ✅ API Gateway accessible at: `http://YOUR_SERVER_IP:3001`
-4. ✅ You can register new users
-5. ✅ You can create auction listings
-6. ✅ Real-time bidding works
-7. ✅ All microservices are communicating
+1.  All pods show `Running` status: `kubectl get pods --all-namespaces`
+2.  Frontend accessible at: `http://YOUR_SERVER_IP:3000`
+3.  API Gateway accessible at: `http://YOUR_SERVER_IP:3001`
+4.  You can register new users
+5.  You can create auction listings
+6.  Real-time bidding works
+7.  All microservices are communicating
 
-## 🔐 Security Considerations
+##  Security Considerations
 
 ### Production Security Checklist
 
-- [ ] Change default passwords in `k8s/secrets/auction-secrets.yaml`
-- [ ] Use proper SSL certificates
-- [ ] Configure network policies
-- [ ] Set up proper backup strategy
-- [ ] Monitor resource usage
-- [ ] Regular security updates
-- [ ] Use secrets management
-- [ ] Enable audit logging
+- [ ]  Change default passwords in `k8s/secrets/auction-secrets.yaml`
+- [ ]  Use proper SSL certificates
+- [ ]  Configure network policies
+- [ ]  Set up proper backup strategy
+- [ ]  Monitor resource usage
+- [ ]  Regular security updates
+- [ ]  Use secrets management
+- [ ]  Enable audit logging
 
-## 📞 Get Help
+##  Get Help
 
 If you encounter issues:
 
@@ -463,11 +471,12 @@ If you encounter issues:
 3. **Check events**: `kubectl get events -n <namespace> --sort-by='.lastTimestamp'`
 4. **Check resources**: `kubectl top pods --all-namespaces`
 
-## 🎉 Congratulations!
+##  Congratulations!
 
-You now have a fully functional auction website running on Minikube with external access! 
+You now have a fully functional auction website running on Minikube with external access!
 
 Your application URLs:
+
 - **Main Application**: `http://YOUR_SERVER_IP:3000`
 - **API Gateway**: `http://YOUR_SERVER_IP:3001`
 - **API Documentation**: `http://YOUR_SERVER_IP:3001/api-docs`

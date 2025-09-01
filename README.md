@@ -36,7 +36,7 @@ The auction platform consists of 9 microservices and a React frontend:
 - **Redis** - Caching and session storage
 - **Frontend** - Next.js React application
 
-## 🚀 Deployment Options
+##  Deployment Options
 
 ### Option 1: Kubernetes (Recommended for Production)
 Deploy on any Kubernetes cluster with automated scripts and comprehensive monitoring.
@@ -50,7 +50,7 @@ kubectl port-forward svc/frontend-service 3000:3000 -n auction-system
 ```
 
 📖 **[Complete Kubernetes Guide →](k8s/README.md)**  
-🚀 **[Quick Start Guide →](k8s/QUICK-START.md)**
+ **[Quick Start Guide →](k8s/QUICK-START.md)**
 
 ### Option 2: Docker Compose (Local Development)
 Perfect for local development and testing.

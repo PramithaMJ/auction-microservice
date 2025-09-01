@@ -18,3 +18,6 @@ services/*/.env.production
 services/*/.env.development
 
 .DS_Store
+
+# K8s Secrets
+k8s/secrets/auction-secrets.yaml
