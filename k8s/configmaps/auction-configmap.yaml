@@ -36,7 +36,7 @@ data:
   AWS_REGION: "us-east-1"
   
   # CORS Configuration
-  CORS_ORIGIN: "http://localhost:3000,http://localhost:3001,http://13.218.239.193:3000,http://13.218.239.193:3001,http://13.218.239.193"
+  CORS_ORIGIN: "http://localhost:3000,http://localhost:3001,http://98.87.20.168:3000,http://98.87.20.168:3001,http://98.87.20.168"
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -44,9 +44,9 @@ metadata:
   name: frontend-config
   namespace: auction-system
 data:
-  NEXT_PUBLIC_API_URL: "http://13.218.239.193:3001"
+  NEXT_PUBLIC_API_URL: "http://98.87.20.168:3001"
   NEXT_PUBLIC_API_GATEWAY_PORT: "3001"
-  SERVER_API_URL: "http://13.218.239.193:3001"
-  NEXT_PUBLIC_SERVER_IP: "13.218.239.193"
-  NEXT_PUBLIC_LISTINGS_SOCKET_URL: "http://13.218.239.193:3103/socket"
+  SERVER_API_URL: "http://98.87.20.168:3001"
+  NEXT_PUBLIC_SERVER_IP: "98.87.20.168"
+  NEXT_PUBLIC_LISTINGS_SOCKET_URL: "http://98.87.20.168:3103/socket"
   WATCHPACK_POLLING: "true"
