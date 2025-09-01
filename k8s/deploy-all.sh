@@ -92,8 +92,8 @@ wait_for_pods() {
 create_namespaces() {
     log_step "Creating namespaces..."
     
-    kubectl create namespace $INFRASTRUCTURE_NS --dry-run=client -o yaml | kubectl apply -f -
-    kubectl create namespace $SYSTEM_NS --dry-run=client -o yaml | kubectl apply -f -
+    # Apply namespace definitions
+    kubectl apply -f namespaces.yaml
     
     log_success "Namespaces created"
 }
