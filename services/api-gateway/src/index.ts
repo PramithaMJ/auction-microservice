@@ -155,7 +155,7 @@ class ApiGateway {
     const circuitCheck = this.circuitBreaker.canExecute(serviceName);
     
     if (!circuitCheck.allowed) {
-      console.log(`🚫 Circuit breaker blocked request to ${serviceName}: ${circuitCheck.reason}`);
+      console.log(` Circuit breaker blocked request to ${serviceName}: ${circuitCheck.reason}`);
       const fallbackResponse = this.circuitBreaker.createFallbackResponse(serviceName, req);
       res.status(503).json(fallbackResponse);
       return;

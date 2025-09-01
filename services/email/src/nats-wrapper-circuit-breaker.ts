@@ -131,7 +131,7 @@ class NatsWrapper {
       this._health.state = NatsCircuitState.OPEN;
       this._health.nextAttemptTime = now + this._config.resetTimeout;
       
-      console.log(`🚫 NATS circuit breaker is now OPEN. Next attempt at ${new Date(this._health.nextAttemptTime).toISOString()}`);
+      console.log(` NATS circuit breaker is now OPEN. Next attempt at ${new Date(this._health.nextAttemptTime).toISOString()}`);
       
       // Schedule automatic reconnection attempt
       this.scheduleReconnection();

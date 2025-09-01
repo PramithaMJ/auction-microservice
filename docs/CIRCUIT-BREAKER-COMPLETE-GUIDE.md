@@ -245,8 +245,8 @@ new NatsWrapper({
 ```
  Proxying GET /api/auth/currentuser → auth (Circuit: CLOSED)
  Circuit breaker failure recorded for auth: 5/5
-🚫 Circuit breaker for auth is now OPEN. Next attempt at 2025-08-26T...
-🚫 Circuit breaker blocked request to auth: Service temporarily unavailable
+ Circuit breaker for auth is now OPEN. Next attempt at 2025-08-26T...
+ Circuit breaker blocked request to auth: Service temporarily unavailable
  Circuit breaker for auth transitioning to HALF_OPEN
  Circuit breaker for auth transitioning to CLOSED (service recovered)
 ```
@@ -256,7 +256,7 @@ new NatsWrapper({
  Connected to NATS
  Event published to subject: user:created
  NATS circuit breaker failure recorded: 3/3
-🚫 NATS circuit breaker is now OPEN. Next attempt at 2025-08-26T...
+ NATS circuit breaker is now OPEN. Next attempt at 2025-08-26T...
  Attempting automatic NATS reconnection...
  NATS circuit breaker transitioning to CLOSED (service recovered)
 ```
