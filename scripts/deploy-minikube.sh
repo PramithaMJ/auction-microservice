@@ -16,7 +16,7 @@ NC='\033[0m' # No Color
 NAMESPACE_INFRA="auction-infrastructure"
 NAMESPACE_APP="auction-system"
 MINIKUBE_PROFILE="auction-cluster"
-MINIKUBE_MEMORY="8192"
+MINIKUBE_MEMORY="6144"  # Reduced from 8192 to 6144MB (6GB) for systems with limited RAM
 MINIKUBE_CPUS="4"
 
 echo -e "${BLUE}🚀 Starting Minikube Deployment for Auction Website${NC}"
