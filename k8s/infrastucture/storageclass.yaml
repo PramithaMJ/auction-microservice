@@ -1,11 +1,15 @@
-# StorageClass for EC2/Minikube deployment
+# StorageClass for EC2 deployment
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
   name: fast-ssd
   annotations:
-    storageclass.kubernetes.io/is-default-class: "false"
-provisioner: k8s.io/minikube-hostpath
-volumeBindingMode: Immediate
+    storageclass.kubernetes.io/is-default-class: "true"
+provisioner: kubernetes.io/aws-ebs
+parameters:
+  type: gp3
+  fsType: ext4
+  iopsPerGB: "10"
+volumeBindingMode: WaitForFirstConsumer
 allowVolumeExpansion: true
 reclaimPolicy: Delete
