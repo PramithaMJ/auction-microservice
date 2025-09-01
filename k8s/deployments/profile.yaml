@@ -36,8 +36,8 @@ spec:
               key: JWT_KEY
         - name: PROFILE_MYSQL_URI
           valueFrom:
-            configMapKeyRef:
-              name: auction-config
+            secretKeyRef:
+              name: auction-secrets
               key: PROFILE_MYSQL_URI
         - name: NATS_URL
           valueFrom:
