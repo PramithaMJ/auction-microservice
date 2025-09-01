@@ -162,27 +162,27 @@ deploy_infrastructure() {
     log_info "Deploying infrastructure components..."
     
     # Storage
-    execute_cmd "kubectl apply -f k8s/infrastucture/storageclass.yaml" \
+    execute_cmd "kubectl apply -f infrastucture/storageclass.yaml" \
                 "Applying storage class configuration"
     
-    execute_cmd "kubectl apply -f k8s/infrastucture/mysql-pvcs.yaml" \
+    execute_cmd "kubectl apply -f infrastucture/mysql-pvcs.yaml" \
                 "Creating persistent volume claims for MySQL"
     
     # MySQL Databases
     log_info "Deploying MySQL databases..."
-    execute_cmd "kubectl apply -f k8s/infrastucture/auth-mysql.yaml" \
+    execute_cmd "kubectl apply -f infrastucture/auth-mysql.yaml" \
                 "Deploying Auth MySQL database"
     
-    execute_cmd "kubectl apply -f k8s/infrastucture/bid-mysql.yaml" \
+    execute_cmd "kubectl apply -f infrastucture/bid-mysql.yaml" \
                 "Deploying Bid MySQL database"
     
-    execute_cmd "kubectl apply -f k8s/infrastucture/listings-mysql.yaml" \
+    execute_cmd "kubectl apply -f infrastucture/listings-mysql.yaml" \
                 "Deploying Listings MySQL database"
     
-    execute_cmd "kubectl apply -f k8s/infrastucture/payments-mysql.yaml" \
+    execute_cmd "kubectl apply -f infrastucture/payments-mysql.yaml" \
                 "Deploying Payments MySQL database"
     
-    execute_cmd "kubectl apply -f k8s/infrastucture/profile-mysql.yaml" \
+    execute_cmd "kubectl apply -f infrastucture/profile-mysql.yaml" \
                 "Deploying Profile MySQL database"
     
     # Wait for MySQL databases
@@ -193,12 +193,12 @@ deploy_infrastructure() {
     wait_for_pods "app=profile-mysql" "auction-infrastructure"
     
     # NATS Streaming
-    execute_cmd "kubectl apply -f k8s/infrastucture/nats-streaming.yaml" \
+    execute_cmd "kubectl apply -f infrastucture/nats-streaming.yaml" \
                 "Deploying NATS Streaming server"
     wait_for_pods "app=nats-streaming" "auction-infrastructure"
     
     # Redis
-    execute_cmd "kubectl apply -f k8s/infrastucture/redis.yaml" \
+    execute_cmd "kubectl apply -f infrastucture/redis.yaml" \
                 "Deploying Redis cache"
     wait_for_pods "app=redis" "auction-infrastructure"
     
@@ -209,13 +209,13 @@ deploy_infrastructure() {
 deploy_configuration() {
     log_info "Deploying configuration..."
     
-    execute_cmd "kubectl apply -f k8s/configmaps/auction-configmap.yaml" \
+    execute_cmd "kubectl apply -f configmaps/auction-configmap.yaml" \
                 "Applying auction configuration"
     
-    execute_cmd "kubectl apply -f k8s/configmaps/mysql-init-scripts.yaml" \
+    execute_cmd "kubectl apply -f configmaps/mysql-init-scripts.yaml" \
                 "Applying MySQL initialization scripts"
     
-    execute_cmd "kubectl apply -f k8s/secrets/auction-secrets.yaml" \
+    execute_cmd "kubectl apply -f secrets/auction-secrets.yaml" \
                 "Applying secrets configuration"
     
     log_success "Configuration deployment completed"
@@ -229,7 +229,7 @@ deploy_microservices() {
     local services=("auth" "bid" "listings" "payments" "profile" "email" "expiration" "saga-orchestrator")
     
     for service in "${services[@]}"; do
-        execute_cmd "kubectl apply -f k8s/deployments/${service}.yaml" \
+        execute_cmd "kubectl apply -f deployments/${service}.yaml" \
                     "Deploying $service service"
     done
     
@@ -239,12 +239,12 @@ deploy_microservices() {
     done
     
     # API Gateway
-    execute_cmd "kubectl apply -f k8s/deployments/api-gateway.yaml" \
+    execute_cmd "kubectl apply -f deployments/api-gateway.yaml" \
                 "Deploying API Gateway"
     wait_for_pods "app=api-gateway" "auction-system"
     
     # Frontend
-    execute_cmd "kubectl apply -f k8s/deployments/frontend.yaml" \
+    execute_cmd "kubectl apply -f deployments/frontend.yaml" \
                 "Deploying Frontend application"
     wait_for_pods "app=frontend" "auction-system"
     
@@ -255,13 +255,13 @@ deploy_microservices() {
 deploy_services() {
     log_info "Deploying Kubernetes services..."
     
-    execute_cmd "kubectl apply -f k8s/services/api-gateway-service.yaml" \
+    execute_cmd "kubectl apply -f services/api-gateway-service.yaml" \
                 "Creating API Gateway service"
     
-    execute_cmd "kubectl apply -f k8s/services/frontend-service.yaml" \
+    execute_cmd "kubectl apply -f services/frontend-service.yaml" \
                 "Creating Frontend service"
     
-    execute_cmd "kubectl apply -f k8s/services/microservices-services.yaml" \
+    execute_cmd "kubectl apply -f services/microservices-services.yaml" \
                 "Creating microservices services"
     
     log_success "Services deployment completed"
@@ -278,7 +278,7 @@ deploy_ingress() {
         log_info "For other clusters: kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.8.1/deploy/static/provider/cloud/deploy.yaml"
     fi
     
-    execute_cmd "kubectl apply -f k8s/ingress/auction-ingress.yaml" \
+    execute_cmd "kubectl apply -f ingress/auction-ingress.yaml" \
                 "Applying ingress rules"
     
     log_success "Ingress deployment completed"
@@ -330,7 +330,7 @@ main() {
     deploy_ingress
     
     echo ""
-    log_success "🎉 Auction Website deployment completed successfully!"
+    log_success " Auction Website deployment completed successfully!"
     
     if [[ "$DRY_RUN" != "true" ]]; then
         show_status

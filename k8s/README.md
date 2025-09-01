@@ -1,6 +1,17 @@
 # Kubernetes Deployment Guide for Auction Website
 
-This guide provides comprehensive instructions for deploying the Auction Website microservices architecture on Kubernetes.
+This guide provides comprehensive instructions for deploying the Auction Website micr```bash
+# Apply configuration
+kubectl apply -f configmaps/auction-configmap.yaml
+kubectl apply -f configmaps/mysql-init-scripts.yaml
+```
+
+#### 3.2 Secrets
+
+```bash
+# ⚠️ IMPORTANT: Update secrets before applying
+# Edit secrets/auction-secrets.yaml with your actual values
+kubectl apply -f secrets/auction-secrets.yamlchitecture on Kubernetes.
 
 ## Table of Contents
 
@@ -94,19 +105,19 @@ kubectl create namespace auction-system
 #### 2.1 Storage Classes and Persistent Volumes
 
 ```bash
-kubectl apply -f k8s/infrastucture/storageclass.yaml
-kubectl apply -f k8s/infrastucture/mysql-pvcs.yaml
+kubectl apply -f infrastucture/storageclass.yaml
+kubectl apply -f infrastucture/mysql-pvcs.yaml
 ```
 
 #### 2.2 MySQL Databases
 
 ```bash
 # Deploy MySQL instances for each service
-kubectl apply -f k8s/infrastucture/auth-mysql.yaml
-kubectl apply -f k8s/infrastucture/bid-mysql.yaml
-kubectl apply -f k8s/infrastucture/listings-mysql.yaml
-kubectl apply -f k8s/infrastucture/payments-mysql.yaml
-kubectl apply -f k8s/infrastucture/profile-mysql.yaml
+kubectl apply -f infrastucture/auth-mysql.yaml
+kubectl apply -f infrastucture/bid-mysql.yaml
+kubectl apply -f infrastucture/listings-mysql.yaml
+kubectl apply -f infrastucture/payments-mysql.yaml
+kubectl apply -f infrastucture/profile-mysql.yaml
 
 # Wait for MySQL pods to be ready
 kubectl wait --for=condition=ready pod -l app=auth-mysql -n auction-infrastructure --timeout=300s
@@ -119,14 +130,14 @@ kubectl wait --for=condition=ready pod -l app=profile-mysql -n auction-infrastru
 #### 2.3 NATS Streaming Server
 
 ```bash
-kubectl apply -f k8s/infrastucture/nats-streaming.yaml
+kubectl apply -f infrastucture/nats-streaming.yaml
 kubectl wait --for=condition=ready pod -l app=nats-streaming -n auction-infrastructure --timeout=300s
 ```
 
 #### 2.4 Redis
 
 ```bash
-kubectl apply -f k8s/infrastucture/redis.yaml
+kubectl apply -f infrastucture/redis.yaml
 kubectl wait --for=condition=ready pod -l app=redis -n auction-infrastructure --timeout=300s
 ```
 
@@ -154,14 +165,14 @@ kubectl apply -f k8s/secrets/auction-secrets.yaml
 
 ```bash
 # Deploy all microservices
-kubectl apply -f k8s/deployments/auth.yaml
-kubectl apply -f k8s/deployments/bid.yaml
-kubectl apply -f k8s/deployments/listings.yaml
-kubectl apply -f k8s/deployments/payments.yaml
-kubectl apply -f k8s/deployments/profile.yaml
-kubectl apply -f k8s/deployments/email.yaml
-kubectl apply -f k8s/deployments/expiration.yaml
-kubectl apply -f k8s/deployments/saga-orchestrator.yaml
+kubectl apply -f deployments/auth.yaml
+kubectl apply -f deployments/bid.yaml
+kubectl apply -f deployments/listings.yaml
+kubectl apply -f deployments/payments.yaml
+kubectl apply -f deployments/profile.yaml
+kubectl apply -f deployments/email.yaml
+kubectl apply -f deployments/expiration.yaml
+kubectl apply -f deployments/saga-orchestrator.yaml
 
 # Wait for services to be ready
 kubectl wait --for=condition=ready pod -l app=auth -n auction-system --timeout=300s
@@ -174,14 +185,14 @@ kubectl wait --for=condition=ready pod -l app=profile -n auction-system --timeou
 #### 4.2 API Gateway
 
 ```bash
-kubectl apply -f k8s/deployments/api-gateway.yaml
+kubectl apply -f deployments/api-gateway.yaml
 kubectl wait --for=condition=ready pod -l app=api-gateway -n auction-system --timeout=300s
 ```
 
 #### 4.3 Frontend
 
 ```bash
-kubectl apply -f k8s/deployments/frontend.yaml
+kubectl apply -f deployments/frontend.yaml
 kubectl wait --for=condition=ready pod -l app=frontend -n auction-system --timeout=300s
 ```
 
@@ -189,9 +200,9 @@ kubectl wait --for=condition=ready pod -l app=frontend -n auction-system --timeo
 
 ```bash
 # Create all services
-kubectl apply -f k8s/services/api-gateway-service.yaml
-kubectl apply -f k8s/services/frontend-service.yaml
-kubectl apply -f k8s/services/microservices-services.yaml
+kubectl apply -f services/api-gateway-service.yaml
+kubectl apply -f services/frontend-service.yaml
+kubectl apply -f services/microservices-services.yaml
 ```
 
 ### Step 6: Setup Ingress
@@ -209,7 +220,7 @@ kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/cont
 #### 6.2 Apply Ingress Rules
 
 ```bash
-kubectl apply -f k8s/ingress/auction-ingress.yaml
+kubectl apply -f ingress/auction-ingress.yaml
 ```
 
 ### Step 7: Verify Deployment
@@ -249,7 +260,7 @@ kubectl patch configmap auction-config -n auction-system --patch '{"data":{"NODE
 
 #### 1. Update External IP/Domain
 
-Edit `k8s/configmaps/auction-configmap.yaml`:
+Edit `configmaps/auction-configmap.yaml`:
 
 ```yaml
 # Replace with your actual domain or IP
@@ -259,7 +270,7 @@ NEXT_PUBLIC_API_URL: "http://your-domain.com:3001"
 
 #### 2. Update CORS Settings
 
-Edit `k8s/configmaps/auction-configmap.yaml`:
+Edit `configmaps/auction-configmap.yaml`:
 
 ```yaml
 CORS_ORIGIN: "http://your-domain.com:3000,http://your-domain.com:3001"
@@ -267,7 +278,7 @@ CORS_ORIGIN: "http://your-domain.com:3000,http://your-domain.com:3001"
 
 #### 3. Update Ingress
 
-Edit `k8s/ingress/auction-ingress.yaml`:
+Edit `ingress/auction-ingress.yaml`:
 
 ```yaml
 metadata:

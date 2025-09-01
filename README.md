@@ -192,7 +192,7 @@ kubectl logs -f deployment/api-gateway -n auction-system
 docker-compose logs -f api-gateway
 ```
 
-## 🧹 Cleanup
+##  Cleanup
 
 ### Kubernetes
 ```bash

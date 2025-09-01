@@ -2,40 +2,56 @@
 
 This is a quick reference for deploying the Auction Website on Kubernetes.
 
-## Quick Commands
+## 🚀 Quick Commands
+
+### Pre-deployment Check
+```bash
+# Check if all files exist before deployment
+cd k8s
+./pre-check.sh
+```
 
 ### Full Deployment (One Command)
-
 ```bash
+# From the k8s directory
+cd k8s
+./deploy-all.sh
+
+# Or from project root
 ./k8s/deploy-all.sh
 ```
 
 ### Development Setup
-
 ```bash
-# Deploy everything
-./k8s/deploy-all.sh
+# 1. Run pre-check
+cd k8s
+./pre-check.sh
 
-# Port forward for local access
+# 2. Deploy everything
+./deploy-all.sh
+
+# 3. Port forward for local access
 kubectl port-forward svc/frontend-service 3000:3000 -n auction-system &
 kubectl port-forward svc/api-gateway-service 3001:3001 -n auction-system &
 ```
 
 ### Production Setup
-
 ```bash
 # 1. Update configuration with your domain/IP
-# Edit k8s/configmaps/auction-configmap.yaml
+# Edit configmaps/auction-configmap.yaml
 # Update NEXT_PUBLIC_SERVER_IP and CORS_ORIGIN
 
 # 2. Update secrets with production values
-# Edit k8s/secrets/auction-secrets.yaml
+# Edit secrets/auction-secrets.yaml
 
-# 3. Deploy
-./k8s/deploy-all.sh
+# 3. Run pre-check
+./pre-check.sh
 
-# 4. Configure ingress with your domain
-# Edit k8s/ingress/auction-ingress.yaml
+# 4. Deploy
+./deploy-all.sh
+
+# 5. Configure ingress with your domain
+# Edit ingress/auction-ingress.yaml
 ```
 
 ## Status Check Commands
@@ -86,30 +102,37 @@ kubectl logs -f deployment/auth -n auction-system
 kubectl logs -f -l app=api-gateway -n auction-system
 ```
 
-## Cleanup Commands
+## 🧹 Cleanup Commands
 
 ### Full Cleanup
-
 ```bash
-./k8s/cleanup.sh
+cd k8s
+./cleanup.sh
 ```
 
 ### Keep Infrastructure
-
 ```bash
-./k8s/cleanup.sh --keep-infra --keep-pvcs
+./cleanup.sh --keep-infra --keep-pvcs
 ```
 
 ### Force Cleanup (No Prompts)
-
 ```bash
-./k8s/cleanup.sh --force
+./cleanup.sh --force
 ```
 
-## Troubleshooting Quick Fixes
+## 🐛 Troubleshooting Quick Fixes
+
+### Check Everything is OK
+```bash
+# Run comprehensive health check
+cd k8s
+./pre-check.sh
+
+# Check deployment status
+kubectl get pods -A | grep auction
+```
 
 ### Pods Not Starting
-
 ```bash
 # Check pod status
 kubectl describe pod <pod-name> -n auction-system
@@ -117,8 +140,8 @@ kubectl describe pod <pod-name> -n auction-system
 # Check events
 kubectl get events -n auction-system --sort-by='.lastTimestamp'
 
-# Force recreate
-kubectl delete pod -l app=api-gateway -n auction-system
+# Check troubleshooting guide
+cat k8s/TROUBLESHOOTING.md
 ```
 
 ### Database Connection Issues

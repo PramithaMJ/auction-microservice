@@ -305,7 +305,7 @@ main() {
     wait_for_cleanup
     
     echo ""
-    log_success "🧹 Auction Website cleanup completed!"
+    log_success " Auction Website cleanup completed!"
     
     show_final_status
     

@@ -20,7 +20,7 @@ class QueueCleanup {
       maxRetryAttempts = 3
     } = options;
 
-    console.log('🧹 Starting queue cleanup...');
+    console.log(' Starting queue cleanup...');
 
     try {
       // Get current queue status
