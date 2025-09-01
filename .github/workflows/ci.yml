@@ -208,6 +208,22 @@ jobs:
         name: Release ${{ steps.meta.outputs.VERSION }}
         body: |
           Automated release for ${{ steps.meta.outputs.VERSION }}
+          DockerHub links:
+          - common: https://hub.docker.com/r/${{ env.DOCKER_USERNAME }}/auction-website-ms-common
+          - auth: https://hub.docker.com/r/${{ env.DOCKER_USERNAME }}/auction-website-ms-auth
+          - bid: https://hub.docker.com/r/${{ env.DOCKER_USERNAME }}/auction-website-ms-bid
+          - listings: https://hub.docker.com/r/${{ env.DOCKER_USERNAME }}/auction-website-ms-listing
+          - payments: https://hub.docker.com/r/${{ env.DOCKER_USERNAME }}/auction-website-ms-payment
+          - profile: https://hub.docker.com/r/${{ env.DOCKER_USERNAME }}/auction-website-ms-profile
+          - email: https://hub.docker.com/r/${{ env.DOCKER_USERNAME }}/auction-website-ms-email
+          - expiration: https://hub.docker.com/r/${{ env.DOCKER_USERNAME }}/auction-website-ms-expiration
+          - saga-orchestrator: https://hub.docker.com/r/${{ env.DOCKER_USERNAME }}/auction-website-ms-saga-orchestrator
+          - api-gateway: https://hub.docker.com/r/${{ env.DOCKER_USERNAME }}/auction-website-ms-api-gateway
+          - frontend: https://hub.docker.com/r/${{ env.DOCKER_USERNAME }}/auction-website-ms-frontend
+          Docker Images Published:
+          Get the Docker images using the following tags:
+          - Version: ${{ steps.meta.outputs.VERSION }}
+          - Full Tag: ${{ steps.meta.outputs.FULL_TAG }}
           Commit: ${{ steps.meta.outputs.SHORT_SHA }}
           Date: ${{ steps.meta.outputs.DATE }}
       env:

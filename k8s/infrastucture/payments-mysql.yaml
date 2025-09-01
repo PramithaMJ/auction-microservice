@@ -28,6 +28,17 @@ spec:
               name: mysql-secrets
               key: MYSQL_ROOT_PASSWORD
         - name: MYSQL_DATABASE
+        - name: MYSQL_USER
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secrets
+              key: MYSQL_USER
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secrets
+              key: MYSQL_PASSWORD
+        - name: MYSQL_DATABASE
           value: "payments"
         volumeMounts:
         - name: mysql-data
@@ -50,7 +61,7 @@ spec:
             - localhost
             - -u
             - root
-            - -ppassword
+            - -p$(MYSQL_ROOT_PASSWORD)
           initialDelaySeconds: 30
           periodSeconds: 10
           timeoutSeconds: 5
@@ -64,7 +75,7 @@ spec:
             - localhost
             - -u
             - root
-            - -ppassword
+            - -p$(MYSQL_ROOT_PASSWORD)
           initialDelaySeconds: 10
           periodSeconds: 5
           timeoutSeconds: 5

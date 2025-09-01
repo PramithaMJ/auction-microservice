@@ -16,12 +16,13 @@ data:
   REDIS_PORT: "6379"
   REDIS_URL: "redis://redis.auction-infrastructure.svc.cluster.local:6379"
   
-  # Database URIs
-  AUTH_MYSQL_URI: "mysql://root:password@auth-mysql.auction-infrastructure.svc.cluster.local:3306/auth"
-  BID_MYSQL_URI: "mysql://root:password@bid-mysql.auction-infrastructure.svc.cluster.local:3306/bid"
-  LISTINGS_MYSQL_URI: "mysql://root:password@listings-mysql.auction-infrastructure.svc.cluster.local:3306/listings"
-  PAYMENTS_MYSQL_URI: "mysql://root:password@payments-mysql.auction-infrastructure.svc.cluster.local:3306/payments"
-  PROFILE_MYSQL_URI: "mysql://root:password@profile-mysql.auction-infrastructure.svc.cluster.local:3306/profile"
+  # Database Host Configuration (passwords moved to secrets)
+  AUTH_MYSQL_HOST: "auth-mysql.auction-infrastructure.svc.cluster.local"
+  BID_MYSQL_HOST: "bid-mysql.auction-infrastructure.svc.cluster.local"
+  LISTINGS_MYSQL_HOST: "listings-mysql.auction-infrastructure.svc.cluster.local"
+  PAYMENTS_MYSQL_HOST: "payments-mysql.auction-infrastructure.svc.cluster.local"
+  PROFILE_MYSQL_HOST: "profile-mysql.auction-infrastructure.svc.cluster.local"
+  MYSQL_PORT: "3306"
   
   # Service URLs
   AUTH_SERVICE_URL: "http://auth-service.auction-system.svc.cluster.local:3101"
@@ -36,7 +37,7 @@ data:
   AWS_REGION: "us-east-1"
   
   # CORS Configuration
-  CORS_ORIGIN: "http://localhost:3000,http://localhost:3001,http://98.87.131.233:3000,http://98.87.131.233:3001,http://98.87.131.233"
+  CORS_ORIGIN: "http://localhost:3000,http://localhost:3001,http://34.229.99.72:3000,http://34.229.99.72:3001,http://34.229.99.72"
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -44,9 +45,9 @@ metadata:
   name: frontend-config
   namespace: auction-system
 data:
-  NEXT_PUBLIC_API_URL: "http://98.87.131.233:3001"
+  NEXT_PUBLIC_API_URL: "http://34.229.99.72:3001"
   NEXT_PUBLIC_API_GATEWAY_PORT: "3001"
-  SERVER_API_URL: "http://98.87.131.233:3001"
-  NEXT_PUBLIC_SERVER_IP: "98.87.131.233"
-  NEXT_PUBLIC_LISTINGS_SOCKET_URL: "http://98.87.131.233:3103/socket"
+  SERVER_API_URL: "http://34.229.99.72:3001"
+  NEXT_PUBLIC_SERVER_IP: "34.229.99.72"
+  NEXT_PUBLIC_LISTINGS_SOCKET_URL: "http://34.229.99.72:3103/socket"
   WATCHPACK_POLLING: "true"
