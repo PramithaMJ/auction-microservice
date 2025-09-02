@@ -35,7 +35,7 @@ router.post(
       );
     }
 
-    if (listing.currentWinnerId !== req.currentUser!.id) {
+    if (listing.winnerId !== req.currentUser!.id) {
       throw new BadRequestError(
         'Only auction winners can pay for sold listings'
       );

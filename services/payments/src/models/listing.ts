@@ -5,7 +5,7 @@ export interface ListingAttributes {
   id: string;
   status?: ListingStatus;
   amount: number;
-  currentWinnerId: string;
+  winnerId: string;
   version?: number;
 }
 
@@ -29,7 +29,7 @@ const ListingFactory = (sequelize: Sequelize): ListingStatic => {
         unique: true,
         primaryKey: true,
       },
-      currentWinnerId: {
+      winnerId: {
         type: DataTypes.UUID,
         allowNull: true,
       },

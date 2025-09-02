@@ -20,8 +20,23 @@ const BidDashboardTableRow = ({ bid, onDelete }) => {
         token: id,
       });
       toast.success('Payment completed successfully!');
+      window.location.reload(); // Refresh page to show updated status
     } catch (err) {
-      err.response.data.errors.forEach((err) => toast.error(err.message));
+      console.error('Payment error:', err);
+      
+      if (err.response?.data?.errors) {
+        err.response.data.errors.forEach((error) => {
+          toast.error(error.message || 'Payment failed. Please try again.');
+        });
+      } else if (err.response?.status === 400) {
+        toast.error('Payment failed. The listing may no longer be available for payment.');
+      } else if (err.response?.status === 401) {
+        toast.error('You must be logged in to make a payment.');
+      } else if (err.response?.status === 404) {
+        toast.error('Listing not found. It may have been removed.');
+      } else {
+        toast.error('Payment failed. Please check your payment details and try again.');
+      }
     }
   };
 

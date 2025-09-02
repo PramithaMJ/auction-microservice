@@ -7,13 +7,13 @@ import { Listing } from '../../src/models';
 import { signup } from '../signup';
 
 const createListing = async (
-  currentWinnerId: string = uuidv4(),
+  winnerId: string = uuidv4(),
   status: ListingStatus = ListingStatus.AwaitingPayment
 ) => {
   return await Listing.create({
     id: uuidv4(),
     amount: 100,
-    currentWinnerId,
+    winnerId,
     status,
   });
 };

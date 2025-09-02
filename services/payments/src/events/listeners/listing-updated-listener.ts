@@ -27,7 +27,7 @@ export class ListingUpdatedListener extends Listener<ListingUpdatedEvent> {
     await listing.update({
       status,
       amount: currentPrice,
-      currentWinnerId: currentWinnerId,
+      winnerId: currentWinnerId,
     });
 
     msg.ack();
