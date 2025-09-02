@@ -35,3 +35,6 @@ export * from './events/user-registration-saga-events';
 export { UserAccountCreatedEvent } from './events/user-registration-saga-events';
 export { ProfileCreatedEvent } from './events/user-registration-saga-events';
 export { WelcomeEmailSentEvent } from './events/user-registration-saga-events';
+
+// Temporary: Export tracing for Docker build compatibility
+export * from './tracing';
