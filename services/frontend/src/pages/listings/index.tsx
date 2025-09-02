@@ -171,12 +171,12 @@ const Listings = ({ listings, search }) => {
         <StyledListings>
           {listings.map((listing, idx) => (
             <ListingCard
-              key={idx}
+              key={listing.id || idx}
               name={listing.title}
               expiresAt={listing.expiresAt}
               price={listing.currentPrice}
               smallImage={listing.smallImage}
-              slug={`/listings/${listing.slug}`}
+              slug={listing.slug ? `/listings/${listing.slug}` : `/listings/${listing.id}`}
             />
           ))}
         </StyledListings>
