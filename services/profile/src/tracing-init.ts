@@ -1,5 +1,5 @@
 // OpenTelemetry Jaeger tracing initialization
-import { JaegerTracingService } from '@jjmauction/common'
+import { JaegerTracingService } from '@jjmauction/common/build/tracing'
 
 const serviceName = process.env.OTEL_SERVICE_NAME || 'profile-service';
 
