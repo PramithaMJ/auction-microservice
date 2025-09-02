@@ -15,8 +15,8 @@ const Listing = ListingFactory(db);
 const User = UserFactory(db);
 const ListingRead = ListingReadFactory(db);
 
-// Set up associations with explicit foreign key
-User.hasMany(Listing, { foreignKey: 'userId', as: 'listings' });
-Listing.belongsTo(User, { foreignKey: 'userId', as: 'User' });
+// Set up associations - temporarily without constraints to handle missing users
+User.hasMany(Listing, { foreignKey: 'userId', as: 'listings', constraints: false });
+Listing.belongsTo(User, { foreignKey: 'userId', as: 'User', constraints: false });
 
 export { db, Listing, User, ListingRead };

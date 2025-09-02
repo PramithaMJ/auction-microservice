@@ -13,9 +13,13 @@ interface S3File extends Express.Multer.File {
   bucket: string;
 }
 
-// Extend Request interface to include file property for S3
+// Extend Request interface to include file property for S3 and current user
 interface MulterS3Request extends Request {
   file: S3File;
+  currentUser: {
+    id: string;
+    iat: number;
+  };
 }
 
 const router = express.Router();
@@ -172,20 +176,9 @@ router.post(
       console.log('=== CREATING LISTING ===');
 
       await db.transaction(async (transaction) => {
-        // Ensure user exists in listings database (temporary fix for saga migration)
-        const existingUser = await User.findOne({ 
-          where: { id: req.currentUser.id }, 
-          transaction 
-        });
-        
-        if (!existingUser) {
-          console.log(`User ${req.currentUser.id} not found in listings database, creating...`);
-          await User.create({
-            id: req.currentUser.id,
-            name: `User_${req.currentUser.id.slice(0, 8)}`, // Generate a name from user ID
-          }, { transaction });
-          console.log(`User ${req.currentUser.id} created in listings database`);
-        }
+        // Note: User existence is not enforced due to microservices eventual consistency
+        // Users should be created via UserCreatedEvent listener, but we don't enforce foreign key constraints
+        console.log(`Creating listing for user: ${req.currentUser.id}`);
 
         // Get S3 file information from multer-s3
         const uploadedFile = req.file;
