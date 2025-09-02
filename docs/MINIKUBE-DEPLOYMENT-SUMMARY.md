@@ -165,7 +165,7 @@ kubectl scale deployment frontend --replicas=1 -n auction-system
 minikube status -p auction-cluster
 ```
 
-## 🛠️ Management Commands
+##  Management Commands
 
 ### Start/Stop
 ```bash
@@ -212,7 +212,7 @@ kubectl rollout undo deployment/frontend -n auction-system
 - **Kubernetes Configs**: `k8s/` directory
 - **Monitoring**: Use `./scripts/monitor-minikube.sh`
 
-## 🎯 Success Indicators
+##  Success Indicators
 
  All pods show `Running` status  
  Frontend accessible at `http://SERVER_IP:30000`  

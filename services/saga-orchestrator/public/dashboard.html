@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saga Orchestrator Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            color: #4a5568;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .metric-card h3 {
+            color: #4a5568;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2d3748;
+        }
+
+        .metric-value.success { color: #38a169; }
+        .metric-value.warning { color: #d69e2e; }
+        .metric-value.danger { color: #e53e3e; }
+
+        .saga-tables {
+            display: grid;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .table-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .table-header h2 {
+            color: #2d3748;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .refresh-btn, .action-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: transform 0.2s;
+        }
+
+        .refresh-btn:hover, .action-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .action-btn.danger {
+            background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+        }
+
+        .action-btn.success {
+            background: linear-gradient(135deg, #38a169 0%, #2f855a 100%);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 0.75rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            background: #f7fafc;
+            font-weight: 600;
+            color: #4a5568;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        tr:hover {
+            background: #f7fafc;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-started { background: #bee3f8; color: #2b6cb0; }
+        .status-completed { background: #c6f6d5; color: #2f855a; }
+        .status-failed { background: #fed7d7; color: #c53030; }
+        .status-compensating { background: #fbd38d; color: #d69e2e; }
+        .status-cancelled { background: #e2e8f0; color: #4a5568; }
+
+        .health-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 0.5rem;
+        }
+
+        .health-healthy { background: #38a169; }
+        .health-warning { background: #d69e2e; }
+        .health-critical { background: #e53e3e; }
+
+        .no-data {
+            text-align: center;
+            color: #718096;
+            padding: 2rem;
+            font-style: italic;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #718096;
+        }
+
+        .error {
+            background: #fed7d7;
+            color: #c53030;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .updating {
+            animation: pulse 1s infinite;
+        }
+
+        .actions-cell {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-btn.small {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>
+            <span></span>
+            Saga Orchestrator Dashboard
+        </h1>
+    </div>
+
+    <div class="container">
+        <!-- Metrics Overview -->
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <h3>Total Active Sagas</h3>
+                <div class="metric-value" id="totalActiveSagas">-</div>
+            </div>
+            <div class="metric-card">
+                <h3>Success Rate</h3>
+                <div class="metric-value success" id="successRate">-</div>
+            </div>
+            <div class="metric-card">
+                <h3>Stalled Sagas</h3>
+                <div class="metric-value warning" id="stalledSagas">-</div>
+            </div>
+            <div class="metric-card">
+                <h3>System Health</h3>
+                <div class="metric-value" id="systemHealth">
+                    <span class="health-indicator health-healthy"></span>
+                    Online
+                </div>
+            </div>
+        </div>
+
+        <!-- Active Sagas Table -->
+        <div class="table-card">
+            <div class="table-header">
+                <h2>
+                    <span></span>
+                    Active Sagas
+                </h2>
+                <div>
+                    <button class="action-btn success" onclick="bulkRetryStalled()">
+                        Retry All Stalled
+                    </button>
+                    <button class="refresh-btn" onclick="refreshData()">
+                         Refresh
+                    </button>
+                </div>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Saga ID</th>
+                        <th>Type</th>
+                        <th>State</th>
+                        <th>Priority</th>
+                        <th>Progress</th>
+                        <th>Time Running</th>
+                        <th>Health</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="activeSagasTable">
+                    <tr>
+                        <td colspan="8" class="loading">Loading active sagas...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Stalled Sagas Table -->
+        <div class="table-card">
+            <div class="table-header">
+                <h2>
+                    <span></span>
+                    Stalled Sagas
+                </h2>
+                <button class="refresh-btn" onclick="refreshStalledSagas()">
+                     Refresh
+                </button>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Saga ID</th>
+                        <th>Type</th>
+                        <th>State</th>
+                        <th>Time Overdue</th>
+                        <th>Recommended Action</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="stalledSagasTable">
+                    <tr>
+                        <td colspan="6" class="loading">Loading stalled sagas...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '';
+        let refreshInterval;
+
+        // Start auto-refresh
+        function startAutoRefresh() {
+            refreshInterval = setInterval(refreshData, 30000); // Refresh every 30 seconds
+        }
+
+        // Stop auto-refresh
+        function stopAutoRefresh() {
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+            }
+        }
+
+        // Fetch enhanced metrics
+        async function fetchMetrics() {
+            try {
+                const response = await fetch(`${API_BASE}/api/sagas/metrics/enhanced`);
+                const data = await response.json();
+                return data.metrics;
+            } catch (error) {
+                console.error('Failed to fetch metrics:', error);
+                return null;
+            }
+        }
+
+        // Fetch stalled sagas
+        async function fetchStalledSagas() {
+            try {
+                const response = await fetch(`${API_BASE}/api/sagas/stalled`);
+                const data = await response.json();
+                return data.stalledSagas;
+            } catch (error) {
+                console.error('Failed to fetch stalled sagas:', error);
+                return [];
+            }
+        }
+
+        // Update metrics display
+        function updateMetrics(metrics) {
+            if (!metrics) return;
+
+            document.getElementById('totalActiveSagas').textContent = metrics.totalActiveSagas;
+            document.getElementById('successRate').textContent = `${metrics.successRate.toFixed(1)}%`;
+            document.getElementById('stalledSagas').textContent = metrics.stalledSagas;
+            
+            // Update success rate color
+            const successRateEl = document.getElementById('successRate');
+            successRateEl.className = 'metric-value ' + 
+                (metrics.successRate >= 95 ? 'success' : 
+                 metrics.successRate >= 85 ? 'warning' : 'danger');
+        }
+
+        // Update active sagas table
+        function updateActiveSagasTable(sagas) {
+            const tbody = document.getElementById('activeSagasTable');
+            
+            if (!sagas || sagas.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="no-data">No active sagas</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = sagas.map(saga => `
+                <tr>
+                    <td><code>${saga.sagaId.substring(0, 8)}...</code></td>
+                    <td>${saga.sagaType}</td>
+                    <td><span class="status-badge status-${saga.state.toLowerCase()}">${saga.state}</span></td>
+                    <td><span class="status-badge status-${saga.priority}">${saga.priority}</span></td>
+                    <td>${saga.progressPercentage || 0}%</td>
+                    <td>${formatDuration(saga.timeRunning)}</td>
+                    <td>
+                        <span class="health-indicator health-${saga.healthStatus}"></span>
+                        ${saga.healthStatus}
+                    </td>
+                    <td class="actions-cell">
+                        <button class="action-btn small" onclick="retrySaga('${saga.sagaId}', '${saga.sagaType}')">
+                            Retry
+                        </button>
+                        <button class="action-btn small danger" onclick="cancelSaga('${saga.sagaId}', '${saga.sagaType}')">
+                            Cancel
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Update stalled sagas table
+        function updateStalledSagasTable(sagas) {
+            const tbody = document.getElementById('stalledSagasTable');
+            
+            if (!sagas || sagas.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="no-data">No stalled sagas</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = sagas.map(saga => `
+                <tr>
+                    <td><code>${saga.sagaId.substring(0, 8)}...</code></td>
+                    <td>${saga.sagaType}</td>
+                    <td><span class="status-badge status-${saga.state.toLowerCase()}">${saga.state}</span></td>
+                    <td>${formatDuration(saga.timeOverdue)}</td>
+                    <td>${saga.recommendedAction.replace('_', ' ')}</td>
+                    <td class="actions-cell">
+                        ${saga.recommendedAction === 'retry' ? 
+                            `<button class="action-btn small success" onclick="retrySaga('${saga.sagaId}', '${saga.sagaType}')">Retry</button>` :
+                            saga.recommendedAction === 'force_cancel' ?
+                            `<button class="action-btn small danger" onclick="cancelSaga('${saga.sagaId}', '${saga.sagaType}')">Force Cancel</button>` :
+                            `<button class="action-btn small" onclick="viewSagaDetails('${saga.sagaId}')">Investigate</button>`
+                        }
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Format duration
+        function formatDuration(ms) {
+            const seconds = Math.floor(ms / 1000);
+            const minutes = Math.floor(seconds / 60);
+            const hours = Math.floor(minutes / 60);
+            
+            if (hours > 0) return `${hours}h ${minutes % 60}m`;
+            if (minutes > 0) return `${minutes}m ${seconds % 60}s`;
+            return `${seconds}s`;
+        }
+
+        // Retry saga
+        async function retrySaga(sagaId, sagaType) {
+            try {
+                const response = await fetch(`${API_BASE}/api/sagas/${sagaId}/retry`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ type: sagaType })
+                });
+                
+                if (response.ok) {
+                    alert('Saga retry initiated successfully');
+                    refreshData();
+                } else {
+                    const error = await response.json();
+                    alert(`Failed to retry saga: ${error.message}`);
+                }
+            } catch (error) {
+                alert(`Error retrying saga: ${error.message}`);
+            }
+        }
+
+        // Cancel saga
+        async function cancelSaga(sagaId, sagaType) {
+            if (!confirm(`Are you sure you want to cancel saga ${sagaId}?`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/api/sagas/${sagaId}/cancel`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        type: sagaType,
+                        reason: 'Manual cancellation from dashboard'
+                    })
+                });
+                
+                if (response.ok) {
+                    alert('Saga cancellation initiated successfully');
+                    refreshData();
+                } else {
+                    const error = await response.json();
+                    alert(`Failed to cancel saga: ${error.message}`);
+                }
+            } catch (error) {
+                alert(`Error cancelling saga: ${error.message}`);
+            }
+        }
+
+        // Bulk retry stalled sagas
+        async function bulkRetryStalled() {
+            if (!confirm('Are you sure you want to retry all stalled sagas?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/api/sagas/bulk/retry-stalled`, {
+                    method: 'POST'
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    alert(`Bulk retry completed. Processed: ${result.totalProcessed} sagas`);
+                    refreshData();
+                } else {
+                    const error = await response.json();
+                    alert(`Failed to bulk retry: ${error.message}`);
+                }
+            } catch (error) {
+                alert(`Error in bulk retry: ${error.message}`);
+            }
+        }
+
+        // View saga details
+        function viewSagaDetails(sagaId) {
+            // This could open a modal or navigate to a detail page
+            alert(`Saga details for ${sagaId} - Feature coming soon!`);
+        }
+
+        // Refresh all data
+        async function refreshData() {
+            document.body.classList.add('updating');
+            
+            try {
+                const [metrics, stalledSagas] = await Promise.all([
+                    fetchMetrics(),
+                    fetchStalledSagas()
+                ]);
+
+                updateMetrics(metrics);
+                updateActiveSagasTable(metrics?.activeSagasDetails || []);
+                updateStalledSagasTable(stalledSagas);
+            } catch (error) {
+                console.error('Failed to refresh data:', error);
+            } finally {
+                document.body.classList.remove('updating');
+            }
+        }
+
+        // Refresh stalled sagas only
+        async function refreshStalledSagas() {
+            const stalledSagas = await fetchStalledSagas();
+            updateStalledSagasTable(stalledSagas);
+        }
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', () => {
+            refreshData();
+            startAutoRefresh();
+        });
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            stopAutoRefresh();
+        });
+    </script>
+</body>
+</html>

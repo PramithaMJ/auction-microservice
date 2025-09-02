@@ -162,7 +162,7 @@ const getEmojiForListing = (title: string): string => {
   if (titleLower.includes('spectacle') || titleLower.includes('glasses')) return '👓';
   
   // Default emojis for common auction items
-  const defaultEmojis = ['🎁', '💍', '🖼️', '🎯', '🎪', '🎭', '🎊', '🎀', '🏅', '⭐'];
+  const defaultEmojis = ['🎁', '💍', '🖼️', '', '🎪', '🎭', '🎊', '🎀', '🏅', '⭐'];
   return defaultEmojis[Math.floor(Math.random() * defaultEmojis.length)];
 };
 
@@ -208,7 +208,7 @@ const ListingCard = ({ name, price, slug, smallImage, expiresAt }: IProps) => {
             {/* Debug info - remove in production */}
             {process.env.NODE_ENV === 'development' && (
               <StyledDebugInfo>
-                {smallImage ? '🖼️' : '❌'} {imageError ? 'ERR' : 'OK'}
+                {smallImage ? '🖼️' : ''} {imageError ? 'ERR' : 'OK'}
               </StyledDebugInfo>
             )}
             

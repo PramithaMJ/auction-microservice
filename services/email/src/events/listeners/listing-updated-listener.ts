@@ -90,7 +90,7 @@ export class ListingUpdatedListener extends Listener<ListingUpdatedEvent> {
     await transporter.sendMail({
       from: process.env.EMAIL,
       to: listing.user.email,
-      subject: `🎯 Your auction "${listing.title}" has a winner!`,
+      subject: ` Your auction "${listing.title}" has a winner!`,
       text: emailContent,
     });
 

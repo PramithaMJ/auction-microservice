@@ -119,7 +119,7 @@ async function createSampleListings() {
     }
     
     console.log(' Sample listings creation completed!');
-    console.log('💡 Visit http://localhost:3000/listings to see the new auction items with emoji icons!');
+    console.log(' Visit http://localhost:3000/listings to see the new auction items with emoji icons!');
     
   } catch (error) {
     console.error(' Error creating sample listings:', error.message);

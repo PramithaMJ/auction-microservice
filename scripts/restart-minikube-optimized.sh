@@ -15,24 +15,24 @@ NC='\033[0m' # No Color
 # Configuration
 MINIKUBE_PROFILE="auction-cluster"
 
-echo -e "${BLUE}🚀 Restarting Minikube with optimized settings for your hardware${NC}"
+echo -e "${BLUE} Restarting Minikube with optimized settings for your hardware${NC}"
 echo -e "${BLUE}💻 Detected: 8 vCPUs, Intel Xeon E5-2666 v3${NC}"
 
 # Function to print status
 print_status() {
-    echo -e "${GREEN}✅ $1${NC}"
+    echo -e "${GREEN} $1${NC}"
 }
 
 print_warning() {
-    echo -e "${YELLOW}⚠️  $1${NC}"
+    echo -e "${YELLOW}  $1${NC}"
 }
 
 print_error() {
-    echo -e "${RED}❌ $1${NC}"
+    echo -e "${RED} $1${NC}"
 }
 
 # Stop existing cluster if running
-echo -e "${BLUE}🛑 Stopping existing Minikube cluster...${NC}"
+echo -e "${BLUE} Stopping existing Minikube cluster...${NC}"
 minikube stop -p $MINIKUBE_PROFILE 2>/dev/null || true
 print_status "Cluster stopped"
 
@@ -50,10 +50,10 @@ else
     AVAILABLE_MEM=6144
 fi
 
-echo -e "${BLUE}📊 Total memory: ${TOTAL_MEM}MB, Using: ${AVAILABLE_MEM}MB${NC}"
+echo -e "${BLUE} Total memory: ${TOTAL_MEM}MB, Using: ${AVAILABLE_MEM}MB${NC}"
 
 # Start Minikube with optimized settings for your hardware
-echo -e "${BLUE}🔧 Starting Minikube with optimized configuration...${NC}"
+echo -e "${BLUE} Starting Minikube with optimized configuration...${NC}"
 minikube start \
   --driver=docker \
   --cpus=6 \
@@ -76,7 +76,7 @@ kubectl config use-context $MINIKUBE_PROFILE
 print_status "kubectl context configured"
 
 # Enable required addons
-echo -e "${BLUE}🔧 Enabling Minikube addons...${NC}"
+echo -e "${BLUE} Enabling Minikube addons...${NC}"
 minikube addons enable ingress -p $MINIKUBE_PROFILE
 minikube addons enable ingress-dns -p $MINIKUBE_PROFILE
 minikube addons enable storage-provisioner -p $MINIKUBE_PROFILE
@@ -97,7 +97,7 @@ kubectl wait --namespace ingress-nginx \
   --timeout=300s || print_warning "Ingress controller took longer than expected"
 
 # Verify cluster health
-echo -e "${BLUE}🔍 Verifying cluster health...${NC}"
+echo -e "${BLUE} Verifying cluster health...${NC}"
 kubectl get nodes
 kubectl get pods -n kube-system
 
@@ -111,13 +111,13 @@ echo "🎉 Minikube cluster is ready for deployment!"
 echo "=============================================="
 echo -e "${NC}"
 
-echo -e "${BLUE}📋 Next Steps:${NC}"
+echo -e "${BLUE} Next Steps:${NC}"
 echo "1. Deploy your application: ./scripts/deploy-minikube.sh"
 echo "2. Monitor deployment: ./scripts/monitor-minikube.sh"
 echo "3. Configure external access: ./scripts/configure-external-access.sh"
 echo ""
 
-echo -e "${BLUE}🔧 Useful Commands:${NC}"
+echo -e "${BLUE} Useful Commands:${NC}"
 echo "Dashboard: minikube dashboard -p $MINIKUBE_PROFILE"
 echo "SSH to node: minikube ssh -p $MINIKUBE_PROFILE"
 echo "Stop cluster: minikube stop -p $MINIKUBE_PROFILE"

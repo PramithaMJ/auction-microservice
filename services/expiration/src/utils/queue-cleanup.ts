@@ -37,7 +37,7 @@ class QueueCleanup {
 
       // Handle failed jobs
       if (failed.length > 0) {
-        console.log(`🔍 Processing ${failed.length} failed jobs...`);
+        console.log(` Processing ${failed.length} failed jobs...`);
         
         let retried = 0;
         let removed = 0;

@@ -144,7 +144,7 @@ const getEmojiForListing = (title: string): string => {
   if (titleLower.includes('collectible') || titleLower.includes('rare') || titleLower.includes('limited')) return '🏆';
   
   // Default emojis for common auction items
-  const defaultEmojis = ['🎁', '💍', '🖼️', '🎯', '🎪', '🎭', '🎊', '🎀', '🏅', '⭐'];
+  const defaultEmojis = ['🎁', '💍', '🖼️', '', '🎪', '🎭', '🎊', '🎀', '🏅', '⭐'];
   return defaultEmojis[Math.floor(Math.random() * defaultEmojis.length)];
 };
 

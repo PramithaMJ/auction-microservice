@@ -27,6 +27,6 @@ docker-compose down --remove-orphans
 echo -e "${GREEN} All services stopped${NC}"
 
 echo ""
-echo -e "${YELLOW}💡 To restart:${NC}"
+echo -e "${YELLOW} To restart:${NC}"
 echo -e "  Latest version: ${GREEN}./scripts/deploy.sh${NC}"
 echo -e "  Specific version: ${GREEN}./scripts/deploy.sh v1.0.123${NC}"

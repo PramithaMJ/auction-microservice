@@ -127,7 +127,7 @@ cd services/bid && npm start &
 | Payments | 3104 | `GET /nats/health` | `POST /nats/circuit-breaker/reset` |
 | Profile | 3105 | `GET /nats/health` | `POST /nats/circuit-breaker/reset` |
 
-## 🧪 Testing Scenarios
+##  Testing Scenarios
 
 ### Scenario 1: API Gateway Circuit Breaker
 ```bash

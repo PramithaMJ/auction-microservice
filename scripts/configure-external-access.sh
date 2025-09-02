@@ -501,7 +501,7 @@ main() {
     echo -e "Frontend: ${GREEN}http://${SERVER_IP}:3000${NC}"
     echo -e "API Gateway: ${GREEN}http://${SERVER_IP}:3001${NC}"
     echo ""
-    echo -e "${YELLOW}💡 Tips:${NC}"
+    echo -e "${YELLOW} Tips:${NC}"
     echo -e "- Make sure ports 3000 and 3001 are open in your firewall"
     echo -e "- Use './scripts/check-external-access.sh' to verify everything is working"
     echo -e "- Check logs with: kubectl logs -f deployment/frontend -n auction-system"

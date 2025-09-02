@@ -17,7 +17,7 @@
 5.  **Updated configs**: Placeholder system for server IPs
 6.  **Created comprehensive guide**: `k8s/DEPLOYMENT-GUIDE.md`
 
-## 🛠️ Complete Deployment Process
+##  Complete Deployment Process
 
 ### Phase 1: Server Preparation
 ```bash
@@ -52,7 +52,7 @@ kubectl get svc -n auction-system
 kubectl get ingress -n auction-system
 ```
 
-## 🎯 Access Your Application
+##  Access Your Application
 
 After successful deployment:
 
