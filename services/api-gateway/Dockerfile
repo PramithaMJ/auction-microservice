@@ -5,14 +5,14 @@ WORKDIR /app
 # Copy and build common package first
 COPY ./common ./common
 WORKDIR /app/common
-RUN npm install && npm run build
+RUN npm install && npm run build && npm pack --pack-destination /app
 
 # Go back to app directory and set up API Gateway
 WORKDIR /app
 COPY ./services/api-gateway/package*.json ./
 
-# Install dependencies
-RUN npm i 
+# Install dependencies including common tarball
+RUN npm install --no-package-lock --force ./jjmauction-common-*.tgz 
 
 # Copy application source
 COPY ./services/api-gateway ./
