@@ -7,7 +7,7 @@ import { syncExistingListings } from './utils/sync-listings';
 
 (async () => {
   try {
-    console.log('The bid service has started');
+    console.log('The payments service has started');
 
     if (!process.env.PAYMENTS_MYSQL_URI) {
       throw new Error('PAYMENTS_MYSQL_URI must be defined');
