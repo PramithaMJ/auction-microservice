@@ -57,6 +57,11 @@ spec:
             configMapKeyRef:
               name: frontend-config
               key: WATCHPACK_POLLING
+        - name: NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+          valueFrom:
+            configMapKeyRef:
+              name: frontend-config
+              key: NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
         resources:
           requests:
             memory: "512Mi"
