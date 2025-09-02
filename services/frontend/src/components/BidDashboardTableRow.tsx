@@ -12,6 +12,13 @@ import buildClient from '../api/base-client';
 const BidDashboardTableRow = ({ bid, onDelete }) => {
   const { auth } = useContext(AppContext);
 
+  // Get Stripe publishable key from environment
+  const stripePublishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+
+  if (!stripePublishableKey) {
+    console.error('NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY is not set');
+  }
+
   const createPayment = async ({ id }) => {
     try {
       const client = buildClient({});
@@ -124,27 +131,36 @@ const BidDashboardTableRow = ({ bid, onDelete }) => {
       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
         {requiresPayment() ? (
           <div className="inline-block">
-            <StripeCheckout
-              token={createPayment}
-              stripeKey="pk_test_51I7NJ5LQOU4SKz9IV9bdjUwPlGAb9UDKlwjKLxdmu52uQpPHfKn6KvpBIpEIIbI1XISEaFRmIpHgnpIGVFlwmKu300buDGjcwL"
-              amount={bid.listing.currentPrice}
-              name="Auction Payment"
-              description={`Payment for ${bid.listing.title}`}
-              email={auth.currentUser?.email}
-              panelLabel="Pay Now"
-              allowRememberMe={false}
-              bitcoin={false}
-              zipCode={false}
-              billingAddress={false}
-              shippingAddress={false}
-            >
-              <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 transition-all duration-200 transform hover:scale-105">
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                </svg>
-                Pay {centsToDollars(bid.listing.currentPrice)}
+            {stripePublishableKey ? (
+              <StripeCheckout
+                token={createPayment}
+                stripeKey={stripePublishableKey}
+                amount={bid.listing.currentPrice}
+                name="Auction Payment"
+                description={`Payment for ${bid.listing.title}`}
+                email={auth.currentUser?.email}
+                panelLabel="Pay Now"
+                allowRememberMe={false}
+                bitcoin={false}
+                zipCode={false}
+                billingAddress={false}
+                shippingAddress={false}
+              >
+                <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 transition-all duration-200 transform hover:scale-105">
+                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                  </svg>
+                  Pay {centsToDollars(bid.listing.currentPrice)}
+                </button>
+              </StripeCheckout>
+            ) : (
+              <button 
+                disabled 
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg shadow-sm text-gray-400 bg-gray-200 cursor-not-allowed"
+              >
+                Payment Unavailable
               </button>
-            </StripeCheckout>
+            )}
           </div>
         ) : bid.listing.status === ListingStatus.Active ? (
           <button
