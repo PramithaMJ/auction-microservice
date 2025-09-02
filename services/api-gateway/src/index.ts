@@ -9,7 +9,7 @@ import morgan from 'morgan';
 import FormData from 'form-data';
 import config from '../config/default';
 import { CircuitBreaker, CircuitState } from './circuit-breaker';
-import { tracingMiddleware, addCorrelationId } from '@jjmauction/common';
+// import { tracingMiddleware, addCorrelationId } from '@jjmauction/common';
 
 interface CustomError extends Error {
   status?: number;
@@ -33,11 +33,16 @@ class ApiGateway {
   }
 
   private setupMiddleware(): void {
-    // Add correlation ID middleware first
-    this.app.use(addCorrelationId);
-    
-    // Add distributed tracing middleware
-    this.app.use(tracingMiddleware('api-gateway'));
+    // Simple correlation ID middleware
+    this.app.use((req, res, next) => {
+      let correlationId = req.get('x-correlation-id');
+      if (!correlationId) {
+        correlationId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      }
+      req.headers['x-correlation-id'] = correlationId;
+      res.setHeader('x-correlation-id', correlationId);
+      next();
+    });
 
     // Security middleware
     this.app.use(

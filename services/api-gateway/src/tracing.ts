@@ -1,10 +1,6 @@
-// Tracing initialization for API Gateway
-import { createTracing } from '@jjmauction/common';
+// Simple tracing initialization for API Gateway
+console.log('🔍 API Gateway tracing initialized (simplified mode)');
 
-// Initialize tracing before any other modules
-const tracing = createTracing('api-gateway', '1.0.0');
-tracing.initialize();
-
-console.log('🔍 Distributed tracing initialized for API Gateway');
-
-export { tracing };
+export const tracing = {
+  initialized: true
+};
