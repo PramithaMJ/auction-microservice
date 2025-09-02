@@ -3,6 +3,20 @@
   "version": "1.0.24",
   "main": "./build/index.js",
   "types": "./build/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./build/index.d.ts",
+      "default": "./build/index.js"
+    },
+    "./server": {
+      "types": "./build/server.d.ts", 
+      "default": "./build/server.js"
+    },
+    "./build/tracing": {
+      "types": "./build/tracing/index.d.ts",
+      "default": "./build/tracing/index.js"
+    }
+  },
   "files": [
     "build/**/*"
   ],
