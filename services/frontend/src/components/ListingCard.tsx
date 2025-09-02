@@ -145,7 +145,7 @@ const getEmojiForListing = (title: string): string => {
   if (titleLower.includes('watch') || titleLower.includes('clock') || titleLower.includes('time')) return '⌚';
   if (titleLower.includes('car') || titleLower.includes('vehicle') || titleLower.includes('auto')) return '🚗';
   if (titleLower.includes('art') || titleLower.includes('paint') || titleLower.includes('canvas')) return '🎨';
-  if (titleLower.includes('book') || titleLower.includes('novel') || titleLower.includes('read')) return '📚';
+  if (titleLower.includes('book') || titleLower.includes('novel') || titleLower.includes('read')) return '';
   if (titleLower.includes('music') || titleLower.includes('guitar') || titleLower.includes('piano')) return '🎵';
   if (titleLower.includes('camera') || titleLower.includes('photo') || titleLower.includes('lens')) return '📷';
   if (titleLower.includes('jewelry') || titleLower.includes('ring') || titleLower.includes('necklace')) return '💎';
@@ -162,7 +162,7 @@ const getEmojiForListing = (title: string): string => {
   if (titleLower.includes('spectacle') || titleLower.includes('glasses')) return '👓';
   
   // Default emojis for common auction items
-  const defaultEmojis = ['🎁', '💍', '🖼️', '🎯', '🎪', '🎭', '🎊', '🎀', '🏅', '⭐'];
+  const defaultEmojis = ['🎁', '💍', '', '', '🎪', '🎭', '🎊', '🎀', '🏅', '⭐'];
   return defaultEmojis[Math.floor(Math.random() * defaultEmojis.length)];
 };
 
@@ -208,7 +208,7 @@ const ListingCard = ({ name, price, slug, smallImage, expiresAt }: IProps) => {
             {/* Debug info - remove in production */}
             {process.env.NODE_ENV === 'development' && (
               <StyledDebugInfo>
-                {smallImage ? '🖼️' : '❌'} {imageError ? 'ERR' : 'OK'}
+                {smallImage ? '' : ''} {imageError ? 'ERR' : 'OK'}
               </StyledDebugInfo>
             )}
             

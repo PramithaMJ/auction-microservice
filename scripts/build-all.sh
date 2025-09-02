@@ -3,7 +3,7 @@
 # Build all Docker images locally for testing
 set -e
 
-echo "🏗️ Building all Docker images locally..."
+echo " Building all Docker images locally..."
 
 # Colors for output
 RED='\033[0;31m'
@@ -90,13 +90,13 @@ for service in "${services_list[@]}"; do
 done
 
 echo ""
-echo -e "${YELLOW}💡 To push to Docker Hub:${NC}"
+echo -e "${YELLOW} To push to Docker Hub:${NC}"
 for service in "${services_list[@]}"; do
     echo -e "  docker push ${DOCKER_USERNAME}/auction-website-ms-${service}:${FULL_TAG}"
     echo -e "  docker push ${DOCKER_USERNAME}/auction-website-ms-${service}:latest"
 done
 
 echo ""
-echo -e "${YELLOW}💡 To use in docker-compose:${NC}"
+echo -e "${YELLOW} To use in docker-compose:${NC}"
 echo -e "  export IMAGE_TAG=${FULL_TAG}"
 echo -e "  docker-compose up -d"

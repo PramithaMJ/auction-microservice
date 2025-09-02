@@ -6,8 +6,11 @@ export enum UserRegistrationSagaState {
   ACCOUNT_CREATED = 'ACCOUNT_CREATED',
   PROFILE_CREATED = 'PROFILE_CREATED',
   EMAIL_SENT = 'EMAIL_SENT',
+  WELCOME_EMAIL_SENT = 'WELCOME_EMAIL_SENT',
   COMPLETED = 'COMPLETED',
   COMPENSATING = 'COMPENSATING',
+  COMPENSATION_ACCOUNT_DELETED = 'COMPENSATION_ACCOUNT_DELETED',
+  COMPENSATION_PROFILE_DELETED = 'COMPENSATION_PROFILE_DELETED',
   FAILED = 'FAILED'
 }
 
@@ -68,6 +71,9 @@ export interface UserRegistrationSagaCompletedEvent {
   data: {
     sagaId: string;
     userId: string;
+    userEmail?: string;
+    userName?: string;
+    userAvatar?: string;
     completedSteps: string[];
     timestamp: string;
   };
@@ -79,6 +85,9 @@ export interface UserRegistrationSagaFailedEvent {
   data: {
     sagaId: string;
     userId?: string;
+    userEmail?: string;
+    userName?: string;
+    userAvatar?: string;
     failedStep: string;
     error: string;
     compensationRequired: boolean;

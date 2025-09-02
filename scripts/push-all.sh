@@ -40,7 +40,7 @@ push_service() {
     # Check if images exist
     if ! docker image inspect "${DOCKER_USERNAME}/auction-website-ms-${service_name}:${FULL_TAG}" > /dev/null 2>&1; then
         echo -e "${RED} Image not found: ${DOCKER_USERNAME}/auction-website-ms-${service_name}:${FULL_TAG}${NC}"
-        echo -e "${YELLOW}💡 Run ./scripts/build-all.sh first${NC}"
+        echo -e "${YELLOW} Run ./scripts/build-all.sh first${NC}"
         return 1
     fi
     
@@ -69,5 +69,5 @@ for service in "${services[@]}"; do
 done
 
 echo ""
-echo -e "${YELLOW}💡 View on Docker Hub:${NC}"
+echo -e "${YELLOW} View on Docker Hub:${NC}"
 echo -e "  https://hub.docker.com/u/${DOCKER_USERNAME}"

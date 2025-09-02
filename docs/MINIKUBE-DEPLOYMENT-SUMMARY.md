@@ -54,7 +54,7 @@ cd auction-website
 | `monitor-minikube.sh` | Monitor cluster status |
 | `cleanup-minikube.sh` | Clean up deployment |
 
-## 🏗️ Architecture Overview
+##  Architecture Overview
 
 ```
 External Traffic
@@ -165,7 +165,7 @@ kubectl scale deployment frontend --replicas=1 -n auction-system
 minikube status -p auction-cluster
 ```
 
-## 🛠️ Management Commands
+##  Management Commands
 
 ### Start/Stop
 ```bash
@@ -205,14 +205,14 @@ kubectl rollout undo deployment/frontend -n auction-system
 - Regular security updates
 - Monitor resource usage
 
-## 📚 Additional Resources
+##  Additional Resources
 
 - **Full Guide**: `MINIKUBE-UBUNTU-DEPLOYMENT-GUIDE.md`
 - **Docker Compose Reference**: `docker-compose.yml`
 - **Kubernetes Configs**: `k8s/` directory
 - **Monitoring**: Use `./scripts/monitor-minikube.sh`
 
-## 🎯 Success Indicators
+##  Success Indicators
 
  All pods show `Running` status  
  Frontend accessible at `http://SERVER_IP:30000`  

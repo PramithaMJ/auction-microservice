@@ -17,7 +17,7 @@ NAMESPACE_INFRA="auction-infrastructure"
 NAMESPACE_APP="auction-system"
 MINIKUBE_PROFILE="auction-cluster"
 
-echo -e "${BLUE}🧹 Starting Minikube Cleanup for Auction Website${NC}"
+echo -e "${BLUE} Starting Minikube Cleanup for Auction Website${NC}"
 
 # Function to print status
 print_status() {

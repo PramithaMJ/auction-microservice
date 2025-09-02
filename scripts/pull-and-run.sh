@@ -38,7 +38,7 @@ pull_images() {
         echo -e "  Pulling pramithamj/auction-website/${service}:${VERSION}"
         docker pull "pramithamj/auction-website/${service}:${VERSION}" || {
             echo -e "${RED} Failed to pull ${service}:${VERSION}${NC}"
-            echo -e "${YELLOW}💡 Make sure the image exists on Docker Hub${NC}"
+            echo -e "${YELLOW} Make sure the image exists on Docker Hub${NC}"
             exit 1
         }
     done
@@ -79,15 +79,15 @@ show_status() {
 # Function to show usage
 show_usage() {
     echo ""
-    echo -e "${YELLOW}💡 Usage Examples:${NC}"
+    echo -e "${YELLOW} Usage Examples:${NC}"
     echo -e "  Latest version:    ${GREEN}./scripts/pull-and-run.sh${NC}"
     echo -e "  Specific version:  ${GREEN}./scripts/pull-and-run.sh v1.0.123${NC}"
     echo -e "  With commit SHA:   ${GREEN}./scripts/pull-and-run.sh v1.0.123-abc1234${NC}"
     echo ""
-    echo -e "${YELLOW}💡 To stop services:${NC}"
+    echo -e "${YELLOW} To stop services:${NC}"
     echo -e "  ${GREEN}docker-compose -f docker-compose.pull-only.yml down${NC}"
     echo ""
-    echo -e "${YELLOW}💡 To view logs:${NC}"
+    echo -e "${YELLOW} To view logs:${NC}"
     echo -e "  ${GREEN}docker-compose -f docker-compose.pull-only.yml logs -f${NC}"
 }
 

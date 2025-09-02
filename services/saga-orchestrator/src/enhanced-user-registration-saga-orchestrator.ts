@@ -172,7 +172,7 @@ export class UserRegistrationSagaOrchestrator implements BaseSagaOrchestrator<Us
   }
 
   // Handle Account Created Event
-  async handleAccountCreated(event: UserAccountCreatedEvent['data']): Promise<void> {
+  private async handleAccountCreated(event: UserAccountCreatedEvent['data']): Promise<void> {
     const { sagaId, userId, userEmail, userName, userAvatar, timestamp } = event;
     
     console.log(`📧 Processing Account Created for saga: ${sagaId}`);
@@ -202,7 +202,7 @@ export class UserRegistrationSagaOrchestrator implements BaseSagaOrchestrator<Us
   }
 
   // Handle Profile Created Event
-  async handleProfileCreated(event: ProfileCreatedEvent['data']): Promise<void> {
+  private async handleProfileCreated(event: ProfileCreatedEvent['data']): Promise<void> {
     const { sagaId, userId, profileId, timestamp } = event;
     
     console.log(` Processing Profile Created for saga: ${sagaId}`);
@@ -231,7 +231,7 @@ export class UserRegistrationSagaOrchestrator implements BaseSagaOrchestrator<Us
   }
 
   // Handle Welcome Email Sent Event
-  async handleWelcomeEmailSent(event: WelcomeEmailSentEvent['data']): Promise<void> {
+  private async handleWelcomeEmailSent(event: WelcomeEmailSentEvent['data']): Promise<void> {
     const { sagaId, userId, email, timestamp } = event;
     
     console.log(`📧 Processing Welcome Email Sent for saga: ${sagaId}`);
@@ -338,9 +338,9 @@ export class UserRegistrationSagaOrchestrator implements BaseSagaOrchestrator<Us
     const completionData: UserRegistrationSagaCompletedEvent['data'] = {
       sagaId,
       userId: sagaState.userId || '',
-      userEmail: sagaState.userEmail,
-      userName: sagaState.userName,
-      userAvatar: sagaState.userAvatar,
+      userEmail: sagaState.userEmail || '',
+      userName: sagaState.userName || '',
+      userAvatar: sagaState.userAvatar || '',
       completedSteps: sagaState.completedSteps,
       timestamp: new Date().toISOString()
     };
@@ -367,12 +367,12 @@ export class UserRegistrationSagaOrchestrator implements BaseSagaOrchestrator<Us
     // Publish failure event
     const failureData: UserRegistrationSagaFailedEvent['data'] = {
       sagaId,
-      userId: saga?.userId,
-      userEmail: saga?.userEmail,
-      userName: saga?.userName,
-      userAvatar: saga?.userAvatar,
-      failedStep: step,
+      userId: saga?.userId || '',
+      userEmail: saga?.userEmail || '',
+      userName: saga?.userName || '',
+      userAvatar: saga?.userAvatar || '',
       error: error.message || error.toString(),
+      failedStep: step,
       compensationRequired: true,
       timestamp: new Date().toISOString()
     };

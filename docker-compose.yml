@@ -288,7 +288,7 @@ services:
       - NATS_URL=${NATS_URL}
       - NATS_CLUSTER_ID=${NATS_CLUSTER_ID}
       - NATS_CLIENT_ID=${NATS_CLIENT_ID_PAYMENTS}
-      - STRIPE_KEY=${STRIPE_KEY}
+      - STRIPE_KEY=${STRIPE_SECRET_KEY}
     depends_on:
       payments-mysql:
         condition: service_healthy
@@ -417,6 +417,7 @@ services:
       - SERVER_API_URL=${SERVER_API_URL}
       - NEXT_PUBLIC_SERVER_IP=${NEXT_PUBLIC_SERVER_IP}
       - NEXT_PUBLIC_LISTINGS_SOCKET_URL=${NEXT_PUBLIC_LISTINGS_SOCKET_URL}
+      - NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
       - WATCHPACK_POLLING=${WATCHPACK_POLLING}
     depends_on:
       api-gateway:

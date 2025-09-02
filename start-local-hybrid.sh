@@ -83,7 +83,7 @@ cd ..
 services=("api-gateway" "auth" "bid" "listings" "payments" "profile" "email" "expiration" "frontend")
 pids=()
 
-echo -e "${BLUE}🛠️ Installing dependencies and starting services...${NC}"
+echo -e "${BLUE} Installing dependencies and starting services...${NC}"
 
 # Install dependencies for all services
 for service in "${services[@]}"; do

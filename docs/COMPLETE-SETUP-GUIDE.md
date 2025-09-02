@@ -19,7 +19,7 @@ Your auction website now has a complete CI/CD pipeline! Here's everything you ne
 - `docker-compose.yml` - Updated with versioned images
 - `CI-CD-README.md` - Detailed documentation
 
-## 🛠️ Setup Steps
+##  Setup Steps
 
 ### 1. GitHub Secrets Setup
 Go to your GitHub repository → Settings → Secrets and variables → Actions:
@@ -214,7 +214,7 @@ export IMAGE_TAG=v1.0.100
 6. **Add SSL certificates**
 7. **Set up backup strategies**
 
-## 💡 Tips
+##  Tips
 
 - **Always test locally** before pushing
 - **Use specific versions** in production

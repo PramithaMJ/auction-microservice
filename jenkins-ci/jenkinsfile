@@ -103,10 +103,10 @@ post {
     }
     }
     success {
-        echo "✅ Docker images built & pushed on ephemeral EC2."
+        echo " Docker images built & pushed on ephemeral EC2."
     }
     failure {
-        echo "❌ Pipeline failed."
+        echo " Pipeline failed."
     }
 }
 

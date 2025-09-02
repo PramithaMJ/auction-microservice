@@ -4,7 +4,7 @@
 
 This guide will help you deploy the auction website on Ubuntu server using Minikube with external access from anywhere.
 
-## 🎯 What You'll Achieve
+##  What You'll Achieve
 
 After following this guide:
 

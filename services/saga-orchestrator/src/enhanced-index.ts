@@ -1,6 +1,9 @@
 import { 
   app, 
-  initializeOrchestrators,
+  userRegistrationOrchestrator,
+  bidPlacementOrchestrator,
+  auctionCompletionOrchestrator,
+  paymentProcessingOrchestrator,
   enhancedSagaStateManager
 } from './app';
 import { natsWrapper } from './nats-wrapper';
@@ -34,10 +37,6 @@ import { natsWrapper } from './nats-wrapper';
     // Connect to Redis for saga state management
     console.log(' Connecting to Redis...');
     await enhancedSagaStateManager.connect(process.env.REDIS_URL);
-
-    // Initialize orchestrators after connections are established
-    console.log(' Initializing saga orchestrators...');
-    initializeOrchestrators();
 
     // Graceful shutdown setup
     natsWrapper.client.on('close', () => {

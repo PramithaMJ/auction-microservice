@@ -376,7 +376,7 @@ echo " Creating namespaces..."
 kubectl apply -f namespaces.yaml
 
 # Deploy infrastructure
-echo "🏗️ Deploying infrastructure..."
+echo " Deploying infrastructure..."
 kubectl apply -f infrastucture/
 
 # Wait for infrastructure
@@ -405,7 +405,7 @@ echo " Deploying applications..."
 kubectl apply -f deployments/
 
 # Deploy external access ingress
-echo "🔗 Deploying external access ingress..."
+echo " Deploying external access ingress..."
 kubectl apply -f ingress/auction-external-ingress.yaml
 
 echo ""
@@ -501,7 +501,7 @@ main() {
     echo -e "Frontend: ${GREEN}http://${SERVER_IP}:3000${NC}"
     echo -e "API Gateway: ${GREEN}http://${SERVER_IP}:3001${NC}"
     echo ""
-    echo -e "${YELLOW}💡 Tips:${NC}"
+    echo -e "${YELLOW} Tips:${NC}"
     echo -e "- Make sure ports 3000 and 3001 are open in your firewall"
     echo -e "- Use './scripts/check-external-access.sh' to verify everything is working"
     echo -e "- Check logs with: kubectl logs -f deployment/frontend -n auction-system"
