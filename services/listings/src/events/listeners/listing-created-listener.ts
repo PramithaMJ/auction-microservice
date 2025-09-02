@@ -25,6 +25,7 @@ export class ListingCreatedListener extends Listener<ListingCreatedEvent> {
         sellerId: data.userId,
         sellerName: '', // Not available in event, will be updated later
         status: 'CREATED', // Default status, will be updated later
+        slug: data.slug, // Add slug from event data
       });
       
       console.log(`[listings-service] Created read model for listing: ${data.id}`);

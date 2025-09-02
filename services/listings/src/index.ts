@@ -13,6 +13,7 @@ import { ListingDeletedListener } from './events/listeners/listing-deleted-liste
 import { db } from './models';
 import { natsWrapper } from './nats-wrapper-circuit-breaker';
 import { socketIOWrapper } from './socket-io-wrapper';
+import { populateMissingSlugs } from './utils/populate-slugs';
 
 (async () => {
   try {
@@ -67,6 +68,9 @@ import { socketIOWrapper } from './socket-io-wrapper';
     await db.authenticate();
     await db.sync();
     console.log('Conneted to MySQL');
+
+    // Populate missing slugs in read model after DB sync
+    await populateMissingSlugs();
 
     const port = process.env.PORT || 3103;
     const server = app.listen(port, () =>
