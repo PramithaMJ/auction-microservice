@@ -58,7 +58,7 @@ export class BidCreatedListener extends Listener<BidCreatedEvent> {
       Great news! Someone just placed a bid on your auction listing.
 
       📦 Listing: ${listing.title}
-      💰 New Bid Amount: $${(bidAmount / 100).toFixed(2)}
+       New Bid Amount: $${(bidAmount / 100).toFixed(2)}
        Bidder: ${bidder.name}
        Current Price: $${(listing.currentPrice / 100).toFixed(2)}
 

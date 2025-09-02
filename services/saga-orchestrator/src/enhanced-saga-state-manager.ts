@@ -43,11 +43,11 @@ class EnhancedSagaStateManager {
       this.client = createClient({ url });
       
       this.client.on('error', (err: any) => {
-        console.error('🔴 Redis Client Error:', err);
+        console.error(' Redis Client Error:', err);
       });
 
       this.client.on('connect', () => {
-        console.log('🟢 Connected to Redis for enhanced saga state management');
+        console.log(' Connected to Redis for enhanced saga state management');
         this.connected = true;
       });
 
@@ -57,7 +57,7 @@ class EnhancedSagaStateManager {
       this.startStalledSagaDetection();
       this.startMetricsCollection();
     } catch (error) {
-      console.error('🔴 Failed to connect to Redis:', error);
+      console.error(' Failed to connect to Redis:', error);
       throw error;
     }
   }
@@ -115,23 +115,29 @@ class EnhancedSagaStateManager {
       throw new Error('Redis client not connected');
     }
 
-    const sagaIds = await this.client.zrange('saga:active', 0, -1);
-    const sagas: SagaState[] = [];
+    try {
+      // Use ZRANGE with proper parameters for the new Redis client
+      const sagaIds = await this.client.zRange('saga:active', 0, -1);
+      const sagas: SagaState[] = [];
 
-    for (const sagaId of sagaIds) {
-      // Try to find saga in different types
-      const types = ['user-registration', 'bid-placement', 'auction-completion', 'payment-processing'];
-      
-      for (const type of types) {
-        const saga = await this.getSagaState(type, sagaId);
-        if (saga) {
-          sagas.push(saga);
-          break;
+      for (const sagaId of sagaIds) {
+        // Try to find saga in different types
+        const types = ['user-registration', 'bid-placement', 'auction-completion', 'payment-processing'];
+        
+        for (const type of types) {
+          const saga = await this.getSagaState(type, sagaId);
+          if (saga) {
+            sagas.push(saga);
+            break;
+          }
         }
       }
-    }
 
-    return sagas;
+      return sagas;
+    } catch (error) {
+      console.error('🔴 Error getting active sagas:', error);
+      return []; // Return empty array instead of throwing to prevent service crash
+    }
   }
 
   async incrementRetryCount(sagaType: string, sagaId: string): Promise<boolean> {
@@ -271,7 +277,7 @@ class EnhancedSagaStateManager {
           }
         }
       } catch (error) {
-        console.error('🔴 Error in stalled saga detection:', error);
+        console.error(' Error in stalled saga detection:', error);
       }
     }, 60000); // Check every minute
   }

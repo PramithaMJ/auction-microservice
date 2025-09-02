@@ -405,7 +405,7 @@ echo " Deploying applications..."
 kubectl apply -f deployments/
 
 # Deploy external access ingress
-echo "🔗 Deploying external access ingress..."
+echo " Deploying external access ingress..."
 kubectl apply -f ingress/auction-external-ingress.yaml
 
 echo ""

@@ -59,7 +59,7 @@ export const syncExistingData = async (): Promise<void> => {
             );
         }
       } catch (error) {
-        console.error(`❌ Failed to sync listing ${listingData.id}:`, error);
+        console.error(` Failed to sync listing ${listingData.id}:`, error);
       }
     }
 
@@ -67,10 +67,10 @@ export const syncExistingData = async (): Promise<void> => {
     return; // Success, exit the function
     
   } catch (error) {
-    console.error(`❌ Failed to sync listings (attempt ${attempt}/${maxRetries}):`, error.message);
+    console.error(` Failed to sync listings (attempt ${attempt}/${maxRetries}):`, error.message);
     
     if (attempt < maxRetries) {
-      console.log(`⏰ Retrying in ${retryDelay/1000} seconds...`);
+      console.log(` Retrying in ${retryDelay/1000} seconds...`);
       await new Promise(resolve => setTimeout(resolve, retryDelay));
     } else {
       console.error('💥 All sync attempts failed. Service will continue without initial sync.');

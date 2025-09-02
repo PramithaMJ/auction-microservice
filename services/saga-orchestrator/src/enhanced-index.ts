@@ -35,7 +35,7 @@ import { natsWrapper } from './nats-wrapper';
     );
 
     // Connect to Redis for saga state management
-    console.log('🔗 Connecting to Redis...');
+    console.log(' Connecting to Redis...');
     await enhancedSagaStateManager.connect(process.env.REDIS_URL);
 
     // Graceful shutdown setup
@@ -75,7 +75,7 @@ import { natsWrapper } from './nats-wrapper';
       console.log('   - Advanced monitoring dashboard');
       console.log('   - Real-time metrics');
       console.log('');
-      console.log('🌐 API Endpoints:');
+      console.log(' API Endpoints:');
       console.log('   GET    /health - Service health check');
       console.log('   GET    /api/sagas/metrics/enhanced - Enhanced metrics');
       console.log('   GET    /api/sagas/:sagaId/status - Get saga status');

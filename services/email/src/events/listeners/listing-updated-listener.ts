@@ -43,7 +43,7 @@ export class ListingUpdatedListener extends Listener<ListingUpdatedEvent> {
       🎉 You won the auction! 🎉
 
       📦 Listing: ${listing.title}
-      💰 Winning Bid: $${(listing.currentPrice / 100).toFixed(2)}
+       Winning Bid: $${(listing.currentPrice / 100).toFixed(2)}
 
       Your payment is now required to complete the purchase. Please visit your dashboard to complete the payment process.
 
@@ -74,7 +74,7 @@ export class ListingUpdatedListener extends Listener<ListingUpdatedEvent> {
       Great news! Your auction has ended with a winner! 🎉
 
       📦 Listing: ${listing.title}
-      💰 Final Price: $${(listing.currentPrice / 100).toFixed(2)}
+       Final Price: $${(listing.currentPrice / 100).toFixed(2)}
       🏆 Winner: ${winner.name}
 
       The winner has been notified and has 48 hours to complete payment. You'll receive another notification once payment is completed.

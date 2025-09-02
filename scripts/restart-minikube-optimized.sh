@@ -103,7 +103,7 @@ kubectl get pods -n kube-system
 
 # Get Minikube IP
 MINIKUBE_IP=$(minikube ip -p $MINIKUBE_PROFILE)
-echo -e "${GREEN}🌐 Minikube IP: $MINIKUBE_IP${NC}"
+echo -e "${GREEN} Minikube IP: $MINIKUBE_IP${NC}"
 
 echo -e "${GREEN}"
 echo "=============================================="
