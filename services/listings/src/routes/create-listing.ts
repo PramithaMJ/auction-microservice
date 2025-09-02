@@ -176,8 +176,27 @@ router.post(
       console.log('=== CREATING LISTING ===');
 
       await db.transaction(async (transaction) => {
-        // Note: User existence is not enforced due to microservices eventual consistency
-        // Users should be created via UserCreatedEvent listener, but we don't enforce foreign key constraints
+        // Check if user exists in listings database
+        const existingUser = await User.findOne({ 
+          where: { id: req.currentUser.id }, 
+          transaction 
+        });
+        
+        if (!existingUser) {
+          console.log(`User ${req.currentUser.id} not found in listings database, creating...`);
+          
+          // Create user with minimal required data
+          // In a proper microservices architecture, this should come from UserCreatedEvent
+          // For now, create with ID and generate temporary data for required fields
+          await User.create({
+            id: req.currentUser.id,
+            name: `User_${req.currentUser.id.slice(0, 8)}`, // Generate from ID
+            email: `user_${req.currentUser.id.slice(0, 8)}@auction.local`, // Generate from ID
+          }, { transaction });
+          
+          console.log(`User ${req.currentUser.id} created in listings database`);
+        }
+
         console.log(`Creating listing for user: ${req.currentUser.id}`);
 
         // Get S3 file information from multer-s3
