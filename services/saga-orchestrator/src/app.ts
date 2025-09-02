@@ -11,12 +11,59 @@ import { PaymentProcessingSagaOrchestrator } from './payment-processing-saga-orc
 import { SagaDashboardController } from './saga-dashboard-controller';
 import { enhancedSagaStateManager } from './enhanced-saga-state-manager';
 
-// Initialize saga orchestrators
-const userRegistrationOrchestrator = new UserRegistrationSagaOrchestrator();
-const bidPlacementOrchestrator = new BidPlacementSagaOrchestrator();
-const auctionCompletionOrchestrator = new AuctionCompletionSagaOrchestrator();
-const paymentProcessingOrchestrator = new PaymentProcessingSagaOrchestrator();
-const dashboardController = new SagaDashboardController();
+// Initialize saga orchestrators - will be set after NATS connection
+let _userRegistrationOrchestrator: UserRegistrationSagaOrchestrator;
+let _bidPlacementOrchestrator: BidPlacementSagaOrchestrator;
+let _auctionCompletionOrchestrator: AuctionCompletionSagaOrchestrator;
+let _paymentProcessingOrchestrator: PaymentProcessingSagaOrchestrator;
+let _dashboardController: SagaDashboardController;
+
+// Getter functions that ensure orchestrators are initialized
+const getUserRegistrationOrchestrator = () => {
+  if (!_userRegistrationOrchestrator) {
+    throw new Error('User registration orchestrator not initialized. Call initializeOrchestrators() first.');
+  }
+  return _userRegistrationOrchestrator;
+};
+
+const getBidPlacementOrchestrator = () => {
+  if (!_bidPlacementOrchestrator) {
+    throw new Error('Bid placement orchestrator not initialized. Call initializeOrchestrators() first.');
+  }
+  return _bidPlacementOrchestrator;
+};
+
+const getAuctionCompletionOrchestrator = () => {
+  if (!_auctionCompletionOrchestrator) {
+    throw new Error('Auction completion orchestrator not initialized. Call initializeOrchestrators() first.');
+  }
+  return _auctionCompletionOrchestrator;
+};
+
+const getPaymentProcessingOrchestrator = () => {
+  if (!_paymentProcessingOrchestrator) {
+    throw new Error('Payment processing orchestrator not initialized. Call initializeOrchestrators() first.');
+  }
+  return _paymentProcessingOrchestrator;
+};
+
+const getDashboardController = () => {
+  if (!_dashboardController) {
+    throw new Error('Dashboard controller not initialized. Call initializeOrchestrators() first.');
+  }
+  return _dashboardController;
+};
+
+// Function to initialize orchestrators after NATS connection
+export const initializeOrchestrators = () => {
+  _userRegistrationOrchestrator = new UserRegistrationSagaOrchestrator();
+  _bidPlacementOrchestrator = new BidPlacementSagaOrchestrator();
+  _auctionCompletionOrchestrator = new AuctionCompletionSagaOrchestrator();
+  _paymentProcessingOrchestrator = new PaymentProcessingSagaOrchestrator();
+  _dashboardController = new SagaDashboardController();
+  
+  console.log(' All saga orchestrators initialized successfully');
+};
 
 const app = express();
 
@@ -47,7 +94,7 @@ app.post('/api/sagas/user-registration/start', async (req, res) => {
   const { userId, userEmail, userName, userAvatar } = req.body;
 
   try {
-    const sagaId = await userRegistrationOrchestrator.startSaga({
+    const sagaId = await getUserRegistrationOrchestrator().startSaga({
       userId,
       userEmail,
       userName,
@@ -75,7 +122,7 @@ app.post('/api/sagas/bid-placement/start', async (req, res) => {
   const { bidId, userId, listingId, bidAmount, userEmail } = req.body;
 
   try {
-    const sagaId = await bidPlacementOrchestrator.startSaga({
+    const sagaId = await getBidPlacementOrchestrator().startSaga({
       bidId,
       userId,
       listingId,
@@ -104,7 +151,7 @@ app.post('/api/sagas/auction-completion/start', async (req, res) => {
   const { listingId, winnerId, winningBid, sellerId } = req.body;
 
   try {
-    const sagaId = await auctionCompletionOrchestrator.startSaga({
+    const sagaId = await getAuctionCompletionOrchestrator().startSaga({
       listingId,
       winnerId,
       winningBid,
@@ -132,7 +179,7 @@ app.post('/api/sagas/payment-processing/start', async (req, res) => {
   const { paymentId, userId, listingId, amount, paymentMethod } = req.body;
 
   try {
-    const sagaId = await paymentProcessingOrchestrator.startSaga({
+    const sagaId = await getPaymentProcessingOrchestrator().startSaga({
       paymentId,
       userId,
       listingId,
@@ -157,25 +204,25 @@ app.post('/api/sagas/payment-processing/start', async (req, res) => {
 // ===== ENHANCED MONITORING AND DASHBOARD ENDPOINTS =====
 
 // Enhanced metrics endpoint
-app.get('/api/sagas/metrics/enhanced', dashboardController.getEnhancedMetrics.bind(dashboardController));
+app.get('/api/sagas/metrics/enhanced', (req, res) => getDashboardController().getEnhancedMetrics(req, res));
 
 // Get saga status (works across all saga types)
-app.get('/api/sagas/:sagaId/status', dashboardController.getSagaStatus.bind(dashboardController));
+app.get('/api/sagas/:sagaId/status', (req, res) => getDashboardController().getSagaStatus(req, res));
 
 // Retry saga endpoint
-app.post('/api/sagas/:sagaId/retry', dashboardController.retrySaga.bind(dashboardController));
+app.post('/api/sagas/:sagaId/retry', (req, res) => getDashboardController().retrySaga(req, res));
 
 // Cancel saga endpoint
-app.post('/api/sagas/:sagaId/cancel', dashboardController.cancelSaga.bind(dashboardController));
+app.post('/api/sagas/:sagaId/cancel', (req, res) => getDashboardController().cancelSaga(req, res));
 
 // Get stalled sagas
-app.get('/api/sagas/stalled', dashboardController.getStalledSagas.bind(dashboardController));
+app.get('/api/sagas/stalled', (req, res) => getDashboardController().getStalledSagas(req, res));
 
 // Get saga history and analytics
-app.get('/api/sagas/history', dashboardController.getSagaHistory.bind(dashboardController));
+app.get('/api/sagas/history', (req, res) => getDashboardController().getSagaHistory(req, res));
 
 // Bulk retry stalled sagas
-app.post('/api/sagas/bulk/retry-stalled', dashboardController.bulkRetryStalled.bind(dashboardController));
+app.post('/api/sagas/bulk/retry-stalled', (req, res) => getDashboardController().bulkRetryStalled(req, res));
 
 // ===== LEGACY ENDPOINTS (for backward compatibility) =====
 
@@ -184,7 +231,7 @@ app.get('/api/sagas/user-registration/:sagaId', async (req, res) => {
   const { sagaId } = req.params;
 
   try {
-    const sagaState = await userRegistrationOrchestrator.getSagaStatus(sagaId);
+    const sagaState = await getUserRegistrationOrchestrator().getSagaStatus(sagaId);
     
     if (!sagaState) {
       return res.status(404).json({
@@ -210,7 +257,7 @@ app.get('/api/sagas/user-registration/:sagaId', async (req, res) => {
 // Get all active user registration sagas endpoint
 app.get('/api/sagas/user-registration', async (req, res) => {
   try {
-    const activeSagas = await userRegistrationOrchestrator.getAllActiveSagas();
+    const activeSagas = await getUserRegistrationOrchestrator().getAllActiveSagas();
     
     res.status(200).json({
       activeSagas,
@@ -251,10 +298,10 @@ app.use(errorHandler as ErrorRequestHandler);
 
 export { 
   app, 
-  userRegistrationOrchestrator,
-  bidPlacementOrchestrator,
-  auctionCompletionOrchestrator,
-  paymentProcessingOrchestrator,
-  dashboardController,
+  getUserRegistrationOrchestrator,
+  getBidPlacementOrchestrator,
+  getAuctionCompletionOrchestrator,
+  getPaymentProcessingOrchestrator,
+  getDashboardController,
   enhancedSagaStateManager
 };
