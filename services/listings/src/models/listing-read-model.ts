@@ -15,7 +15,6 @@ export interface ListingReadAttributes {
   sellerId: string;
   sellerName: string;
   status: string;
-  slug?: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -45,7 +44,6 @@ export const ListingReadFactory = (sequelize: Sequelize): ListingReadStatic => {
       sellerId: DataTypes.UUID,
       sellerName: DataTypes.STRING,
       status: DataTypes.STRING,
-      slug: DataTypes.STRING,
     },
     {
       timestamps: true,

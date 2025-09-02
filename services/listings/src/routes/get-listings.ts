@@ -33,18 +33,29 @@ router.get('/api/listings/', async (req: Request, res: Response) => {
     const refreshedListings = await Promise.all(
       listings.map(async (listing) => {
         try {
+          // Get the slug from the main listings table
+          const mainListing = await Listing.findByPk(listing.id);
+          const slug = mainListing ? mainListing.slug : listing.id;
+          
           if (listing.imageId) {
             const refreshedUrls = await generateImageUrls(listing.imageId, bucketName);
             return {
               ...listing.toJSON(),
+              slug, // Add slug from main table
               smallImage: refreshedUrls.small,
               largeImage: refreshedUrls.large,
             };
           }
-          return listing.toJSON();
+          return {
+            ...listing.toJSON(),
+            slug, // Add slug from main table
+          };
         } catch (error) {
           console.error('Error refreshing URLs for listing:', listing.id, error);
-          return listing.toJSON();
+          return {
+            ...listing.toJSON(),
+            slug: listing.id, // Fallback to ID if slug not found
+          };
         }
       })
     );
@@ -54,7 +65,28 @@ router.get('/api/listings/', async (req: Request, res: Response) => {
   }
 
   console.log('=== END DEBUG ===');
-  res.status(200).send(listings);
+  
+  // Add slugs to listings even without S3 refresh
+  const listingsWithSlugs = await Promise.all(
+    listings.map(async (listing) => {
+      try {
+        const mainListing = await Listing.findByPk(listing.id);
+        const slug = mainListing ? mainListing.slug : listing.id;
+        return {
+          ...listing.toJSON(),
+          slug,
+        };
+      } catch (error) {
+        console.error('Error getting slug for listing:', listing.id, error);
+        return {
+          ...listing.toJSON(),
+          slug: listing.id, // Fallback to ID if slug not found
+        };
+      }
+    })
+  );
+  
+  res.status(200).send(listingsWithSlugs);
 });
 
 export { router as getListingsRouter };
