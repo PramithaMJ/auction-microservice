@@ -1,3 +1,6 @@
+// Initialize tracing first
+import './tracing-init';
+
 import { app } from './app';
 import { BidCreatedListener } from './events/listeners/bid-created-listener';
 import { BidDeletedListener } from './events/listeners/bid-deleted-listener';

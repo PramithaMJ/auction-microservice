@@ -17,6 +17,9 @@ export class ListingUpdatedListener extends Listener<ListingUpdatedEvent> {
         currentPrice: data.currentPrice,
         endDate: data.expiresAt,
         imageUrl: data.imageUrl || '',
+        imageId: data.imageId || '',
+        smallImage: data.smallImage || '',
+        largeImage: data.largeImage || '',
         status: data.status,
       },
       { where: { id: data.id } }

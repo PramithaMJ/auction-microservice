@@ -1,3 +1,6 @@
+// Initialize tracing first
+import './tracing';
+
 import express, { Request, Response, NextFunction } from 'express';
 import axios from 'axios';
 import cors from 'cors';
@@ -6,6 +9,7 @@ import morgan from 'morgan';
 import FormData from 'form-data';
 import config from '../config/default';
 import { CircuitBreaker, CircuitState } from './circuit-breaker';
+import { tracingMiddleware, addCorrelationId } from '@jjmauction/common';
 
 interface CustomError extends Error {
   status?: number;
@@ -29,6 +33,12 @@ class ApiGateway {
   }
 
   private setupMiddleware(): void {
+    // Add correlation ID middleware first
+    this.app.use(addCorrelationId);
+    
+    // Add distributed tracing middleware
+    this.app.use(tracingMiddleware('api-gateway'));
+
     // Security middleware
     this.app.use(
       helmet({

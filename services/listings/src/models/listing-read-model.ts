@@ -9,6 +9,9 @@ export interface ListingReadAttributes {
   currentPrice: number;
   endDate: Date;
   imageUrl: string;
+  imageId: string;
+  smallImage: string;
+  largeImage: string;
   sellerId: string;
   sellerName: string;
   status: string;
@@ -35,6 +38,9 @@ export const ListingReadFactory = (sequelize: Sequelize): ListingReadStatic => {
       currentPrice: DataTypes.FLOAT,
       endDate: DataTypes.DATE,
       imageUrl: DataTypes.STRING,
+      imageId: DataTypes.STRING,
+      smallImage: DataTypes.STRING,
+      largeImage: DataTypes.STRING,
       sellerId: DataTypes.UUID,
       sellerName: DataTypes.STRING,
       status: DataTypes.STRING,
