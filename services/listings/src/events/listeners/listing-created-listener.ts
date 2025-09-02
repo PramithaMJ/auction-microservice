@@ -9,21 +9,29 @@ export class ListingCreatedListener extends Listener<ListingCreatedEvent> {
   queueGroupName = queueGroupName;
 
   async onMessage(data: ListingCreatedEvent['data'], msg: Message) {
-    // Create a new read model entry
-    await ListingRead.create({
-      id: data.id,
-      title: data.title,
-      description: data.description,
-      currentPrice: data.currentPrice,
-      endDate: data.expiresAt,
-      imageUrl: data.imageUrl || '',
-      imageId: data.imageId || '',
-      smallImage: data.smallImage || '',
-      largeImage: data.largeImage || '',
-      sellerId: data.userId,
-      sellerName: data.sellerName || '',
-      status: data.status,
-    });
-    msg.ack();
+    // Create a new read model entry with available data from the event
+    // Some fields need to be populated from the actual listing data or set as defaults
+    try {
+      await ListingRead.create({
+        id: data.id,
+        title: data.title,
+        description: '', // Not available in event, will be updated later
+        currentPrice: data.price, // Use price as initial currentPrice
+        endDate: data.expiresAt,
+        imageUrl: '', // Not available in event, will be updated later
+        imageId: '', // Not available in event, will be updated later
+        smallImage: '', // Not available in event, will be updated later
+        largeImage: '', // Not available in event, will be updated later
+        sellerId: data.userId,
+        sellerName: '', // Not available in event, will be updated later
+        status: 'CREATED', // Default status, will be updated later
+      });
+      
+      console.log(`[listings-service] Created read model for listing: ${data.id}`);
+      msg.ack();
+    } catch (error) {
+      console.error(`[listings-service] Failed to create read model for listing ${data.id}:`, error);
+      // Don't ack the message so it will be retried
+    }
   }
 }
