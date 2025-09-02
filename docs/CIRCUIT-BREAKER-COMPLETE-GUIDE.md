@@ -4,7 +4,7 @@
 
 This guide documents the complete **two-layer circuit breaker implementation** for your auction website microservices architecture. The implementation provides comprehensive protection against cascade failures at both the HTTP service communication level and the NATS event messaging level.
 
-## 🏗️ Architecture Overview
+##  Architecture Overview
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
@@ -57,20 +57,20 @@ This guide documents the complete **two-layer circuit breaker implementation** f
 ### API Gateway
 ```
 services/api-gateway/src/
-├── circuit-breaker.ts                    # ✨ NEW - Circuit breaker logic
+├── circuit-breaker.ts                    #  NEW - Circuit breaker logic
 ├── index.ts                             #  MODIFIED - Integrated circuit breaker
-├── demo-circuit-breaker.sh              # ✨ NEW - Demo script
-└── CIRCUIT-BREAKER-README.md            # ✨ NEW - Documentation
+├── demo-circuit-breaker.sh              #  NEW - Demo script
+└── CIRCUIT-BREAKER-README.md            #  NEW - Documentation
 ```
 
 ### Each Service (auth, bid, listings, payments, profile)
 ```
 services/{service}/src/
-├── nats-wrapper-circuit-breaker.ts      # ✨ NEW - Enhanced NATS wrapper
+├── nats-wrapper-circuit-breaker.ts      #  NEW - Enhanced NATS wrapper
 ├── events/
-│   ├── enhanced-publisher.ts            # ✨ NEW - Circuit breaker publisher
+│   ├── enhanced-publisher.ts            #  NEW - Circuit breaker publisher
 │   └── publishers/
-│       └── *-publisher-enhanced.ts      # ✨ NEW - Enhanced publishers
+│       └── *-publisher-enhanced.ts      #  NEW - Enhanced publishers
 ├── index.ts                             #  MODIFIED - Uses enhanced wrapper
 └── app.ts                               #  MODIFIED - Added NATS endpoints
 ```
@@ -78,9 +78,9 @@ services/{service}/src/
 ### Scripts
 ```
 services/
-├── implement-nats-circuit-breaker.sh    # ✨ NEW - Implementation script
-├── add-nats-endpoints.sh                # ✨ NEW - Endpoints script
-└── demo-nats-circuit-breaker.sh         # ✨ NEW - Complete demo
+├── implement-nats-circuit-breaker.sh    #  NEW - Implementation script
+├── add-nats-endpoints.sh                #  NEW - Endpoints script
+└── demo-nats-circuit-breaker.sh         #  NEW - Complete demo
 ```
 
 ##  Quick Start

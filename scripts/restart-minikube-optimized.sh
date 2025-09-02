@@ -37,7 +37,7 @@ minikube stop -p $MINIKUBE_PROFILE 2>/dev/null || true
 print_status "Cluster stopped"
 
 # Clean up any problematic state
-echo -e "${BLUE}🧹 Cleaning up cluster state...${NC}"
+echo -e "${BLUE} Cleaning up cluster state...${NC}"
 minikube delete -p $MINIKUBE_PROFILE 2>/dev/null || true
 print_status "Cluster state cleaned"
 
@@ -107,7 +107,7 @@ echo -e "${GREEN} Minikube IP: $MINIKUBE_IP${NC}"
 
 echo -e "${GREEN}"
 echo "=============================================="
-echo "🎉 Minikube cluster is ready for deployment!"
+echo " Minikube cluster is ready for deployment!"
 echo "=============================================="
 echo -e "${NC}"
 

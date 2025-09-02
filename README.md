@@ -119,7 +119,7 @@ Key configuration files:
 - **Stripe** - Payment processing (test keys included)
 - **Email Service** - SMTP configuration for notifications
 
-## 📚 Documentation
+##  Documentation
 
 ### Deployment Guides
 - **[Kubernetes Deployment Guide](k8s/README.md)** - Complete K8s deployment instructions
@@ -231,6 +231,6 @@ docker-compose down -v
 4. Test with both Docker Compose and Kubernetes
 5. Submit a pull request
 
-## 📄 License
+##  License
 
 This project is licensed under the MIT License - see the LICENSE file for details.

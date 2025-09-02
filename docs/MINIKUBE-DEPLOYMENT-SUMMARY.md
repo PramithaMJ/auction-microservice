@@ -54,7 +54,7 @@ cd auction-website
 | `monitor-minikube.sh` | Monitor cluster status |
 | `cleanup-minikube.sh` | Clean up deployment |
 
-## 🏗️ Architecture Overview
+##  Architecture Overview
 
 ```
 External Traffic
@@ -205,7 +205,7 @@ kubectl rollout undo deployment/frontend -n auction-system
 - Regular security updates
 - Monitor resource usage
 
-## 📚 Additional Resources
+##  Additional Resources
 
 - **Full Guide**: `MINIKUBE-UBUNTU-DEPLOYMENT-GUIDE.md`
 - **Docker Compose Reference**: `docker-compose.yml`

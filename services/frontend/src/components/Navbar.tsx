@@ -195,7 +195,7 @@ const Navbar = () => {
                     className="flex items-center px-3 py-2 rounded-lg text-base font-medium bg-yellow-500 text-white mx-3 shadow-md"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    <span className="mr-3">✨</span>
+                    <span className="mr-3"></span>
                     Get Started
                   </a>
                 </Link>

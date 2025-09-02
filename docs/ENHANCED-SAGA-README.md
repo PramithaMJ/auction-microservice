@@ -63,7 +63,7 @@ GET    /api/sagas/user-registration         - Get active user registration sagas
 GET    /api/sagas/metrics                   - Basic saga metrics
 ```
 
-## 🏗️ Architecture
+##  Architecture
 
 ### Core Components
 
@@ -91,7 +91,7 @@ GET    /api/sagas/metrics                   - Basic saga metrics
    - Reliable delivery
    - Queue group processing
 
-## 🚦 Saga States
+##  Saga States
 
 ### Common States
 - `STARTED` - Saga initiated
@@ -103,7 +103,7 @@ GET    /api/sagas/metrics                   - Basic saga metrics
 ### Type-Specific States
 Each saga type has additional intermediate states representing business process steps.
 
-## 📝 Usage Examples
+##  Usage Examples
 
 ### Starting a User Registration Saga
 ```bash
@@ -295,13 +295,13 @@ curl http://localhost:3108/api/sagas/stalled
 curl -X POST http://localhost:3108/api/sagas/bulk/retry-stalled
 ```
 
-## 📚 Additional Resources
+##  Additional Resources
 
 - [User Registration Saga Guide](../docs/USER-REGISTRATION-SAGA-GUIDE.md)
 - [Circuit Breaker Guide](../docs/CIRCUIT-BREAKER-COMPLETE-GUIDE.md)
 - [Complete Setup Guide](../docs/COMPLETE-SETUP-GUIDE.md)
 
-## 🤝 Contributing
+##  Contributing
 
 1. Fork the repository
 2. Create a feature branch
@@ -309,6 +309,6 @@ curl -X POST http://localhost:3108/api/sagas/bulk/retry-stalled
 4. Ensure all tests pass
 5. Submit a pull request
 
-## 📄 License
+##  License
 
 This project is licensed under the MIT License.

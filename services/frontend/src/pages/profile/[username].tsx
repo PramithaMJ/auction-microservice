@@ -146,7 +146,7 @@ const Profile = ({ profile, userListings = [], error }: ProfileProps) => {
               </div>
             ) : (
               <div className="text-center py-12">
-                <div className="text-6xl mb-4">📦</div>
+                <div className="text-6xl mb-4"></div>
                 <h3 className="text-lg font-medium text-gray-900 mb-2">No Active Listings</h3>
                 <p className="text-gray-600 mb-6">
                   {isOwnProfile 
@@ -177,7 +177,7 @@ function getEmojiForListing(title: string): string {
   if (titleLower.includes('watch') || titleLower.includes('rolex') || titleLower.includes('omega')) return '⌚';
   if (titleLower.includes('car') || titleLower.includes('auto') || titleLower.includes('vehicle')) return '🚗';
   if (titleLower.includes('art') || titleLower.includes('paint') || titleLower.includes('canvas')) return '🎨';
-  if (titleLower.includes('book') || titleLower.includes('novel') || titleLower.includes('manuscript')) return '📚';
+  if (titleLower.includes('book') || titleLower.includes('novel') || titleLower.includes('manuscript')) return '';
   if (titleLower.includes('coin') || titleLower.includes('currency') || titleLower.includes('money')) return '🪙';
   if (titleLower.includes('wine') || titleLower.includes('champagne') || titleLower.includes('bottle')) return '🍷';
   if (titleLower.includes('guitar') || titleLower.includes('piano') || titleLower.includes('music')) return '🎸';
@@ -187,7 +187,7 @@ function getEmojiForListing(title: string): string {
   if (titleLower.includes('stamp') || titleLower.includes('post') || titleLower.includes('mail')) return '📮';
   if (titleLower.includes('diamond') || titleLower.includes('gem') || titleLower.includes('crystal')) return '💎';
   
-  return '📦'; // Default fallback
+  return ''; // Default fallback
 }
 
 Profile.getInitialProps = async (context: NextPageContext, client: any) => {

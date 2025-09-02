@@ -3,7 +3,7 @@
 # Build all Docker images locally for testing
 set -e
 
-echo "🏗️ Building all Docker images locally..."
+echo " Building all Docker images locally..."
 
 # Colors for output
 RED='\033[0;31m'

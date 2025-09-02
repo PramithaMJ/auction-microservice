@@ -68,7 +68,7 @@ After successful deployment:
    - **API Gateway**: `http://YOUR_SERVER_IP:3001`
    - **API Documentation**: `http://YOUR_SERVER_IP:3001/api-docs`
 
-## 🏗️ Architecture Deployed
+##  Architecture Deployed
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐

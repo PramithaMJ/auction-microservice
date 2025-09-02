@@ -376,7 +376,7 @@ echo " Creating namespaces..."
 kubectl apply -f namespaces.yaml
 
 # Deploy infrastructure
-echo "🏗️ Deploying infrastructure..."
+echo " Deploying infrastructure..."
 kubectl apply -f infrastucture/
 
 # Wait for infrastructure

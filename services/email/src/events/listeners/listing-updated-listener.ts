@@ -40,9 +40,9 @@ export class ListingUpdatedListener extends Listener<ListingUpdatedEvent> {
     const emailContent = `
       Congratulations ${winner.name}!
 
-      🎉 You won the auction! 🎉
+       You won the auction! 
 
-      📦 Listing: ${listing.title}
+       Listing: ${listing.title}
        Winning Bid: $${(listing.currentPrice / 100).toFixed(2)}
 
       Your payment is now required to complete the purchase. Please visit your dashboard to complete the payment process.
@@ -60,7 +60,7 @@ export class ListingUpdatedListener extends Listener<ListingUpdatedEvent> {
     await transporter.sendMail({
       from: process.env.EMAIL,
       to: winner.email,
-      subject: `🎉 Congratulations! You won "${listing.title}"`,
+      subject: ` Congratulations! You won "${listing.title}"`,
       text: emailContent,
     });
 
@@ -71,9 +71,9 @@ export class ListingUpdatedListener extends Listener<ListingUpdatedEvent> {
     const emailContent = `
       Hello ${listing.user.name},
 
-      Great news! Your auction has ended with a winner! 🎉
+      Great news! Your auction has ended with a winner! 
 
-      📦 Listing: ${listing.title}
+       Listing: ${listing.title}
        Final Price: $${(listing.currentPrice / 100).toFixed(2)}
       🏆 Winner: ${winner.name}
 
