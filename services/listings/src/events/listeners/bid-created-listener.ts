@@ -5,14 +5,13 @@ import {
   Subjects,
 } from '@jjmauction/common';
 import { Message } from 'node-nats-streaming';
-import { trace, SpanKind } from '@opentelemetry/api';
 
 import { Listing, User } from '../../models';
 import { natsWrapper } from '../../nats-wrapper-circuit-breaker';
 import { socketIOWrapper } from '../../socket-io-wrapper';
 import { ListingUpdatedPublisher } from '../publishers/listing-updated-publisher';
 import { queueGroupName } from './queue-group-name';
-import { tracingService } from '../utils/tracing';
+import { tracingService } from '../../utils/tracing';
 
 export class BidCreatedListener extends Listener<BidCreatedEvent> {
   queueGroupName = queueGroupName;
@@ -56,7 +55,7 @@ export class BidCreatedListener extends Listener<BidCreatedEvent> {
         msg.ack();
       },
       {
-        kind: SpanKind.CONSUMER,
+        kind: 'CONSUMER',
         attributes: {
           'messaging.operation': 'process',
           'messaging.destination': 'bid.created',

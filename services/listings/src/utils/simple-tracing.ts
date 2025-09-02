@@ -1,54 +1,73 @@
-// Simple tracing utility for Listings Service
-import { trace, context, SpanKind, SpanStatusCode } from '@opentelemetry/api';
-
+// Simple logging-based tracing utility for Listings Service
 export class ListingsTracing {
   private serviceName = 'listings-service';
 
-  createSpan(name: string, kind: SpanKind = SpanKind.INTERNAL) {
-    const tracer = trace.getTracer(this.serviceName);
-    return tracer.startSpan(name, { kind });
+  createSpan(name: string, kind: string = 'INTERNAL') {
+    const traceId = this.generateTraceId();
+    console.log(`[${this.serviceName}] Created span: ${name}`, {
+      traceId,
+      kind,
+      timestamp: new Date().toISOString(),
+    });
+    return { traceId, name, kind };
   }
 
   async traceAsyncOperation<T>(
     operationName: string,
     operation: () => Promise<T>,
-    kind: SpanKind = SpanKind.INTERNAL,
+    kind: string = 'INTERNAL',
     attributes?: Record<string, string | number | boolean>
   ): Promise<T> {
-    const span = this.createSpan(operationName, kind);
+    const startTime = Date.now();
+    const traceId = this.generateTraceId();
     
-    if (attributes) {
-      span.setAttributes(attributes);
-    }
+    console.log(`[${this.serviceName}] Starting operation: ${operationName}`, {
+      traceId,
+      kind,
+      timestamp: new Date().toISOString(),
+      ...attributes,
+    });
 
     try {
-      const result = await context.with(trace.setSpan(context.active(), span), operation);
-      span.setStatus({ code: SpanStatusCode.OK });
+      const result = await operation();
+      const duration = Date.now() - startTime;
+      
+      console.log(`[${this.serviceName}] Completed operation: ${operationName}`, {
+        traceId,
+        duration: `${duration}ms`,
+        status: 'success',
+      });
+      
       return result;
     } catch (error) {
-      span.setStatus({
-        code: SpanStatusCode.ERROR,
-        message: error instanceof Error ? error.message : 'Unknown error',
+      const duration = Date.now() - startTime;
+      
+      console.error(`[${this.serviceName}] Failed operation: ${operationName}`, {
+        traceId,
+        duration: `${duration}ms`,
+        status: 'error',
+        error: error instanceof Error ? error.message : 'Unknown error',
       });
-      span.recordException(error as Error);
+      
       throw error;
-    } finally {
-      span.end();
     }
   }
 
   addEventToCurrentSpan(eventName: string, attributes?: Record<string, string | number | boolean>): void {
-    const span = trace.getActiveSpan();
-    if (span) {
-      span.addEvent(eventName, attributes);
-    }
+    console.log(`[${this.serviceName}] Event: ${eventName}`, {
+      timestamp: new Date().toISOString(),
+      ...attributes,
+    });
   }
 
   setAttributeOnCurrentSpan(key: string, value: string | number | boolean): void {
-    const span = trace.getActiveSpan();
-    if (span) {
-      span.setAttribute(key, value);
-    }
+    console.log(`[${this.serviceName}] Attribute set: ${key} = ${value}`, {
+      timestamp: new Date().toISOString(),
+    });
+  }
+
+  private generateTraceId(): string {
+    return Math.random().toString(36).substring(2, 15);
   }
 }
 
