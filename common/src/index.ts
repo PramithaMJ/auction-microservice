@@ -36,5 +36,5 @@ export { UserAccountCreatedEvent } from './events/user-registration-saga-events'
 export { ProfileCreatedEvent } from './events/user-registration-saga-events';
 export { WelcomeEmailSentEvent } from './events/user-registration-saga-events';
 
-// Temporary: Export tracing for Docker build compatibility
-export * from './tracing';
+// Note: Tracing utilities are exported separately to avoid browser incompatibility
+// Import from '@jjmauction/common/build/tracing' for server-side tracing
