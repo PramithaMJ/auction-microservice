@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
 import { Sequelize } from 'sequelize';
 
-import { Listing } from '../models';
+import { Listing, ListingRead } from '../models';
 import { generateImageUrls } from '../utils/s3-config';
 
 const router = express.Router();
@@ -18,25 +18,12 @@ router.get('/api/listings/', async (req: Request, res: Response) => {
   console.log('search falsy?:', !search);
   console.log('will use search?:', !!search);
 
-  const listings =
-    search && search.trim().length > 0
-      ? await Listing.findAll({
-          attributes: {
-            include: [
-              [
-                Sequelize.literal(
-                  `MATCH (title) AGAINST('${search}' IN NATURAL LANGUAGE MODE)`
-                ),
-                'score',
-              ],
-            ],
-          },
-          where: Sequelize.literal(
-            `MATCH (title) AGAINST('${search}' IN NATURAL LANGUAGE MODE)`
-          ),
-          order: [[Sequelize.literal('score'), 'DESC']],
-        })
-      : await Listing.findAll();
+  // Use the CQRS read model for queries
+  const where: any = {};
+  if (search && search.trim().length > 0) {
+    where.title = { [require('sequelize').Op.like]: `%${search}%` };
+  }
+  const listings = await ListingRead.findAll({ where });
 
   console.log('listings found:', listings.length);
 

@@ -2,6 +2,7 @@ import { Sequelize } from 'sequelize';
 
 import { ListingFactory } from './listing';
 import { UserFactory } from './user';
+import { ListingReadFactory } from './listing-read-model';
 
 const db =
   process.env.NODE_ENV == 'test'
@@ -12,9 +13,10 @@ const db =
 
 const Listing = ListingFactory(db);
 const User = UserFactory(db);
+const ListingRead = ListingReadFactory(db);
 
 // Set up associations with explicit foreign key
 User.hasMany(Listing, { foreignKey: 'userId', as: 'listings' });
 Listing.belongsTo(User, { foreignKey: 'userId', as: 'User' });
 
-export { db, Listing, User };
+export { db, Listing, User, ListingRead };
