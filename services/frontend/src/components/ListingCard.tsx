@@ -200,7 +200,8 @@ const ListingCard = ({ name, price, slug, smallImage, expiresAt, sellerName }: I
       hasSmallImage: !!smallImage,
       imageLength: smallImage?.length || 0,
       emoji: emojiIcon,
-      imageType: typeof smallImage
+      imageType: typeof smallImage,
+      isValidUrl: smallImage && smallImage.startsWith('http')
     });
     
     // Also log if smallImage looks like a valid URL
@@ -210,6 +211,16 @@ const ListingCard = ({ name, price, slug, smallImage, expiresAt, sellerName }: I
         includesAws: smallImage.includes('amazonaws'),
         fullUrl: smallImage
       });
+    }
+    
+    // Reset image states when smallImage changes
+    if (smallImage && smallImage.trim() !== '') {
+      setImageError(false);
+      setImageLoaded(false);
+      setImageLoading(true);
+    } else {
+      setImageLoading(false);
+      setImageError(true);
     }
   }, [name, smallImage, emojiIcon]);
   
@@ -236,8 +247,21 @@ const ListingCard = ({ name, price, slug, smallImage, expiresAt, sellerName }: I
     setImageLoading(false);
   };
 
-  const hasValidImage = smallImage && smallImage.trim() !== '';
+  const hasValidImage = smallImage && smallImage.trim() !== '' && smallImage.startsWith('http');
   const showEmojiOverlay = hasValidImage && emojiIcon && imageLoaded && !imageError;
+  
+  // Additional check for newly created listings - retry loading after a delay
+  React.useEffect(() => {
+    if (!hasValidImage && smallImage && !smallImage.startsWith('http')) {
+      console.log('Detected potentially incomplete image URL, will retry in 2 seconds:', smallImage);
+      const retryTimer = setTimeout(() => {
+        // Force a component re-render by updating a state
+        setImageLoading(false);
+      }, 2000);
+      
+      return () => clearTimeout(retryTimer);
+    }
+  }, [smallImage, hasValidImage]);
   
   return (
     <StyledListingCard>

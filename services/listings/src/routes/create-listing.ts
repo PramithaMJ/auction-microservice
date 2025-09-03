@@ -255,6 +255,12 @@ router.post(
         });
 
         console.log('Event published successfully');
+        
+        // Add a small delay to allow the read model to be populated before responding
+        // This helps ensure that when the frontend redirects and fetches listings,
+        // the new listing will have proper image URLs in the read model
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
         res.status(201).send(listing);
       });
     } catch (error) {

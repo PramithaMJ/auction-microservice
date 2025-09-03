@@ -10,11 +10,11 @@ class SimpleTracingService {
   }
 
   initialize(): void {
-    console.log(`✅ OpenTelemetry tracing initialized for ${this.serviceName}`);
+    console.log(` OpenTelemetry tracing initialized for ${this.serviceName}`);
   }
 
   shutdown(): void {
-    console.log(`🔌 Jaeger tracing terminated for ${this.serviceName}`);
+    console.log(` Jaeger tracing terminated for ${this.serviceName}`);
   }
 }
 

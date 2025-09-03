@@ -55,10 +55,15 @@ export class ListingCreatedListener extends Listener<ListingCreatedEvent> {
         const bucketName = process.env.AWS_S3_BUCKET_NAME;
         if (bucketName) {
           try {
+            console.log(`[listings-service] Generating S3 URLs for new listing ${data.id} with imageId: ${mainListing.imageId}`);
             const imageUrls = await generateImageUrls(mainListing.imageId, bucketName);
             readModelData.smallImage = imageUrls.small;
             readModelData.largeImage = imageUrls.large;
             readModelData.imageUrl = imageUrls.large; // For backward compatibility
+            console.log(`[listings-service] Generated image URLs for ${data.id}:`, {
+              smallImageLength: imageUrls.small.length,
+              largeImageLength: imageUrls.large.length
+            });
           } catch (error) {
             console.error(`[listings-service] Failed to generate image URLs for ${mainListing.imageId}:`, error);
             // Still create read model without URLs
@@ -67,11 +72,13 @@ export class ListingCreatedListener extends Listener<ListingCreatedEvent> {
             readModelData.imageUrl = '';
           }
         } else {
+          console.log(`[listings-service] No S3 bucket configured for listing ${data.id}`);
           readModelData.smallImage = '';
           readModelData.largeImage = '';
           readModelData.imageUrl = '';
         }
       } else {
+        console.log(`[listings-service] No imageId found for listing ${data.id}`);
         readModelData.smallImage = '';
         readModelData.largeImage = '';
         readModelData.imageUrl = '';

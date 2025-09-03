@@ -88,8 +88,12 @@ const Sell = (): JSX.Element => {
       
       const client = buildClient({});
       const { data } = await client.post('/api/listings', formData);
-      toast.success('Sucessfully listed item for sale!');
-      Router.push(`/listings/${data.slug}`);
+      toast.success('Successfully listed item for sale!');
+      
+      // Add a small delay before redirecting to allow the read model to sync
+      setTimeout(() => {
+        Router.push(`/listings/${data.slug}`);
+      }, 1500);
     } catch (err) {
       err.response.data.errors.forEach((err) => toast.error(err.message));
     }
