@@ -1,0 +1,70 @@
+# fluent-bit-values.yaml - Step 1: Add Nginx parsing
+config:
+  service: |
+    [SERVICE]
+        Log_Level         debug
+        Parsers_File      /fluent-bit/etc/parsers.conf
+        Parsers_File      /fluent-bit/etc/conf/custom_parsers.conf
+        HTTP_Server       On
+        HTTP_Listen       0.0.0.0
+        HTTP_Port         2020
+
+  inputs: |
+    # Tail Kubernetes container logs
+    [INPUT]
+        Name              tail
+        Path              /var/log/containers/*.log
+        Tag               kube.*
+        Parser            docker
+        Mem_Buf_Limit     5MB
+        Refresh_Interval  5
+
+    # Tail Nginx access logs
+    [INPUT]
+        Name              tail
+        Path              /var/log/nginx/access.log
+        Tag               nginx.access
+        Parser            nginx_custom
+        Mem_Buf_Limit     5MB
+        Refresh_Interval  5
+
+  filters: |
+    # Basic filter for debugging - just add a field to track processing
+    [FILTER]
+        Name              modify
+        Match             nginx.*
+        Add               processed_by fluent-bit
+
+  outputs: |
+    # Output to stdout for debugging first
+    [OUTPUT]
+        Name              stdout
+        Match             nginx.*
+        Format            json_lines
+
+    # Also output to OpenSearch
+    [OUTPUT]
+        Name              opensearch
+        Match             nginx.*
+        Host              host.minikube.internal
+        Port              9200
+        Index             nginx
+        Logstash_Format   On
+        Logstash_Prefix   nginx
+        Replace_Dots      On
+        TLS               On
+        TLS.Verify        Off
+        HTTP_User         admin
+        HTTP_Passwd       abcABC@123
+        Retry_Limit       3
+        Suppress_Type_Name On
+        Trace_Error       On
+        Trace_Output      On
+
+  customParsers: |
+    [PARSER]
+        Name        nginx_custom
+        Format      regex
+        Regex       ^(?<remote_addr>[^ ]*) - (?<remote_user>[^ ]*) \[(?<time_local>[^\]]*)\] "(?<method>[A-Z]+) (?<uri>[^ ]*) (?<protocol>[^"]*)" (?<status>[0-9]{3}) (?<body_bytes_sent>[^ ]*) "(?<http_referer>[^"]*)" "(?<http_user_agent>[^"]*)" "(?<http_x_forwarded_for>[^"]*)"
+        Time_Key    time_local
+        Time_Format %d/%b/%Y:%H:%M:%S %z
