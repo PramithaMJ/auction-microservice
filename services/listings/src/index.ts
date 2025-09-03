@@ -14,6 +14,7 @@ import { db } from './models';
 import { natsWrapper } from './nats-wrapper-circuit-breaker';
 import { socketIOWrapper } from './socket-io-wrapper';
 import { populateMissingSlugs } from './utils/populate-slugs';
+import { addSlugColumnToListingsRead } from './utils/migration-helper';
 
 (async () => {
   try {
@@ -67,7 +68,10 @@ import { populateMissingSlugs } from './utils/populate-slugs';
 
     await db.authenticate();
     await db.sync();
-    console.log('Conneted to MySQL');
+    console.log('Connected to MySQL');
+
+    // Ensure slug column exists in listings_read table
+    await addSlugColumnToListingsRead();
 
     // Populate missing slugs in read model after DB sync
     await populateMissingSlugs();
