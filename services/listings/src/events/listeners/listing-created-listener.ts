@@ -25,9 +25,10 @@ export class ListingCreatedListener extends Listener<ListingCreatedEvent> {
         sellerId: data.userId,
         sellerName: '', // Not available in event, will be updated later
         status: 'CREATED', // Default status, will be updated later
+        slug: data.slug, // Include slug from the event
       });
       
-      console.log(`[listings-service] Created read model for listing: ${data.id}`);
+      console.log(`[listings-service] Created read model for listing: ${data.id} with slug: ${data.slug}`);
       msg.ack();
     } catch (error) {
       console.error(`[listings-service] Failed to create read model for listing ${data.id}:`, error);
