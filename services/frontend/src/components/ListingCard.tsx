@@ -12,6 +12,7 @@ interface IProps {
   price: number;
   slug: string;
   smallImage: string;
+  sellerName?: string;
 }
 
 const StyledListingCard = styled.div`${tw`
@@ -185,7 +186,7 @@ const getEmojiForListing = (title: string): string => {
   return defaultEmojis[Math.floor(Math.random() * defaultEmojis.length)];
 };
 
-const ListingCard = ({ name, price, slug, smallImage, expiresAt }: IProps) => {
+const ListingCard = ({ name, price, slug, smallImage, expiresAt, sellerName }: IProps) => {
   const [imageError, setImageError] = React.useState(false);
   const [imageLoaded, setImageLoaded] = React.useState(false);
   const [imageLoading, setImageLoading] = React.useState(true);
@@ -288,6 +289,11 @@ const ListingCard = ({ name, price, slug, smallImage, expiresAt }: IProps) => {
           <TextWrapper>
             <div>
               <StyledTitle>{name}</StyledTitle>
+              {sellerName && (
+                <div className="text-gray-500 text-xs mb-1">
+                  by {sellerName}
+                </div>
+              )}
               <StyledText>
                 <Countdown expiresAt={expiresAt} />
               </StyledText>

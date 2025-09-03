@@ -17,6 +17,7 @@ import { populateMissingSlugs } from './utils/populate-slugs';
 import { addSlugColumnToListingsRead } from './utils/migration-helper';
 import { syncImageDataToReadModel } from './utils/sync-image-data';
 import { expandImageColumns } from './utils/expand-image-columns';
+import { populateSellerNames } from './utils/populate-seller-names';
 
 (async () => {
   try {
@@ -83,6 +84,9 @@ import { expandImageColumns } from './utils/expand-image-columns';
 
     // Sync missing image data from main table to read model
     await syncImageDataToReadModel();
+
+    // Populate missing seller names in read model
+    await populateSellerNames();
 
     const port = process.env.PORT || 3103;
     const server = app.listen(port, () =>

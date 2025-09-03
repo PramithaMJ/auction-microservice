@@ -56,6 +56,7 @@ router.get('/api/listings/', async (req: Request, res: Response) => {
             return {
               ...listing.toJSON(),
               slug, // Add slug from main table
+              expiresAt: listing.endDate, // Map endDate to expiresAt for frontend compatibility
               smallImage: refreshedUrls.small,
               largeImage: refreshedUrls.large,
             };
@@ -64,12 +65,14 @@ router.get('/api/listings/', async (req: Request, res: Response) => {
           return {
             ...listing.toJSON(),
             slug, // Add slug from main table
+            expiresAt: listing.endDate, // Map endDate to expiresAt for frontend compatibility
           };
         } catch (error) {
           console.error('Error refreshing URLs for listing:', listing.id, error);
           return {
             ...listing.toJSON(),
             slug: listing.id, // Fallback to ID if slug not found
+            expiresAt: listing.endDate, // Map endDate to expiresAt for frontend compatibility
           };
         }
       })
@@ -101,12 +104,14 @@ router.get('/api/listings/', async (req: Request, res: Response) => {
         return {
           ...listing.toJSON(),
           slug,
+          expiresAt: listing.endDate, // Map endDate to expiresAt for frontend compatibility
         };
       } catch (error) {
         console.error('Error getting slug for listing:', listing.id, error);
         return {
           ...listing.toJSON(),
           slug: listing.id, // Fallback to ID if slug not found
+          expiresAt: listing.endDate, // Map endDate to expiresAt for frontend compatibility
         };
       }
     })

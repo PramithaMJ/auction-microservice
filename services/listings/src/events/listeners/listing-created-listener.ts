@@ -1,7 +1,7 @@
 // Listener for ListingCreatedEvent to update the CQRS read model
 import { Listener, Subjects, ListingCreatedEvent } from '@jjmauction/common';
 import { Message } from 'node-nats-streaming';
-import { ListingRead, Listing } from '../../models';
+import { ListingRead, Listing, User } from '../../models';
 import { queueGroupName } from './queue-group-name';
 import { generateImageUrls } from '../../utils/s3-config';
 
@@ -32,10 +32,23 @@ export class ListingCreatedListener extends Listener<ListingCreatedEvent> {
         endDate: data.expiresAt,
         imageId: mainListing.imageId || '',
         sellerId: data.userId,
-        sellerName: '', // Not available in event, will be updated later
+        sellerName: '', // Will be populated below
         status: 'CREATED',
         slug: data.slug,
       };
+
+      // Fetch seller information
+      try {
+        const seller = await User.findByPk(data.userId);
+        if (seller) {
+          readModelData.sellerName = seller.name;
+          console.log(`[listings-service] Found seller: ${seller.name} for listing ${data.id}`);
+        } else {
+          console.log(`[listings-service] Seller ${data.userId} not found in database for listing ${data.id}`);
+        }
+      } catch (error) {
+        console.error(`[listings-service] Failed to fetch seller ${data.userId} for listing ${data.id}:`, error);
+      }
 
       // If listing has an image, generate S3 URLs
       if (mainListing.imageId) {

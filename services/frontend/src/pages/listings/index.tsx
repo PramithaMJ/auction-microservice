@@ -173,10 +173,11 @@ const Listings = ({ listings, search }) => {
             <ListingCard
               key={listing.id || idx}
               name={listing.title}
-              expiresAt={listing.expiresAt}
+              expiresAt={listing.endDate || listing.expiresAt}
               price={listing.currentPrice}
               smallImage={listing.smallImage}
               slug={listing.slug ? `/listings/${listing.slug}` : `/listings/${listing.id}`}
+              sellerName={listing.sellerName}
             />
           ))}
         </StyledListings>
