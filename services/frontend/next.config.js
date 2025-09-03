@@ -25,6 +25,17 @@ const nextConfig = {
       "util": false,
     };
     
+    // Exclude server-only packages from client bundle
+    if (!isServer) {
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        'express-validator': false,
+        'express': false,
+        'cookie-session': false,
+        'jsonwebtoken': false,
+      };
+    }
+    
     // Handle __webpack_require__.nmd issue
     config.module.rules.push({
       test: /\.js$/,
