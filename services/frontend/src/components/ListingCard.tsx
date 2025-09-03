@@ -193,47 +193,64 @@ const ListingCard = ({ name, price, slug, smallImage, expiresAt }: IProps) => {
   
   // Debug: log the smallImage URL
   React.useEffect(() => {
-    console.log('ListingCard Debug:', {
+    console.log('=== ListingCard Debug ===', {
       name,
       smallImage,
       hasSmallImage: !!smallImage,
       imageLength: smallImage?.length || 0,
-      emoji: emojiIcon
+      emoji: emojiIcon,
+      imageType: typeof smallImage
     });
+    
+    // Also log if smallImage looks like a valid URL
+    if (smallImage) {
+      console.log('SmallImage URL check:', {
+        startsWithHttp: smallImage.startsWith('http'),
+        includesAws: smallImage.includes('amazonaws'),
+        fullUrl: smallImage
+      });
+    }
   }, [name, smallImage, emojiIcon]);
   
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-    console.error('Image failed to load:', {
+    console.error('=== Image Load Error ===', {
       name,
       smallImage,
-      error: e.currentTarget.src
+      errorSrc: e.currentTarget.src,
+      naturalWidth: e.currentTarget.naturalWidth,
+      naturalHeight: e.currentTarget.naturalHeight
     });
     setImageError(true);
     setImageLoading(false);
   };
 
   const handleImageLoad = () => {
-    console.log('Image loaded successfully:', name);
+    console.log('=== Image Loaded Successfully ===', {
+      name,
+      smallImage,
+      naturalWidth: (document.querySelector(`img[alt="${name}"]`) as HTMLImageElement)?.naturalWidth,
+      naturalHeight: (document.querySelector(`img[alt="${name}"]`) as HTMLImageElement)?.naturalHeight
+    });
     setImageLoaded(true);
     setImageLoading(false);
   };
 
-  const hasValidImage = smallImage && smallImage.trim() !== '' && !imageError;
-  const showEmojiOverlay = hasValidImage && emojiIcon;
+  const hasValidImage = smallImage && smallImage.trim() !== '';
+  const showEmojiOverlay = hasValidImage && emojiIcon && imageLoaded && !imageError;
   
   return (
     <StyledListingCard>
       <Link href={slug}>
         <StyledCardContent>
           <StyledImageContainer>
-            {/* Debug info - remove in production */}
-            {process.env.NODE_ENV === 'development' && (
+            {/* Debug info - only in development */}
+            {typeof window !== 'undefined' && window.location?.hostname === 'localhost' && (
               <StyledDebugInfo>
-                {smallImage ? '🖼️' : '❌'} {imageError ? 'ERR' : 'OK'} {emojiIcon && '📱'}
+                IMG: {smallImage ? '✅' : '❌'} | ERR: {imageError ? '❌' : '✅'} | EMOJI: {emojiIcon ? '✅' : '❌'}
               </StyledDebugInfo>
             )}
             
-            {hasValidImage ? (
+            {(hasValidImage) ? (
               <>
                 {/* S3 Image */}
                 <StyledImage
