@@ -46,7 +46,7 @@ echo -e "${BLUE} Step 6: Applying Services...${NC}"
 kubectl apply -f k8s/services/
 check_status "Services application"
 
-echo -e "${BLUE}🔌 Step 7: Applying Ingress...${NC}"
+echo -e "${BLUE} Step 7: Applying Ingress...${NC}"
 kubectl apply -f k8s/ingress/
 check_status "Ingress application"
 

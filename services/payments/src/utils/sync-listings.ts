@@ -14,6 +14,23 @@ interface ListingData {
   currentWinnerId?: string;
 }
 
+// Map listing status from listings service to payments service enum
+const mapListingStatus = (status: string): ListingStatus => {
+  switch (status) {
+    case 'CREATED':
+    case 'Active':
+      return ListingStatus.Active;
+    case 'Expired':
+      return ListingStatus.Expired;
+    case 'awaiting:payment':
+      return ListingStatus.AwaitingPayment;
+    case 'complete':
+      return ListingStatus.Complete;
+    default:
+      return ListingStatus.Active; // Default fallback
+  }
+};
+
 export const syncExistingListings = async (): Promise<void> => {
   const maxRetries = 3;
   const retryDelay = 5000; // 5 seconds
@@ -40,7 +57,7 @@ export const syncExistingListings = async (): Promise<void> => {
           if (!existingListing) {
             await Listing.create({
               id: listingData.id,
-              status: listingData.status as ListingStatus,
+              status: mapListingStatus(listingData.status),
               amount: listingData.currentPrice,
               winnerId: listingData.currentWinnerId || '',
             });
@@ -48,7 +65,7 @@ export const syncExistingListings = async (): Promise<void> => {
           } else {
             // Update existing listing
             await existingListing.update({
-              status: listingData.status as ListingStatus,
+              status: mapListingStatus(listingData.status),
               amount: listingData.currentPrice,
               winnerId: listingData.currentWinnerId || '',
             });

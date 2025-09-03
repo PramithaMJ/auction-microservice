@@ -1,3 +1,6 @@
+// Initialize tracing first
+import './tracing-init';
+
 import { ListingCreatedListener } from './events/listeners/listing-created-listener';
 import { natsWrapper } from './nats-wrapper-circuit-breaker';
 

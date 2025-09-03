@@ -200,7 +200,8 @@ const ListingCard = ({ name, price, slug, smallImage, expiresAt, sellerName }: I
       hasSmallImage: !!smallImage,
       imageLength: smallImage?.length || 0,
       emoji: emojiIcon,
-      imageType: typeof smallImage
+      imageType: typeof smallImage,
+      isValidUrl: smallImage && smallImage.startsWith('http')
     });
     
     // Also log if smallImage looks like a valid URL
@@ -210,6 +211,16 @@ const ListingCard = ({ name, price, slug, smallImage, expiresAt, sellerName }: I
         includesAws: smallImage.includes('amazonaws'),
         fullUrl: smallImage
       });
+    }
+    
+    // Reset image states when smallImage changes
+    if (smallImage && smallImage.trim() !== '') {
+      setImageError(false);
+      setImageLoaded(false);
+      setImageLoading(true);
+    } else {
+      setImageLoading(false);
+      setImageError(true);
     }
   }, [name, smallImage, emojiIcon]);
   
@@ -236,8 +247,21 @@ const ListingCard = ({ name, price, slug, smallImage, expiresAt, sellerName }: I
     setImageLoading(false);
   };
 
-  const hasValidImage = smallImage && smallImage.trim() !== '';
+  const hasValidImage = smallImage && smallImage.trim() !== '' && smallImage.startsWith('http');
   const showEmojiOverlay = hasValidImage && emojiIcon && imageLoaded && !imageError;
+  
+  // Additional check for newly created listings - retry loading after a delay
+  React.useEffect(() => {
+    if (!hasValidImage && smallImage && !smallImage.startsWith('http')) {
+      console.log('Detected potentially incomplete image URL, will retry in 2 seconds:', smallImage);
+      const retryTimer = setTimeout(() => {
+        // Force a component re-render by updating a state
+        setImageLoading(false);
+      }, 2000);
+      
+      return () => clearTimeout(retryTimer);
+    }
+  }, [smallImage, hasValidImage]);
   
   return (
     <StyledListingCard>
@@ -272,6 +296,13 @@ const ListingCard = ({ name, price, slug, smallImage, expiresAt, sellerName }: I
                   </StyledImageFallback>
                 )}
                 
+                {/* Error fallback if image fails to load */}
+                {imageError && (
+                  <StyledImageFallback>
+                    <StyledEmojiIcon>{emojiIcon}</StyledEmojiIcon>
+                  </StyledImageFallback>
+                )}
+                
                 {/* Emoji overlay on successful image load */}
                 {showEmojiOverlay && imageLoaded && (
                   <StyledEmojiOverlay>
@@ -280,9 +311,25 @@ const ListingCard = ({ name, price, slug, smallImage, expiresAt, sellerName }: I
                 )}
               </>
             ) : (
-              /* Fallback to large emoji when no image */
+              /* Fallback to large emoji when no image or invalid URL */
               <StyledImageFallback>
                 <StyledEmojiIcon>{emojiIcon}</StyledEmojiIcon>
+                {/* Show "Image Loading" text for newly created listings */}
+                {smallImage === 'NO_IMAGE' && (
+                  <div style={{ 
+                    position: 'absolute', 
+                    bottom: '10px', 
+                    left: '50%', 
+                    transform: 'translateX(-50%)',
+                    fontSize: '12px',
+                    color: '#666',
+                    backgroundColor: 'rgba(255,255,255,0.8)',
+                    padding: '4px 8px',
+                    borderRadius: '4px'
+                  }}>
+                    Image Loading...
+                  </div>
+                )}
               </StyledImageFallback>
             )}
           </StyledImageContainer>

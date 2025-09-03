@@ -297,7 +297,7 @@ class EnhancedSagaStateManager {
     if (this.connected && this.client) {
       await this.client.disconnect();
       this.connected = false;
-      console.log('🔌 Disconnected from Redis');
+      console.log(' Disconnected from Redis');
     }
   }
 }

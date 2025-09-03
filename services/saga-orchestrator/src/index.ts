@@ -1,3 +1,6 @@
+// Initialize tracing first
+import './tracing-init';
+
 import { 
   app, 
   initializeOrchestrators,
