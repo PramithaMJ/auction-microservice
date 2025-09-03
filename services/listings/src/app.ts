@@ -1,6 +1,6 @@
 import 'express-async-errors';
 
-import { NotFoundError, currentUser, errorHandler } from '@jjmauction/common';
+import { NotFoundError, currentUser, errorHandler, tracingMiddleware, addCorrelationId } from '@jjmauction/common';
 import { json } from 'body-parser';
 import cookieSession from 'cookie-session';
 import express, { Request, Response, NextFunction } from 'express';
@@ -19,6 +19,8 @@ const app = express();
 
 app.set('trust proxy', true);
 app.use(json());
+app.use(addCorrelationId);
+app.use(tracingMiddleware('listings-service'));
 app.use(cookieSession({ signed: false, secure: false }));
 app.use(currentUser as any);
 

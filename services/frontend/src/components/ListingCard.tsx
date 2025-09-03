@@ -12,6 +12,7 @@ interface IProps {
   price: number;
   slug: string;
   smallImage: string;
+  sellerName?: string;
 }
 
 const StyledListingCard = styled.div`${tw`
@@ -81,9 +82,6 @@ const StyledImageContainer = styled.div`${tw`
 	w-full
 	h-48
 	bg-gradient-to-br from-yellow-100 to-orange-100
-	flex
-	items-center
-	justify-center
 	rounded-t-xl
 	border-b
 	border-yellow-200
@@ -108,11 +106,33 @@ const StyledImageFallback = styled.div`${tw`
 	items-center
 	justify-center
 	bg-gradient-to-br from-yellow-100 to-orange-100
+	absolute
+	top-0
+	left-0
 `}`;
 
 const StyledEmojiIcon = styled.div`${tw`
 	text-6xl
 	opacity-80
+`}`;
+
+const StyledEmojiOverlay = styled.div`${tw`
+	absolute
+	bottom-2
+	right-2
+	text-3xl
+	bg-white
+	bg-opacity-90
+	rounded-full
+	w-12
+	h-12
+	flex
+	items-center
+	justify-center
+	shadow-lg
+	border-2
+	border-yellow-300
+	z-10
 `}`;
 
 const StyledLoadingSpinner = styled.div`${tw`
@@ -166,7 +186,7 @@ const getEmojiForListing = (title: string): string => {
   return defaultEmojis[Math.floor(Math.random() * defaultEmojis.length)];
 };
 
-const ListingCard = ({ name, price, slug, smallImage, expiresAt }: IProps) => {
+const ListingCard = ({ name, price, slug, smallImage, expiresAt, sellerName }: IProps) => {
   const [imageError, setImageError] = React.useState(false);
   const [imageLoaded, setImageLoaded] = React.useState(false);
   const [imageLoading, setImageLoading] = React.useState(true);
@@ -174,46 +194,66 @@ const ListingCard = ({ name, price, slug, smallImage, expiresAt }: IProps) => {
   
   // Debug: log the smallImage URL
   React.useEffect(() => {
-    console.log('ListingCard Debug:', {
+    console.log('=== ListingCard Debug ===', {
       name,
       smallImage,
       hasSmallImage: !!smallImage,
-      imageLength: smallImage?.length || 0
+      imageLength: smallImage?.length || 0,
+      emoji: emojiIcon,
+      imageType: typeof smallImage
     });
-  }, [name, smallImage]);
+    
+    // Also log if smallImage looks like a valid URL
+    if (smallImage) {
+      console.log('SmallImage URL check:', {
+        startsWithHttp: smallImage.startsWith('http'),
+        includesAws: smallImage.includes('amazonaws'),
+        fullUrl: smallImage
+      });
+    }
+  }, [name, smallImage, emojiIcon]);
   
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-    console.error('Image failed to load:', {
+    console.error('=== Image Load Error ===', {
       name,
       smallImage,
-      error: e.currentTarget.src
+      errorSrc: e.currentTarget.src,
+      naturalWidth: e.currentTarget.naturalWidth,
+      naturalHeight: e.currentTarget.naturalHeight
     });
     setImageError(true);
     setImageLoading(false);
   };
 
   const handleImageLoad = () => {
-    console.log('Image loaded successfully:', name);
+    console.log('=== Image Loaded Successfully ===', {
+      name,
+      smallImage,
+      naturalWidth: (document.querySelector(`img[alt="${name}"]`) as HTMLImageElement)?.naturalWidth,
+      naturalHeight: (document.querySelector(`img[alt="${name}"]`) as HTMLImageElement)?.naturalHeight
+    });
     setImageLoaded(true);
     setImageLoading(false);
   };
 
-  const shouldShowImage = smallImage && smallImage.trim() !== '' && !imageError;
+  const hasValidImage = smallImage && smallImage.trim() !== '';
+  const showEmojiOverlay = hasValidImage && emojiIcon && imageLoaded && !imageError;
   
   return (
     <StyledListingCard>
       <Link href={slug}>
         <StyledCardContent>
           <StyledImageContainer>
-            {/* Debug info - remove in production */}
-            {process.env.NODE_ENV === 'development' && (
+            {/* Debug info - only in development */}
+            {typeof window !== 'undefined' && window.location?.hostname === 'localhost' && (
               <StyledDebugInfo>
-                {smallImage ? '' : ''} {imageError ? 'ERR' : 'OK'}
+                IMG: {smallImage ? '' : ''} | ERR: {imageError ? '' : ''} | EMOJI: {emojiIcon ? '' : ''}
               </StyledDebugInfo>
             )}
             
-            {shouldShowImage ? (
+            {(hasValidImage) ? (
               <>
+                {/* S3 Image */}
                 <StyledImage
                   src={smallImage}
                   alt={name}
@@ -224,13 +264,23 @@ const ListingCard = ({ name, price, slug, smallImage, expiresAt }: IProps) => {
                     transition: 'opacity 0.3s ease-in-out'
                   }}
                 />
+                
+                {/* Loading spinner while image loads */}
                 {imageLoading && (
-                  <StyledImageFallback style={{ position: 'absolute', top: 0, left: 0 }}>
+                  <StyledImageFallback>
                     <StyledLoadingSpinner />
                   </StyledImageFallback>
                 )}
+                
+                {/* Emoji overlay on successful image load */}
+                {showEmojiOverlay && imageLoaded && (
+                  <StyledEmojiOverlay>
+                    {emojiIcon}
+                  </StyledEmojiOverlay>
+                )}
               </>
             ) : (
+              /* Fallback to large emoji when no image */
               <StyledImageFallback>
                 <StyledEmojiIcon>{emojiIcon}</StyledEmojiIcon>
               </StyledImageFallback>
@@ -239,6 +289,11 @@ const ListingCard = ({ name, price, slug, smallImage, expiresAt }: IProps) => {
           <TextWrapper>
             <div>
               <StyledTitle>{name}</StyledTitle>
+              {sellerName && (
+                <div className="text-gray-500 text-xs mb-1">
+                  by {sellerName}
+                </div>
+              )}
               <StyledText>
                 <Countdown expiresAt={expiresAt} />
               </StyledText>

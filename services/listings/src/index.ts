@@ -1,12 +1,23 @@
+// Initialize tracing first
+import './tracing-init';
+
 import { app } from './app';
 import { BidCreatedListener } from './events/listeners/bid-created-listener';
 import { BidDeletedListener } from './events/listeners/bid-deleted-listener';
 import { ListingExpiredListener } from './events/listeners/listing-expired-listener';
 import { UserCreatedListener } from './events/listeners/user-created-listener';
 import { UserAccountCreatedListener } from './events/listeners/user-account-created-listener';
+import { ListingCreatedListener } from './events/listeners/listing-created-listener';
+import { ListingUpdatedListener } from './events/listeners/listing-updated-listener';
+import { ListingDeletedListener } from './events/listeners/listing-deleted-listener';
 import { db } from './models';
 import { natsWrapper } from './nats-wrapper-circuit-breaker';
 import { socketIOWrapper } from './socket-io-wrapper';
+import { populateMissingSlugs } from './utils/populate-slugs';
+import { addSlugColumnToListingsRead } from './utils/migration-helper';
+import { syncImageDataToReadModel } from './utils/sync-image-data';
+import { expandImageColumns } from './utils/expand-image-columns';
+import { populateSellerNames } from './utils/populate-seller-names';
 
 (async () => {
   try {
@@ -60,7 +71,22 @@ import { socketIOWrapper } from './socket-io-wrapper';
 
     await db.authenticate();
     await db.sync();
-    console.log('Conneted to MySQL');
+    console.log('Connected to MySQL');
+
+    // Ensure slug column exists in listings_read table
+    await addSlugColumnToListingsRead();
+
+    // Expand image columns to handle longer S3 URLs
+    await expandImageColumns();
+
+    // Populate missing slugs in read model after DB sync
+    await populateMissingSlugs();
+
+    // Sync missing image data from main table to read model
+    await syncImageDataToReadModel();
+
+    // Populate missing seller names in read model
+    await populateSellerNames();
 
     const port = process.env.PORT || 3103;
     const server = app.listen(port, () =>
@@ -92,6 +118,9 @@ import { socketIOWrapper } from './socket-io-wrapper';
     new UserCreatedListener(natsWrapper.client).listen();
     new UserAccountCreatedListener(natsWrapper.client).listen();
     new ListingExpiredListener(natsWrapper.client).listen();
+    new ListingCreatedListener(natsWrapper.client).listen();
+    new ListingUpdatedListener(natsWrapper.client).listen();
+    new ListingDeletedListener(natsWrapper.client).listen();
 
     console.log('The listings service has started up successfully');
   } catch (err) {

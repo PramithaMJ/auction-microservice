@@ -9,10 +9,15 @@ export class UserCreatedListener extends Listener<UserCreatedEvent> {
   subject: Subjects.UserCreated = Subjects.UserCreated;
 
   async onMessage(data: UserCreatedEvent['data'], msg: Message) {
-    const { id, name } = data;
+    const { id, name, email } = data;
 
-    await User.create({ id, name });
-
-    msg.ack();
+    try {
+      await User.create({ id, name, email });
+      console.log(`[listings-service] Created user: ${id} (${name})`);
+      msg.ack();
+    } catch (error) {
+      console.error(`[listings-service] Failed to create user ${id}:`, error);
+      // Don't ack the message so it will be retried
+    }
   }
 }

@@ -87,9 +87,9 @@ class EnhancedSagaStateManager {
 
     await Promise.all([
       this.client.set(key, value, { EX: 86400 }), // 24 hour expiry
-      this.client.zadd('saga:active', Date.now(), sagaState.sagaId),
-      this.client.zadd(`saga:by-type:${sagaState.sagaType}`, Date.now(), sagaState.sagaId),
-      this.client.hincrby('saga:metrics:daily', `total:${sagaState.sagaType}`, 1)
+      this.client.zAdd('saga:active', { score: Date.now(), value: sagaState.sagaId }),
+      this.client.zAdd(`saga:by-type:${sagaState.sagaType}`, { score: Date.now(), value: sagaState.sagaId }),
+      this.client.hIncrBy('saga:metrics:daily', `total:${sagaState.sagaType}`, 1)
     ]);
 
     console.log(`💾 Saved saga state: ${sagaState.sagaId} - ${sagaState.state}`);
@@ -149,7 +149,7 @@ class EnhancedSagaStateManager {
 
     if (saga.retryCount >= (saga.maxRetries || this.MAX_RETRIES)) {
       saga.state = 'FAILED_MAX_RETRIES';
-      await this.client.hincrby('saga:metrics:daily', `failed:${sagaType}:max_retries`, 1);
+      await this.client.hIncrBy('saga:metrics:daily', `failed:${sagaType}:max_retries`, 1);
     }
 
     await this.saveSagaState(saga);
@@ -165,8 +165,8 @@ class EnhancedSagaStateManager {
     
     await Promise.all([
       this.saveSagaState(saga),
-      this.client.zrem('saga:active', sagaId),
-      this.client.hincrby('saga:metrics:daily', `completed:${sagaType}`, 1)
+      this.client.zRem('saga:active', sagaId),
+      this.client.hIncrBy('saga:metrics:daily', `completed:${sagaType}`, 1)
     ]);
 
     console.log(` Saga completed: ${sagaId}`);
@@ -182,8 +182,8 @@ class EnhancedSagaStateManager {
     
     await Promise.all([
       this.saveSagaState(saga),
-      this.client.zrem('saga:active', sagaId),
-      this.client.hincrby('saga:metrics:daily', `failed:${sagaType}`, 1)
+      this.client.zRem('saga:active', sagaId),
+      this.client.hIncrBy('saga:metrics:daily', `failed:${sagaType}`, 1)
     ]);
 
     console.log(` Saga failed: ${sagaId} - ${error}`);
@@ -198,8 +198,8 @@ class EnhancedSagaStateManager {
     
     await Promise.all([
       this.saveSagaState(saga),
-      this.client.zrem('saga:active', sagaId),
-      this.client.hincrby('saga:metrics:daily', `cancelled:${sagaType}`, 1)
+      this.client.zRem('saga:active', sagaId),
+      this.client.hIncrBy('saga:metrics:daily', `cancelled:${sagaType}`, 1)
     ]);
 
     console.log(` Saga cancelled: ${sagaId}`);
@@ -218,7 +218,7 @@ class EnhancedSagaStateManager {
 
   async getSagaMetrics(): Promise<SagaMetrics> {
     const activeSagas = await this.getAllActiveSagas();
-    const dailyMetrics = await this.client.hgetall('saga:metrics:daily');
+    const dailyMetrics = await this.client.hGetAll('saga:metrics:daily');
     
     const sagasByType = activeSagas.reduce((acc, saga) => {
       acc[saga.sagaType] = (acc[saga.sagaType] || 0) + 1;

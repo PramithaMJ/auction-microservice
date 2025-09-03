@@ -71,6 +71,39 @@ spec:
             secretKeyRef:
               name: auction-secrets
               key: AWS_S3_BUCKET_NAME
+        # OpenTelemetry/Jaeger Configuration
+        - name: JAEGER_ENDPOINT
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: JAEGER_ENDPOINT
+        - name: OTEL_SERVICE_NAME
+          value: "listings-service"
+        - name: OTEL_RESOURCE_ATTRIBUTES
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: OTEL_RESOURCE_ATTRIBUTES
+        - name: OTEL_EXPORTER_JAEGER_ENDPOINT
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: OTEL_EXPORTER_JAEGER_ENDPOINT
+        - name: OTEL_TRACES_EXPORTER
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: OTEL_TRACES_EXPORTER
+        - name: OTEL_PROPAGATORS
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: OTEL_PROPAGATORS
+        - name: OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED
         resources:
           requests:
             memory: "256Mi"
@@ -78,21 +111,20 @@ spec:
           limits:
             memory: "512Mi"
             cpu: "250m"
-        # Disable health checks temporarily
-        # livenessProbe:
-        #   httpGet:
-        #     path: /health
-        #     port: 3103
-        #   initialDelaySeconds: 30
-        #   periodSeconds: 10
-        #   failureThreshold: 3
-        # readinessProbe:
-        #   httpGet:
-        #     path: /ready
-        #     port: 3103
-        #   initialDelaySeconds: 10
-        #   periodSeconds: 5
-        #   failureThreshold: 3
+        livenessProbe:
+          httpGet:
+            path: /healthcheck
+            port: 3103
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /healthcheck
+            port: 3103
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          failureThreshold: 3
 ---
 apiVersion: v1
 kind: Service

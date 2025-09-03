@@ -51,6 +51,19 @@ spec:
               key: NATS_CLUSTER_ID
         - name: NATS_CLIENT_ID
           value: "profile-service"
+        # OpenTelemetry/Jaeger Configuration
+        - name: JAEGER_ENDPOINT
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: JAEGER_ENDPOINT
+        - name: OTEL_SERVICE_NAME
+          value: "profile-service"
+        - name: OTEL_RESOURCE_ATTRIBUTES
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: OTEL_RESOURCE_ATTRIBUTES
         resources:
           requests:
             memory: "256Mi"

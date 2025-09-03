@@ -1,3 +1,6 @@
+// Initialize tracing first
+import './tracing';
+
 import express, { Request, Response, NextFunction } from 'express';
 import axios from 'axios';
 import cors from 'cors';
@@ -6,6 +9,7 @@ import morgan from 'morgan';
 import FormData from 'form-data';
 import config from '../config/default';
 import { CircuitBreaker, CircuitState } from './circuit-breaker';
+// import { tracingMiddleware, addCorrelationId } from '@jjmauction/common';
 
 interface CustomError extends Error {
   status?: number;
@@ -29,6 +33,17 @@ class ApiGateway {
   }
 
   private setupMiddleware(): void {
+    // Simple correlation ID middleware
+    this.app.use((req, res, next) => {
+      let correlationId = req.get('x-correlation-id');
+      if (!correlationId) {
+        correlationId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      }
+      req.headers['x-correlation-id'] = correlationId;
+      res.setHeader('x-correlation-id', correlationId);
+      next();
+    });
+
     // Security middleware
     this.app.use(
       helmet({

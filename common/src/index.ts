@@ -9,6 +9,7 @@ export * from './middlewares/current-user';
 export * from './middlewares/error-handler';
 export * from './middlewares/require-auth';
 export * from './middlewares/validate-request';
+export * from './middlewares/tracing-middleware';
 
 export * from './events/base-listener';
 export * from './events/base-publisher';
@@ -19,6 +20,10 @@ export * from './events/listing-expired-event';
 export * from './events/bid-deleted-event';
 export * from './events/subjects';
 export * from './events/types/listing-status';
+
+// Note: Tracing utilities are exported separately to avoid browser incompatibility
+// Import from '@jjmauction/common/build/tracing' for server-side tracing
+
 export * from './events/user-created-event';
 export * from './events/email-created-event';
 export * from './events/listing-updated-event';
@@ -30,3 +35,6 @@ export * from './events/user-registration-saga-events';
 export { UserAccountCreatedEvent } from './events/user-registration-saga-events';
 export { ProfileCreatedEvent } from './events/user-registration-saga-events';
 export { WelcomeEmailSentEvent } from './events/user-registration-saga-events';
+
+// Note: Tracing utilities are exported separately to avoid browser incompatibility
+// Import from '@jjmauction/common/build/tracing' for server-side tracing

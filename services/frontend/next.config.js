@@ -15,6 +15,29 @@ const nextConfig = {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
     NEXT_PUBLIC_API_GATEWAY_PORT: process.env.NEXT_PUBLIC_API_GATEWAY_PORT,
   },
+  webpack: (config, { isServer }) => {
+    // Fix for potential module resolution issues
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      "buffer": false,
+      "crypto": false,
+      "stream": false,
+      "util": false,
+    };
+    
+    // Exclude server-only packages from client bundle
+    if (!isServer) {
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        'express-validator': false,
+        'express': false,
+        'cookie-session': false,
+        'jsonwebtoken': false,
+      };
+    }
+
+    return config;
+  },
 }
 
 module.exports = nextConfig

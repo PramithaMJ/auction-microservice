@@ -47,7 +47,7 @@ sleep 30
 
 echo -e "${GREEN} Restart Complete!${NC}"
 echo ""
-echo -e "${YELLOW}📊 Checking service status...${NC}"
+echo -e "${YELLOW} Checking service status...${NC}"
 echo ""
 
 # Check container status
