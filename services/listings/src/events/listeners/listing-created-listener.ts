@@ -10,18 +10,32 @@ export class ListingCreatedListener extends Listener<ListingCreatedEvent> {
   queueGroupName = queueGroupName;
 
   async onMessage(data: ListingCreatedEvent['data'], msg: Message) {
-    // Create a new read model entry with available data from the event
-    // Get additional data from the main listing table (like image data)
+    console.log(`[ListingCreatedListener] Processing event for listing ${data.id}`);
+    console.log(`[ListingCreatedListener] Event data:`, {
+      id: data.id,
+      title: data.title,
+      slug: data.slug,
+      userId: data.userId,
+      price: data.price
+    });
+    
     try {
       // Fetch the full listing data from main table to get image information
       const mainListing = await Listing.findByPk(data.id);
       
       if (!mainListing) {
-        console.error(`[listings-service] Main listing ${data.id} not found when creating read model`);
+        console.error(`[ListingCreatedListener] Main listing ${data.id} not found when creating read model`);
         // Create basic read model without image data
         await this.createBasicReadModel(data);
         return msg.ack();
       }
+      
+      console.log(`[ListingCreatedListener] Main listing found:`, {
+        id: mainListing.id,
+        title: mainListing.title,
+        imageId: mainListing.imageId,
+        hasImageId: !!mainListing.imageId
+      });
 
       // Create read model with both event data and main table data
       const readModelData: any = {
@@ -85,10 +99,26 @@ export class ListingCreatedListener extends Listener<ListingCreatedEvent> {
       }
 
       await ListingRead.create(readModelData);
-      console.log(`[listings-service] Created read model for listing: ${data.id} with slug: ${data.slug} and imageId: ${mainListing.imageId}`);
+      console.log(`[ListingCreatedListener] ✅ Successfully created read model for listing: ${data.id} with slug: ${data.slug} and imageId: ${mainListing.imageId}`);
+      console.log(`[ListingCreatedListener] Read model data:`, {
+        id: readModelData.id,
+        title: readModelData.title,
+        smallImage: readModelData.smallImage ? `${readModelData.smallImage.substring(0, 50)}...` : 'NO_IMAGE',
+        largeImage: readModelData.largeImage ? `${readModelData.largeImage.substring(0, 50)}...` : 'NO_IMAGE',
+        hasSmallImage: !!readModelData.smallImage,
+        hasLargeImage: !!readModelData.largeImage
+      });
       msg.ack();
     } catch (error) {
-      console.error(`[listings-service] Failed to create read model for listing ${data.id}:`, error);
+      // Check if it's a duplicate entry error (which is okay since we create it immediately in the route)
+      if (error.name === 'SequelizeUniqueConstraintError' || error.original?.code === 'ER_DUP_ENTRY') {
+        console.log(`[ListingCreatedListener] Read model entry already exists for listing ${data.id} (created immediately in route)`);
+        msg.ack();
+        return;
+      }
+      
+      console.error(`[ListingCreatedListener] ❌ Failed to create read model for listing ${data.id}:`, error);
+      console.error(`[ListingCreatedListener] Error stack:`, error.stack);
       // Don't ack the message so it will be retried
     }
   }

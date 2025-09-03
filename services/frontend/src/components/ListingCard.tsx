@@ -296,6 +296,13 @@ const ListingCard = ({ name, price, slug, smallImage, expiresAt, sellerName }: I
                   </StyledImageFallback>
                 )}
                 
+                {/* Error fallback if image fails to load */}
+                {imageError && (
+                  <StyledImageFallback>
+                    <StyledEmojiIcon>{emojiIcon}</StyledEmojiIcon>
+                  </StyledImageFallback>
+                )}
+                
                 {/* Emoji overlay on successful image load */}
                 {showEmojiOverlay && imageLoaded && (
                   <StyledEmojiOverlay>
@@ -304,9 +311,25 @@ const ListingCard = ({ name, price, slug, smallImage, expiresAt, sellerName }: I
                 )}
               </>
             ) : (
-              /* Fallback to large emoji when no image */
+              /* Fallback to large emoji when no image or invalid URL */
               <StyledImageFallback>
                 <StyledEmojiIcon>{emojiIcon}</StyledEmojiIcon>
+                {/* Show "Image Loading" text for newly created listings */}
+                {smallImage === 'NO_IMAGE' && (
+                  <div style={{ 
+                    position: 'absolute', 
+                    bottom: '10px', 
+                    left: '50%', 
+                    transform: 'translateX(-50%)',
+                    fontSize: '12px',
+                    color: '#666',
+                    backgroundColor: 'rgba(255,255,255,0.8)',
+                    padding: '4px 8px',
+                    borderRadius: '4px'
+                  }}>
+                    Image Loading...
+                  </div>
+                )}
               </StyledImageFallback>
             )}
           </StyledImageContainer>

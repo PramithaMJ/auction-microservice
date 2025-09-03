@@ -243,6 +243,34 @@ router.post(
 
         console.log('Listing created successfully:', listing.toJSON());
 
+        // Create read model entry immediately to ensure it's available for queries
+        // This supplements the event-driven approach for better reliability
+        try {
+          const { ListingRead } = require('../models');
+          
+          const readModelData = {
+            id: listing.id,
+            title: listing.title,
+            description: listing.description,
+            currentPrice: listing.currentPrice,
+            endDate: listing.expiresAt,
+            imageId: listing.imageId,
+            smallImage: imageUrls.small,
+            largeImage: imageUrls.large,
+            imageUrl: imageUrls.large, // For backward compatibility
+            sellerId: req.currentUser.id,
+            sellerName: `User_${req.currentUser.id.slice(0, 8)}`, // Temporary name
+            status: 'Active',
+            slug: listing.slug,
+          };
+
+          await ListingRead.create(readModelData, { transaction });
+          console.log('✅ Read model entry created immediately for listing:', listing.id);
+        } catch (readModelError) {
+          console.error('⚠️ Failed to create immediate read model entry:', readModelError);
+          // Don't fail the entire transaction, as the event listener will handle it
+        }
+
         console.log('Publishing listing created event...');
         await new ListingCreatedPublisher(natsWrapper.client).publish({
           id: listing.id,
