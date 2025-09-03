@@ -16,7 +16,7 @@ const nextConfig = {
     NEXT_PUBLIC_API_GATEWAY_PORT: process.env.NEXT_PUBLIC_API_GATEWAY_PORT,
   },
   webpack: (config, { isServer }) => {
-    // Fix for lodash webpack issues
+    // Fix for potential module resolution issues
     config.resolve.fallback = {
       ...config.resolve.fallback,
       "buffer": false,
@@ -35,19 +35,6 @@ const nextConfig = {
         'jsonwebtoken': false,
       };
     }
-    
-    // Handle __webpack_require__.nmd issue
-    config.module.rules.push({
-      test: /\.js$/,
-      include: /node_modules\/lodash/,
-      use: {
-        loader: 'babel-loader',
-        options: {
-          presets: ['next/babel'],
-          plugins: []
-        }
-      }
-    });
 
     return config;
   },
