@@ -139,18 +139,18 @@ export class JaegerTracingService {
       });
 
       this.sdk.start();
-      console.log(`🔍 Jaeger tracing initialized for ${this.serviceName}`);
+      console.log(` Jaeger tracing initialized for ${this.serviceName}`);
     } catch (error) {
       console.warn('Failed to initialize Jaeger tracing:', error);
       // Fall back to console logging
-      console.log(`🔍 Fallback tracing for ${this.serviceName}`);
+      console.log(` Fallback tracing for ${this.serviceName}`);
     }
   }
 
   shutdown(): void {
     if (this.sdk) {
       this.sdk.shutdown()
-        .then(() => console.log(`🔍 Jaeger tracing terminated for ${this.serviceName}`))
+        .then(() => console.log(` Jaeger tracing terminated for ${this.serviceName}`))
         .catch((error) => console.error('Error terminating tracing', error));
     }
   }

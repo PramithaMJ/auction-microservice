@@ -15,6 +15,7 @@ import { natsWrapper } from './nats-wrapper-circuit-breaker';
 import { socketIOWrapper } from './socket-io-wrapper';
 import { populateMissingSlugs } from './utils/populate-slugs';
 import { addSlugColumnToListingsRead } from './utils/migration-helper';
+import { syncImageDataToReadModel } from './utils/sync-image-data';
 
 (async () => {
   try {
@@ -75,6 +76,9 @@ import { addSlugColumnToListingsRead } from './utils/migration-helper';
 
     // Populate missing slugs in read model after DB sync
     await populateMissingSlugs();
+
+    // Sync missing image data from main table to read model
+    await syncImageDataToReadModel();
 
     const port = process.env.PORT || 3103;
     const server = app.listen(port, () =>

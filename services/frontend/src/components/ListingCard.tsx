@@ -246,7 +246,7 @@ const ListingCard = ({ name, price, slug, smallImage, expiresAt }: IProps) => {
             {/* Debug info - only in development */}
             {typeof window !== 'undefined' && window.location?.hostname === 'localhost' && (
               <StyledDebugInfo>
-                IMG: {smallImage ? '✅' : '❌'} | ERR: {imageError ? '❌' : '✅'} | EMOJI: {emojiIcon ? '✅' : '❌'}
+                IMG: {smallImage ? '' : ''} | ERR: {imageError ? '' : ''} | EMOJI: {emojiIcon ? '' : ''}
               </StyledDebugInfo>
             )}
             

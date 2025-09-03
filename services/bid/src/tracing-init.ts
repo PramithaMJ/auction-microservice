@@ -8,7 +8,7 @@ const tracingService = new JaegerTracingService(serviceName);
 
 try {
   tracingService.initialize();
-  console.log(`🔍 OpenTelemetry tracing initialized for ${serviceName}`);
+  console.log(` OpenTelemetry tracing initialized for ${serviceName}`);
 } catch (error) {
   console.error('Failed to initialize OpenTelemetry:', error);
 }

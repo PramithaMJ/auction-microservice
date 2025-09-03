@@ -1,8 +1,9 @@
 // Listener for ListingCreatedEvent to update the CQRS read model
 import { Listener, Subjects, ListingCreatedEvent } from '@jjmauction/common';
 import { Message } from 'node-nats-streaming';
-import { ListingRead } from '../../models';
+import { ListingRead, Listing } from '../../models';
 import { queueGroupName } from './queue-group-name';
+import { generateImageUrls } from '../../utils/s3-config';
 
 export class ListingCreatedListener extends Listener<ListingCreatedEvent> {
   subject: Subjects.ListingCreated = Subjects.ListingCreated;
@@ -10,29 +11,83 @@ export class ListingCreatedListener extends Listener<ListingCreatedEvent> {
 
   async onMessage(data: ListingCreatedEvent['data'], msg: Message) {
     // Create a new read model entry with available data from the event
-    // Some fields need to be populated from the actual listing data or set as defaults
+    // Get additional data from the main listing table (like image data)
     try {
-      await ListingRead.create({
+      // Fetch the full listing data from main table to get image information
+      const mainListing = await Listing.findByPk(data.id);
+      
+      if (!mainListing) {
+        console.error(`[listings-service] Main listing ${data.id} not found when creating read model`);
+        // Create basic read model without image data
+        await this.createBasicReadModel(data);
+        return msg.ack();
+      }
+
+      // Create read model with both event data and main table data
+      const readModelData: any = {
         id: data.id,
         title: data.title,
-        description: '', // Not available in event, will be updated later
-        currentPrice: data.price, // Use price as initial currentPrice
+        description: mainListing.description,
+        currentPrice: data.price,
         endDate: data.expiresAt,
-        imageUrl: '', // Not available in event, will be updated later
-        imageId: '', // Not available in event, will be updated later
-        smallImage: '', // Not available in event, will be updated later
-        largeImage: '', // Not available in event, will be updated later
+        imageId: mainListing.imageId || '',
         sellerId: data.userId,
         sellerName: '', // Not available in event, will be updated later
-        status: 'CREATED', // Default status, will be updated later
-        slug: data.slug, // Include slug from the event
-      });
-      
-      console.log(`[listings-service] Created read model for listing: ${data.id} with slug: ${data.slug}`);
+        status: 'CREATED',
+        slug: data.slug,
+      };
+
+      // If listing has an image, generate S3 URLs
+      if (mainListing.imageId) {
+        const bucketName = process.env.AWS_S3_BUCKET_NAME;
+        if (bucketName) {
+          try {
+            const imageUrls = await generateImageUrls(mainListing.imageId, bucketName);
+            readModelData.smallImage = imageUrls.small;
+            readModelData.largeImage = imageUrls.large;
+            readModelData.imageUrl = imageUrls.large; // For backward compatibility
+          } catch (error) {
+            console.error(`[listings-service] Failed to generate image URLs for ${mainListing.imageId}:`, error);
+            // Still create read model without URLs
+            readModelData.smallImage = '';
+            readModelData.largeImage = '';
+            readModelData.imageUrl = '';
+          }
+        } else {
+          readModelData.smallImage = '';
+          readModelData.largeImage = '';
+          readModelData.imageUrl = '';
+        }
+      } else {
+        readModelData.smallImage = '';
+        readModelData.largeImage = '';
+        readModelData.imageUrl = '';
+      }
+
+      await ListingRead.create(readModelData);
+      console.log(`[listings-service] Created read model for listing: ${data.id} with slug: ${data.slug} and imageId: ${mainListing.imageId}`);
       msg.ack();
     } catch (error) {
       console.error(`[listings-service] Failed to create read model for listing ${data.id}:`, error);
       // Don't ack the message so it will be retried
     }
+  }
+
+  private async createBasicReadModel(data: ListingCreatedEvent['data']) {
+    await ListingRead.create({
+      id: data.id,
+      title: data.title,
+      description: '',
+      currentPrice: data.price,
+      endDate: data.expiresAt,
+      imageUrl: '',
+      imageId: '',
+      smallImage: '',
+      largeImage: '',
+      sellerId: data.userId,
+      sellerName: '',
+      status: 'CREATED',
+      slug: data.slug,
+    });
   }
 }

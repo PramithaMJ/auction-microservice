@@ -63,7 +63,7 @@ class TracingService {
     });
 
     this.sdk.start();
-    console.log(`🔍 Distributed tracing initialized for ${this.serviceName}`);
+    console.log(` Distributed tracing initialized for ${this.serviceName}`);
   }
 
   public shutdown(): Promise<void> {

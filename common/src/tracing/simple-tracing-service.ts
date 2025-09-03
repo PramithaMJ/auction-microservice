@@ -49,7 +49,7 @@ class SimpleTracingService {
       });
 
       this.sdk.start();
-      console.log(`🔍 Distributed tracing initialized for ${this.serviceName}`);
+      console.log(` Distributed tracing initialized for ${this.serviceName}`);
     } catch (error) {
       console.warn('Failed to initialize tracing:', error);
     }
