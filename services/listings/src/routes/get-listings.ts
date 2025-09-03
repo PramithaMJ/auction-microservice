@@ -27,8 +27,20 @@ router.get('/api/listings/', async (req: Request, res: Response) => {
 
   console.log('listings found:', listings.length);
 
+  // Debug the listings data
+  listings.forEach((listing, index) => {
+    console.log(`Listing ${index + 1} debug:`, {
+      id: listing.id,
+      title: listing.title,
+      imageId: listing.imageId,
+      hasImageId: !!listing.imageId
+    });
+  });
+
   // Refresh S3 URLs for each listing to ensure they haven't expired
   const bucketName = process.env.AWS_S3_BUCKET_NAME;
+  console.log('S3 bucket configured:', !!bucketName);
+  
   if (bucketName) {
     const refreshedListings = await Promise.all(
       listings.map(async (listing) => {
@@ -38,7 +50,9 @@ router.get('/api/listings/', async (req: Request, res: Response) => {
           const slug = mainListing ? mainListing.slug : listing.id;
           
           if (listing.imageId) {
+            console.log(`Generating S3 URLs for listing ${listing.id}:`, listing.imageId);
             const refreshedUrls = await generateImageUrls(listing.imageId, bucketName);
+            console.log(`Generated URLs for ${listing.id}:`, refreshedUrls);
             return {
               ...listing.toJSON(),
               slug, // Add slug from main table
@@ -46,6 +60,7 @@ router.get('/api/listings/', async (req: Request, res: Response) => {
               largeImage: refreshedUrls.large,
             };
           }
+          console.log(`No imageId for listing ${listing.id}, returning without images`);
           return {
             ...listing.toJSON(),
             slug, // Add slug from main table
@@ -59,6 +74,16 @@ router.get('/api/listings/', async (req: Request, res: Response) => {
         }
       })
     );
+    
+    console.log('Final response being sent to frontend:');
+    refreshedListings.forEach((listing, index) => {
+      console.log(`Response listing ${index + 1}:`, {
+        id: listing.id,
+        title: listing.title,
+        smallImage: listing.smallImage ? 'HAS_IMAGE' : 'NO_IMAGE',
+        smallImageLength: listing.smallImage?.length || 0
+      });
+    });
     
     console.log('=== END DEBUG ===');
     return res.status(200).send(refreshedListings);
