@@ -1,3 +1,6 @@
+// Initialize tracing first
+import './tracing-init';
+
 import { EmailCreatedListener } from './events/listeners/email-created-listener';
 import { ProfileCreatedListener } from './events/listeners/profile-created-listener';
 import { BidCreatedListener } from './events/listeners/bid-created-listener';

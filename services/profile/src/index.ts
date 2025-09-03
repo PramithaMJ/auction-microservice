@@ -1,3 +1,6 @@
+// Initialize tracing first
+import './tracing-init';
+
 import { app } from './app';
 import { UserCreatedListener } from './events/listeners/user-created-listener';
 import { UserAccountCreatedListener } from './events/listeners/user-account-created-listener';

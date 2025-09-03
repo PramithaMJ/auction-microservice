@@ -186,6 +186,11 @@ services:
       - JAEGER_ENDPOINT=${JAEGER_ENDPOINT}
       - OTEL_SERVICE_NAME=api-gateway
       - OTEL_RESOURCE_ATTRIBUTES=${OTEL_RESOURCE_ATTRIBUTES}
+      # OpenTelemetry Jaeger configuration
+      - OTEL_EXPORTER_JAEGER_ENDPOINT=http://jaeger:14268/api/traces
+      - OTEL_TRACES_EXPORTER=jaeger
+      - OTEL_PROPAGATORS=tracecontext,baggage
+      - OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED=true
     depends_on:
       nats-streaming:
         condition: service_started
@@ -229,6 +234,11 @@ services:
       - JAEGER_ENDPOINT=${JAEGER_ENDPOINT}
       - OTEL_SERVICE_NAME=auth-service
       - OTEL_RESOURCE_ATTRIBUTES=${OTEL_RESOURCE_ATTRIBUTES}
+      # OpenTelemetry Jaeger configuration
+      - OTEL_EXPORTER_JAEGER_ENDPOINT=http://jaeger:14268/api/traces
+      - OTEL_TRACES_EXPORTER=jaeger
+      - OTEL_PROPAGATORS=tracecontext,baggage
+      - OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED=true
     depends_on:
       auth-mysql:
         condition: service_healthy
@@ -257,6 +267,11 @@ services:
       - JAEGER_ENDPOINT=${JAEGER_ENDPOINT}
       - OTEL_SERVICE_NAME=bid-service
       - OTEL_RESOURCE_ATTRIBUTES=${OTEL_RESOURCE_ATTRIBUTES}
+      # OpenTelemetry Jaeger configuration
+      - OTEL_EXPORTER_JAEGER_ENDPOINT=http://jaeger:14268/api/traces
+      - OTEL_TRACES_EXPORTER=jaeger
+      - OTEL_PROPAGATORS=tracecontext,baggage
+      - OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED=true
     depends_on:
       bid-mysql:
         condition: service_healthy
@@ -322,6 +337,14 @@ services:
       - NATS_CLUSTER_ID=${NATS_CLUSTER_ID}
       - NATS_CLIENT_ID=${NATS_CLIENT_ID_PAYMENTS}
       - STRIPE_KEY=${STRIPE_SECRET_KEY}
+      - JAEGER_ENDPOINT=${JAEGER_ENDPOINT}
+      - OTEL_SERVICE_NAME=payments-service
+      - OTEL_RESOURCE_ATTRIBUTES=${OTEL_RESOURCE_ATTRIBUTES}
+      # OpenTelemetry Jaeger configuration
+      - OTEL_EXPORTER_JAEGER_ENDPOINT=http://jaeger:14268/api/traces
+      - OTEL_TRACES_EXPORTER=jaeger
+      - OTEL_PROPAGATORS=tracecontext,baggage
+      - OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED=true
     depends_on:
       payments-mysql:
         condition: service_healthy
@@ -347,6 +370,14 @@ services:
       - NATS_URL=${NATS_URL}
       - NATS_CLUSTER_ID=${NATS_CLUSTER_ID}
       - NATS_CLIENT_ID=${NATS_CLIENT_ID_PROFILE}
+      - JAEGER_ENDPOINT=${JAEGER_ENDPOINT}
+      - OTEL_SERVICE_NAME=profile-service
+      - OTEL_RESOURCE_ATTRIBUTES=${OTEL_RESOURCE_ATTRIBUTES}
+      # OpenTelemetry Jaeger configuration
+      - OTEL_EXPORTER_JAEGER_ENDPOINT=http://jaeger:14268/api/traces
+      - OTEL_TRACES_EXPORTER=jaeger
+      - OTEL_PROPAGATORS=tracecontext,baggage
+      - OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED=true
     depends_on:
       profile-mysql:
         condition: service_healthy
@@ -375,6 +406,14 @@ services:
       - EMAIL_PASSWORD=${EMAIL_PASSWORD}
       - AUTH_SERVICE_URL=${AUTH_SERVICE_URL}
       - LISTINGS_SERVICE_URL=${LISTINGS_SERVICE_URL}
+      - JAEGER_ENDPOINT=${JAEGER_ENDPOINT}
+      - OTEL_SERVICE_NAME=email-service
+      - OTEL_RESOURCE_ATTRIBUTES=${OTEL_RESOURCE_ATTRIBUTES}
+      # OpenTelemetry Jaeger configuration
+      - OTEL_EXPORTER_JAEGER_ENDPOINT=http://jaeger:14268/api/traces
+      - OTEL_TRACES_EXPORTER=jaeger
+      - OTEL_PROPAGATORS=tracecontext,baggage
+      - OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED=true
     depends_on:
       nats-streaming:
         condition: service_started
@@ -400,6 +439,14 @@ services:
       - REDIS_HOST=${REDIS_HOST}
       - REDIS_PORT=${REDIS_PORT}
       - REDIS_URL=${REDIS_URL}
+      - JAEGER_ENDPOINT=${JAEGER_ENDPOINT}
+      - OTEL_SERVICE_NAME=saga-orchestrator-service
+      - OTEL_RESOURCE_ATTRIBUTES=${OTEL_RESOURCE_ATTRIBUTES}
+      # OpenTelemetry Jaeger configuration
+      - OTEL_EXPORTER_JAEGER_ENDPOINT=http://jaeger:14268/api/traces
+      - OTEL_TRACES_EXPORTER=jaeger
+      - OTEL_PROPAGATORS=tracecontext,baggage
+      - OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED=true
     depends_on:
       redis:
         condition: service_healthy
@@ -426,6 +473,14 @@ services:
       - NATS_CLIENT_ID=${NATS_CLIENT_ID_EXPIRATION}
       - REDIS_HOST=${REDIS_HOST}
       - REDIS_PORT=${REDIS_PORT}
+      - JAEGER_ENDPOINT=${JAEGER_ENDPOINT}
+      - OTEL_SERVICE_NAME=expiration-service
+      - OTEL_RESOURCE_ATTRIBUTES=${OTEL_RESOURCE_ATTRIBUTES}
+      # OpenTelemetry Jaeger configuration
+      - OTEL_EXPORTER_JAEGER_ENDPOINT=http://jaeger:14268/api/traces
+      - OTEL_TRACES_EXPORTER=jaeger
+      - OTEL_PROPAGATORS=tracecontext,baggage
+      - OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED=true
     depends_on:
       redis:
         condition: service_healthy
