@@ -29,7 +29,7 @@ print_warning() {
 }
 
 print_error() {
-    echo -e "${RED}❌ $1${NC}"
+    echo -e "${RED} $1${NC}"
 }
 
 print_info() {
@@ -170,7 +170,7 @@ wait_for_applications() {
 # Function to show deployment status
 show_status() {
     echo ""
-    echo -e "${BLUE}📊 Deployment Status${NC}"
+    echo -e "${BLUE} Deployment Status${NC}"
     echo ""
     
     echo -e "${CYAN}Infrastructure Services:${NC}"
@@ -211,7 +211,7 @@ show_status() {
 # Function to show helpful commands
 show_helpful_commands() {
     echo ""
-    echo -e "${BLUE}🔧 Helpful Commands${NC}"
+    echo -e "${BLUE} Helpful Commands${NC}"
     echo ""
     echo -e "${CYAN}Monitor pods:${NC}"
     echo "kubectl get pods -n $NAMESPACE_APP -w"
@@ -256,7 +256,7 @@ main() {
     
     echo ""
     print_status "Deployment completed successfully!"
-    echo -e "${CYAN}🎉 Your auction website with Jaeger tracing is now running!${NC}"
+    echo -e "${CYAN} Your auction website with Jaeger tracing is now running!${NC}"
 }
 
 # Run main function

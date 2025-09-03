@@ -52,7 +52,7 @@ check_status "Ingress application"
 
 echo -e "${GREEN} Deployment Complete!${NC}"
 echo ""
-echo -e "${YELLOW}📊 Checking deployment status...${NC}"
+echo -e "${YELLOW} Checking deployment status...${NC}"
 echo ""
 
 # Check pod status

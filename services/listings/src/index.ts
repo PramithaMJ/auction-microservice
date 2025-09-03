@@ -16,6 +16,7 @@ import { socketIOWrapper } from './socket-io-wrapper';
 import { populateMissingSlugs } from './utils/populate-slugs';
 import { addSlugColumnToListingsRead } from './utils/migration-helper';
 import { syncImageDataToReadModel } from './utils/sync-image-data';
+import { expandImageColumns } from './utils/expand-image-columns';
 
 (async () => {
   try {
@@ -73,6 +74,9 @@ import { syncImageDataToReadModel } from './utils/sync-image-data';
 
     // Ensure slug column exists in listings_read table
     await addSlugColumnToListingsRead();
+
+    // Expand image columns to handle longer S3 URLs
+    await expandImageColumns();
 
     // Populate missing slugs in read model after DB sync
     await populateMissingSlugs();
