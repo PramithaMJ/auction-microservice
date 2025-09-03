@@ -56,6 +56,19 @@ spec:
             secretKeyRef:
               name: auction-secrets
               key: STRIPE_KEY
+        # OpenTelemetry/Jaeger Configuration
+        - name: JAEGER_ENDPOINT
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: JAEGER_ENDPOINT
+        - name: OTEL_SERVICE_NAME
+          value: "payments-service"
+        - name: OTEL_RESOURCE_ATTRIBUTES
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: OTEL_RESOURCE_ATTRIBUTES
         resources:
           requests:
             memory: "256Mi"

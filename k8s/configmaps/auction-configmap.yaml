@@ -36,6 +36,14 @@ data:
   # AWS Configuration
   AWS_REGION: "us-east-1"
   
+  # Jaeger/OpenTelemetry Configuration
+  JAEGER_ENDPOINT: "http://jaeger.auction-infrastructure.svc.cluster.local:14268/api/traces"
+  OTEL_RESOURCE_ATTRIBUTES: "service.version=1.0.0,deployment.environment=development"
+  OTEL_EXPORTER_JAEGER_ENDPOINT: "http://jaeger.auction-infrastructure.svc.cluster.local:14268/api/traces"
+  OTEL_TRACES_EXPORTER: "jaeger"
+  OTEL_PROPAGATORS: "tracecontext,baggage"
+  OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED: "true"
+  
   # CORS Configuration - Updated for EC2
   CORS_ORIGIN: "http://localhost:3000,http://auction.local,http://api.auction.local,http://44.207.118.24:3000,http://44.207.118.24:3001,http://44.207.118.24"
 ---

@@ -1,0 +1,122 @@
+# Jaeger All-in-One Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jaeger
+  namespace: auction-infrastructure
+  labels:
+    app: jaeger
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jaeger
+  template:
+    metadata:
+      labels:
+        app: jaeger
+    spec:
+      containers:
+      - name: jaeger
+        image: jaegertracing/all-in-one:1.49
+        ports:
+        - containerPort: 16686  # Jaeger UI
+          name: ui
+        - containerPort: 14268  # Jaeger HTTP collector
+          name: collector-http
+        - containerPort: 14250  # Jaeger gRPC collector
+          name: collector-grpc
+        - containerPort: 6831   # Jaeger agent UDP
+          protocol: UDP
+          name: agent-udp-1
+        - containerPort: 6832   # Jaeger agent UDP
+          protocol: UDP
+          name: agent-udp-2
+        - containerPort: 9411   # Zipkin compatible endpoint
+          name: zipkin
+        env:
+        - name: COLLECTOR_OTLP_ENABLED
+          value: "true"
+        - name: COLLECTOR_ZIPKIN_HOST_PORT
+          value: ":9411"
+        - name: SPAN_STORAGE_TYPE
+          value: "memory"
+        - name: JAEGER_DISABLED
+          value: "false"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "200m"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 16686
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 16686
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+
+---
+# Jaeger Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: jaeger
+  namespace: auction-infrastructure
+  labels:
+    app: jaeger
+spec:
+  type: ClusterIP
+  ports:
+  - port: 16686
+    targetPort: 16686
+    name: ui
+  - port: 14268
+    targetPort: 14268
+    name: collector-http
+  - port: 14250
+    targetPort: 14250
+    name: collector-grpc
+  - port: 6831
+    targetPort: 6831
+    protocol: UDP
+    name: agent-udp-1
+  - port: 6832
+    targetPort: 6832
+    protocol: UDP
+    name: agent-udp-2
+  - port: 9411
+    targetPort: 9411
+    name: zipkin
+  selector:
+    app: jaeger
+
+---
+# Jaeger UI Service (NodePort for external access)
+apiVersion: v1
+kind: Service
+metadata:
+  name: jaeger-ui
+  namespace: auction-infrastructure
+  labels:
+    app: jaeger
+spec:
+  type: NodePort
+  ports:
+  - port: 16686
+    targetPort: 16686
+    nodePort: 30686
+    name: ui
+  selector:
+    app: jaeger

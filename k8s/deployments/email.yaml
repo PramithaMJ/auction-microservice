@@ -66,6 +66,19 @@ spec:
             configMapKeyRef:
               name: auction-config
               key: LISTINGS_SERVICE_URL
+        # OpenTelemetry/Jaeger Configuration
+        - name: JAEGER_ENDPOINT
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: JAEGER_ENDPOINT
+        - name: OTEL_SERVICE_NAME
+          value: "email-service"
+        - name: OTEL_RESOURCE_ATTRIBUTES
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: OTEL_RESOURCE_ATTRIBUTES
         resources:
           requests:
             memory: "128Mi"
