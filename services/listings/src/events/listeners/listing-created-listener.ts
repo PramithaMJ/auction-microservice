@@ -33,7 +33,7 @@ export class ListingCreatedListener extends Listener<ListingCreatedEvent> {
         imageId: mainListing.imageId || '',
         sellerId: data.userId,
         sellerName: '', // Will be populated below
-        status: 'CREATED',
+        status: 'Active', // Use proper ListingStatus enum value instead of 'CREATED'
         slug: data.slug,
       };
 
@@ -99,7 +99,7 @@ export class ListingCreatedListener extends Listener<ListingCreatedEvent> {
       largeImage: '',
       sellerId: data.userId,
       sellerName: '',
-      status: 'CREATED',
+      status: 'Active', // Use proper ListingStatus enum value instead of 'CREATED'
       slug: data.slug,
     });
   }
