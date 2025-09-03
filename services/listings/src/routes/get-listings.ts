@@ -80,8 +80,9 @@ router.get('/api/listings/', async (req: Request, res: Response) => {
       console.log(`Response listing ${index + 1}:`, {
         id: listing.id,
         title: listing.title,
-        smallImage: listing.smallImage ? 'HAS_IMAGE' : 'NO_IMAGE',
-        smallImageLength: listing.smallImage?.length || 0
+        smallImage: listing.smallImage || 'NO_IMAGE',
+        smallImageLength: listing.smallImage?.length || 0,
+        hasValidImage: !!(listing.smallImage && listing.smallImage.length > 10)
       });
     });
     
