@@ -1,29 +1,7 @@
 import { 
   Listener, 
-  ListingUpdate  private async sendWinnerNotificationEmail(listing: ListingData, winner: UserData) {
-    // Get the frontend URL with proper fallback
-    const frontendUrl = process.env.FRONTEND_URL || process.env.FRONTEND_HOST || 'http://localhost:3000';
-    const dashboardUrl = frontendUrl.includes('://') ? `${frontendUrl}/dashboard/bids` : `http://${frontendUrl}/dashboard/bids`;
-
-    const emailContent = `
-      Congratulations ${winner.name}!
-
-       You won the auction! 
-
-       Listing: ${listing.title}
-       Winning Bid: $${(listing.currentPrice / 100).toFixed(2)}
-
-      Your payment is now required to complete the purchase. Please visit your dashboard to complete the payment process.
-
-      👉 Visit your bids dashboard: ${dashboardUrl}
-
-      You have 48 hours to complete payment. After this time, the auction may be offered to the next highest bidder.
-
-      Thank you for participating!
-
-      Best regards,
-      The AuctionHub Team
-    `;atus,
+  ListingUpdatedEvent,
+  ListingStatus,
   Subjects 
 } from '@jjmauction/common';
 import { Message } from 'node-nats-streaming';
