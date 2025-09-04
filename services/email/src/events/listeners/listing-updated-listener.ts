@@ -1,7 +1,29 @@
 import { 
   Listener, 
-  ListingUpdatedEvent, 
-  ListingStatus,
+  ListingUpdate  private async sendWinnerNotificationEmail(listing: ListingData, winner: UserData) {
+    // Get the frontend URL with proper fallback
+    const frontendUrl = process.env.FRONTEND_URL || process.env.FRONTEND_HOST || 'http://localhost:3000';
+    const dashboardUrl = frontendUrl.includes('://') ? `${frontendUrl}/dashboard/bids` : `http://${frontendUrl}/dashboard/bids`;
+
+    const emailContent = `
+      Congratulations ${winner.name}!
+
+       You won the auction! 
+
+       Listing: ${listing.title}
+       Winning Bid: $${(listing.currentPrice / 100).toFixed(2)}
+
+      Your payment is now required to complete the purchase. Please visit your dashboard to complete the payment process.
+
+      👉 Visit your bids dashboard: ${dashboardUrl}
+
+      You have 48 hours to complete payment. After this time, the auction may be offered to the next highest bidder.
+
+      Thank you for participating!
+
+      Best regards,
+      The AuctionHub Team
+    `;atus,
   Subjects 
 } from '@jjmauction/common';
 import { Message } from 'node-nats-streaming';
@@ -68,6 +90,10 @@ export class ListingUpdatedListener extends Listener<ListingUpdatedEvent> {
   }
 
   private async sendSellerNotificationEmail(listing: ListingData, winner: UserData) {
+    // Get the frontend URL with proper fallback
+    const frontendUrl = process.env.FRONTEND_URL || process.env.FRONTEND_HOST || 'http://localhost:3000';
+    const dashboardUrl = frontendUrl.includes('://') ? `${frontendUrl}/dashboard/sold` : `http://${frontendUrl}/dashboard/sold`;
+
     const emailContent = `
       Hello ${listing.user.name},
 
@@ -79,7 +105,7 @@ export class ListingUpdatedListener extends Listener<ListingUpdatedEvent> {
 
       The winner has been notified and has 48 hours to complete payment. You'll receive another notification once payment is completed.
 
-      You can monitor the status in your dashboard: http://${process.env.FRONTEND_URL}:3000/dashboard/sold
+      You can monitor the status in your dashboard: ${dashboardUrl}
 
       Happy selling!
 
