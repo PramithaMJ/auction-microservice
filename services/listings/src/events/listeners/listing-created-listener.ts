@@ -101,7 +101,7 @@ export class ListingCreatedListener extends Listener<ListingCreatedEvent> {
                     imageUrl: imageUrls.large // For backward compatibility
                   });
                   
-                  console.log(`[listings-service] ✅ Successfully updated image URLs for ${data.id}:`, {
+                  console.log(`[listings-service]  Successfully updated image URLs for ${data.id}:`, {
                     smallImageLength: imageUrls.small.length,
                     largeImageLength: imageUrls.large.length
                   });
@@ -110,7 +110,7 @@ export class ListingCreatedListener extends Listener<ListingCreatedEvent> {
                   break;
                 } catch (error) {
                   retryCount++;
-                  console.error(`[listings-service] ⚠️ URL generation attempt ${retryCount}/${maxRetries + 1} failed for ${data.id}:`, error);
+                  console.error(`[listings-service]  URL generation attempt ${retryCount}/${maxRetries + 1} failed for ${data.id}:`, error);
                   
                   if (retryCount <= maxRetries) {
                     // Wait before next retry
@@ -119,7 +119,7 @@ export class ListingCreatedListener extends Listener<ListingCreatedEvent> {
                     await new Promise(resolve => setTimeout(resolve, delay));
                   } else {
                     // All retries failed - update with empty strings
-                    console.error(`[listings-service] ❌ All attempts failed for ${data.id}, setting empty URLs`);
+                    console.error(`[listings-service]  All attempts failed for ${data.id}, setting empty URLs`);
                     await readModel.update({
                       smallImage: '',
                       largeImage: '',
@@ -155,7 +155,7 @@ export class ListingCreatedListener extends Listener<ListingCreatedEvent> {
 
       // Create read model without image URLs if we reached here
       await ListingRead.create(readModelData);
-      console.log(`[ListingCreatedListener] ✅ Successfully created read model for listing: ${data.id} with slug: ${data.slug} and imageId: ${mainListing.imageId}`);
+      console.log(`[ListingCreatedListener]  Successfully created read model for listing: ${data.id} with slug: ${data.slug} and imageId: ${mainListing.imageId}`);
       console.log(`[ListingCreatedListener] Read model data:`, {
         id: readModelData.id,
         title: readModelData.title,

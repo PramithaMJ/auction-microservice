@@ -88,7 +88,7 @@ router.get('/api/listings/', async (req: Request, res: Response) => {
                 }
               }
               
-              console.log(`[get-listings] ✅ Generated URLs for ${listing.id}`);
+              console.log(`[get-listings]  Generated URLs for ${listing.id}`);
               
               // Create the return object with the properties from model
               const result = {

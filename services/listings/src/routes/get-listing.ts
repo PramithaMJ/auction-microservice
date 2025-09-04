@@ -54,14 +54,14 @@ router.get(
               // Add imageUrl as a separate property not in the type definition
               (refreshedListing as any).imageUrl = refreshedUrls.large; // For backward compatibility
               
-              console.log(`[get-listing] ✅ Successfully refreshed URLs for listing ${listing.id}`);
+              console.log(`[get-listing]  Successfully refreshed URLs for listing ${listing.id}`);
               success = true;
             } else {
               throw new Error('Empty URLs returned');
             }
           } catch (err) {
             retryCount++;
-            console.error(`[get-listing] ⚠️ URL refresh attempt ${retryCount}/${maxRetries + 1} failed:`, err);
+            console.error(`[get-listing]  URL refresh attempt ${retryCount}/${maxRetries + 1} failed:`, err);
             
             if (retryCount <= maxRetries) {
               // Wait before next retry with exponential backoff
@@ -72,7 +72,7 @@ router.get(
           }
         }
       } catch (error) {
-        console.error(`[get-listing] ❌ Error refreshing URLs for listing ${listing.id}:`, error);
+        console.error(`[get-listing]  Error refreshing URLs for listing ${listing.id}:`, error);
       }
     } else {
       console.log(`[get-listing] No imageId found for listing ${listing.id} or no S3 bucket configured`);

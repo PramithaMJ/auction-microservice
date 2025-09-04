@@ -95,7 +95,7 @@ const generateImageUrls = async (
         });
 
         if (signedUrl && signedUrl.length > 0) {
-          console.log(`[S3] ✅ Successfully generated S3 signed URL for key: ${key} (length: ${signedUrl.length})`);
+          console.log(`[S3]  Successfully generated S3 signed URL for key: ${key} (length: ${signedUrl.length})`);
           break; // Success, exit retry loop
         }
       } catch (err) {
@@ -104,12 +104,12 @@ const generateImageUrls = async (
         if (retries > 0) {
           // Calculate backoff time based on attempt number
           const backoffTime = getBackoffTime(5 - retries);
-          console.log(`[S3] ⚠️ Retrying URL generation for ${key}, attempts left: ${retries}, waiting ${backoffTime}ms`);
+          console.log(`[S3]  Retrying URL generation for ${key}, attempts left: ${retries}, waiting ${backoffTime}ms`);
           
           // Wait with exponential backoff before retry
           await new Promise(resolve => setTimeout(resolve, backoffTime));
         } else {
-          console.error(`[S3] ❌ Failed to generate URL after all attempts for key: ${key}`, err);
+          console.error(`[S3]  Failed to generate URL after all attempts for key: ${key}`, err);
         }
       }
     }
@@ -121,7 +121,7 @@ const generateImageUrls = async (
 
     // Cache the successful URL in memory for future use
     // (In a production app, you might want to use Redis or another distributed cache)
-    console.log(`[S3] ✅ Successfully generated URL with length ${signedUrl.length}`);
+    console.log(`[S3]  Successfully generated URL with length ${signedUrl.length}`);
 
     // For simplicity, we'll use the same signed URL for different sizes
     // In a production environment, you might want to use AWS Lambda or CloudFront
@@ -132,7 +132,7 @@ const generateImageUrls = async (
       large: signedUrl, // 1280x1280 equivalent
     };
   } catch (error) {
-    console.error('[S3] ❌ Error generating signed URLs:', error);
+    console.error('[S3]  Error generating signed URLs:', error);
     
     // Try both fallback mechanisms
     try {
@@ -148,7 +148,7 @@ const generateImageUrls = async (
       });
       
       if (fallbackSignedUrl && fallbackSignedUrl.length > 0) {
-        console.log('[S3] ✅ Fallback presigned URL generated successfully');
+        console.log('[S3]  Fallback presigned URL generated successfully');
         return {
           original: fallbackSignedUrl,
           small: fallbackSignedUrl,
