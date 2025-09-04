@@ -1,0 +1,488 @@
+version: '3.8'
+
+services:
+  # Infrastructure Services
+  nats-streaming:
+    image: nats-streaming:0.24.6
+    container_name: auction-nats
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+    command: [
+      "-p", "4222",
+      "-m", "8222",
+      "-hbi", "5s",
+      "-hbt", "5s",
+      "-hbf", "2",
+      "-SD",
+      "-cid", "auction"
+    ]
+    networks:
+      - auction-network
+    restart: unless-stopped
+    healthcheck:
+      disable: true
+
+  redis:
+    image: redis:7-alpine
+    container_name: auction-redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data
+    networks:
+      - auction-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.49
+    container_name: auction-jaeger
+    ports:
+      - "16686:16686"  # Jaeger UI
+      - "14268:14268"  # Jaeger HTTP collector
+      - "14250:14250"  # Jaeger gRPC collector
+      - "6831:6831/udp"  # Jaeger agent UDP
+      - "6832:6832/udp"  # Jaeger agent UDP
+      - "4317:4317"    # OTLP gRPC receiver
+      - "4318:4318"    # OTLP HTTP receiver
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+      - COLLECTOR_ZIPKIN_HOST_PORT=:9411
+    networks:
+      - auction-network
+    restart: unless-stopped
+
+  # MySQL Databases
+  auth-mysql:
+    image: mysql:8.0
+    container_name: auction-auth-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+    ports:
+      - "3306:3306"
+    volumes:
+      - auth-mysql-data:/var/lib/mysql
+    networks:
+      - auction-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  bid-mysql:
+    image: mysql:8.0
+    container_name: auction-bid-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${BID_MYSQL_DATABASE}
+    ports:
+      - "3307:3306"
+    volumes:
+      - bid-mysql-data:/var/lib/mysql
+    networks:
+      - auction-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  listings-mysql:
+    image: mysql:8.0
+    container_name: auction-listings-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${LISTINGS_MYSQL_DATABASE}
+    ports:
+      - "3308:3306"
+    volumes:
+      - listings-mysql-data:/var/lib/mysql
+    networks:
+      - auction-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  payments-mysql:
+    image: mysql:8.0
+    container_name: auction-payments-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${PAYMENTS_MYSQL_DATABASE}
+    ports:
+      - "3309:3306"
+    volumes:
+      - payments-mysql-data:/var/lib/mysql
+    networks:
+      - auction-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  profile-mysql:
+    image: mysql:8.0
+    container_name: auction-profile-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${PROFILE_MYSQL_DATABASE}
+    ports:
+      - "3310:3306"
+    volumes:
+      - profile-mysql-data:/var/lib/mysql
+    networks:
+      - auction-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # Application Services
+  api-gateway:
+    image: pramithamj/auction-website-ms-api-gateway:${IMAGE_TAG:-latest}
+    container_name: auction-api-gateway
+    ports:
+      - "${API_GATEWAY_PORT:-3001}:3001"
+    environment:
+      - PORT=${API_GATEWAY_PORT:-3001}
+      - NODE_ENV=${NODE_ENV:-production}
+      - AUTH_SERVICE_URL=${AUTH_SERVICE_URL}
+      - BID_SERVICE_URL=${BID_SERVICE_URL}
+      - LISTINGS_SERVICE_URL=${LISTINGS_SERVICE_URL}
+      - PAYMENTS_SERVICE_URL=${PAYMENTS_SERVICE_URL}
+      - PROFILE_SERVICE_URL=${PROFILE_SERVICE_URL}
+      - EMAIL_SERVICE_URL=${EMAIL_SERVICE_URL}
+      - SAGA_ORCHESTRATOR_URL=${SAGA_ORCHESTRATOR_URL}
+      - CORS_ORIGIN=${CORS_ORIGIN}
+      - JAEGER_ENDPOINT=${JAEGER_ENDPOINT}
+      - OTEL_SERVICE_NAME=api-gateway
+      - OTEL_RESOURCE_ATTRIBUTES=${OTEL_RESOURCE_ATTRIBUTES}
+      - OTEL_EXPORTER_JAEGER_ENDPOINT=${OTEL_EXPORTER_JAEGER_ENDPOINT}
+      - OTEL_TRACES_EXPORTER=${OTEL_TRACES_EXPORTER}
+      - OTEL_PROPAGATORS=tracecontext,baggage
+      - OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED=true
+    depends_on:
+      nats-streaming:
+        condition: service_started
+      auth:
+        condition: service_started
+      bid:
+        condition: service_started
+      listings:
+        condition: service_started
+      payments:
+        condition: service_started
+      profile:
+        condition: service_started
+      email:
+        condition: service_started
+      saga-orchestrator:
+        condition: service_started
+    networks:
+      - auction-network
+    restart: unless-stopped
+
+  auth:
+    image: pramithamj/auction-website-ms-auth:${IMAGE_TAG:-latest}
+    container_name: auction-auth
+    ports:
+      - "${AUTH_PORT:-3101}:3101"
+    environment:
+      - PORT=${AUTH_PORT:-3101}
+      - NODE_ENV=${NODE_ENV:-production}
+      - JWT_KEY=${JWT_KEY}
+      - AUTH_MYSQL_URI=${AUTH_MYSQL_URI}
+      - NATS_URL=${NATS_URL}
+      - NATS_CLUSTER_ID=${NATS_CLUSTER_ID}
+      - NATS_CLIENT_ID=${NATS_CLIENT_ID_AUTH}
+      - SAGA_ORCHESTRATOR_URL=${SAGA_ORCHESTRATOR_URL}
+      - JAEGER_ENDPOINT=${JAEGER_ENDPOINT}
+      - OTEL_SERVICE_NAME=auth-service
+      - OTEL_RESOURCE_ATTRIBUTES=${OTEL_RESOURCE_ATTRIBUTES}
+      - OTEL_EXPORTER_JAEGER_ENDPOINT=${OTEL_EXPORTER_JAEGER_ENDPOINT}
+      - OTEL_TRACES_EXPORTER=${OTEL_TRACES_EXPORTER}
+      - OTEL_PROPAGATORS=tracecontext,baggage
+      - OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED=true
+    depends_on:
+      auth-mysql:
+        condition: service_healthy
+      nats-streaming:
+        condition: service_started
+    networks:
+      - auction-network
+    restart: unless-stopped
+
+  bid:
+    image: pramithamj/auction-website-ms-bid:${IMAGE_TAG:-latest}
+    container_name: auction-bid
+    ports:
+      - "${BID_PORT:-3102}:3102"
+    environment:
+      - PORT=${BID_PORT:-3102}
+      - NODE_ENV=${NODE_ENV:-production}
+      - JWT_KEY=${JWT_KEY}
+      - BID_MYSQL_URI=${BID_MYSQL_URI}
+      - NATS_URL=${NATS_URL}
+      - NATS_CLUSTER_ID=${NATS_CLUSTER_ID}
+      - NATS_CLIENT_ID=${NATS_CLIENT_ID_BID}
+      - JAEGER_ENDPOINT=${JAEGER_ENDPOINT}
+      - OTEL_SERVICE_NAME=bid-service
+      - OTEL_RESOURCE_ATTRIBUTES=${OTEL_RESOURCE_ATTRIBUTES}
+      - OTEL_EXPORTER_JAEGER_ENDPOINT=${OTEL_EXPORTER_JAEGER_ENDPOINT}
+      - OTEL_TRACES_EXPORTER=${OTEL_TRACES_EXPORTER}
+      - OTEL_PROPAGATORS=tracecontext,baggage
+      - OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED=true
+    depends_on:
+      bid-mysql:
+        condition: service_healthy
+      nats-streaming:
+        condition: service_started
+      listings:
+        condition: service_started
+    networks:
+      - auction-network
+    restart: unless-stopped
+
+  listings:
+    image: pramithamj/auction-website-ms-listing:${IMAGE_TAG:-latest}
+    container_name: auction-listings
+    ports:
+      - "${LISTINGS_PORT:-3103}:3103"
+    environment:
+      - PORT=${LISTINGS_PORT:-3103}
+      - NODE_ENV=${NODE_ENV:-production}
+      - JWT_KEY=${JWT_KEY}
+      - LISTINGS_MYSQL_URI=${LISTINGS_MYSQL_URI}
+      - NATS_URL=${NATS_URL}
+      - NATS_CLUSTER_ID=${NATS_CLUSTER_ID}
+      - NATS_CLIENT_ID=${NATS_CLIENT_ID_LISTINGS}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=${AWS_REGION}
+      - AWS_S3_BUCKET_NAME=${AWS_S3_BUCKET_NAME}
+      - JAEGER_ENDPOINT=${JAEGER_ENDPOINT}
+      - OTEL_SERVICE_NAME=listings-service
+      - OTEL_RESOURCE_ATTRIBUTES=${OTEL_RESOURCE_ATTRIBUTES}
+      - OTEL_EXPORTER_JAEGER_ENDPOINT=${OTEL_EXPORTER_JAEGER_ENDPOINT}
+      - OTEL_TRACES_EXPORTER=${OTEL_TRACES_EXPORTER}
+      - OTEL_PROPAGATORS=tracecontext,baggage
+      - OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED=true
+    depends_on:
+      listings-mysql:
+        condition: service_healthy
+      nats-streaming:
+        condition: service_started
+    networks:
+      - auction-network
+    restart: unless-stopped
+
+  payments:
+    image: pramithamj/auction-website-ms-payment:${IMAGE_TAG:-latest}
+    container_name: auction-payments
+    ports:
+      - "${PAYMENTS_PORT:-3104}:3104"
+    environment:
+      - PORT=${PAYMENTS_PORT:-3104}
+      - NODE_ENV=${NODE_ENV:-production}
+      - JWT_KEY=${JWT_KEY}
+      - PAYMENTS_MYSQL_URI=${PAYMENTS_MYSQL_URI}
+      - NATS_URL=${NATS_URL}
+      - NATS_CLUSTER_ID=${NATS_CLUSTER_ID}
+      - NATS_CLIENT_ID=${NATS_CLIENT_ID_PAYMENTS}
+      - STRIPE_KEY=${STRIPE_SECRET_KEY}
+      - JAEGER_ENDPOINT=${JAEGER_ENDPOINT}
+      - OTEL_SERVICE_NAME=payments-service
+      - OTEL_RESOURCE_ATTRIBUTES=${OTEL_RESOURCE_ATTRIBUTES}
+      - OTEL_EXPORTER_JAEGER_ENDPOINT=${OTEL_EXPORTER_JAEGER_ENDPOINT}
+      - OTEL_TRACES_EXPORTER=${OTEL_TRACES_EXPORTER}
+      - OTEL_PROPAGATORS=tracecontext,baggage
+      - OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED=true
+    depends_on:
+      payments-mysql:
+        condition: service_healthy
+      nats-streaming:
+        condition: service_started
+    networks:
+      - auction-network
+    restart: unless-stopped
+
+  profile:
+    image: pramithamj/auction-website-ms-profile:${IMAGE_TAG:-latest}
+    container_name: auction-profile
+    ports:
+      - "${PROFILE_PORT:-3105}:3105"
+    environment:
+      - PORT=${PROFILE_PORT:-3105}
+      - NODE_ENV=${NODE_ENV:-production}
+      - JWT_KEY=${JWT_KEY}
+      - PROFILE_MYSQL_URI=${PROFILE_MYSQL_URI}
+      - NATS_URL=${NATS_URL}
+      - NATS_CLUSTER_ID=${NATS_CLUSTER_ID}
+      - NATS_CLIENT_ID=${NATS_CLIENT_ID_PROFILE}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=${AWS_REGION}
+      - AWS_S3_BUCKET_NAME=${AWS_S3_BUCKET_NAME}
+      - JAEGER_ENDPOINT=${JAEGER_ENDPOINT}
+      - OTEL_SERVICE_NAME=profile-service
+      - OTEL_RESOURCE_ATTRIBUTES=${OTEL_RESOURCE_ATTRIBUTES}
+      - OTEL_EXPORTER_JAEGER_ENDPOINT=${OTEL_EXPORTER_JAEGER_ENDPOINT}
+      - OTEL_TRACES_EXPORTER=${OTEL_TRACES_EXPORTER}
+      - OTEL_PROPAGATORS=tracecontext,baggage
+      - OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED=true
+    depends_on:
+      profile-mysql:
+        condition: service_healthy
+      nats-streaming:
+        condition: service_started
+    networks:
+      - auction-network
+    restart: unless-stopped
+
+  email:
+    image: pramithamj/auction-website-ms-email:${IMAGE_TAG:-latest}
+    container_name: auction-email
+    ports:
+      - "${EMAIL_PORT:-3106}:3106"
+    environment:
+      - PORT=${EMAIL_PORT:-3106}
+      - NODE_ENV=${NODE_ENV:-production}
+      - JWT_KEY=${JWT_KEY}
+      - NATS_URL=${NATS_URL}
+      - NATS_CLUSTER_ID=${NATS_CLUSTER_ID}
+      - NATS_CLIENT_ID=${NATS_CLIENT_ID_EMAIL}
+      - EMAIL=${EMAIL}
+      - EMAIL_PASSWORD=${EMAIL_PASSWORD}
+      - AUTH_SERVICE_URL=${AUTH_SERVICE_URL}
+      - LISTINGS_SERVICE_URL=${LISTINGS_SERVICE_URL}
+      - FRONTEND_URL=${FRONTEND_URL}
+      - JAEGER_ENDPOINT=${JAEGER_ENDPOINT}
+      - OTEL_SERVICE_NAME=email-service
+      - OTEL_RESOURCE_ATTRIBUTES=${OTEL_RESOURCE_ATTRIBUTES}
+      - OTEL_EXPORTER_JAEGER_ENDPOINT=${OTEL_EXPORTER_JAEGER_ENDPOINT}
+      - OTEL_TRACES_EXPORTER=${OTEL_TRACES_EXPORTER}
+      - OTEL_PROPAGATORS=tracecontext,baggage
+      - OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED=true
+    depends_on:
+      nats-streaming:
+        condition: service_started
+    networks:
+      - auction-network
+    restart: unless-stopped
+
+  saga-orchestrator:
+    image: pramithamj/auction-website-ms-saga-orchestrator:${IMAGE_TAG:-latest}
+    container_name: auction-saga-orchestrator
+    ports:
+      - "${SAGA_ORCHESTRATOR_PORT:-3108}:3108"
+    environment:
+      - PORT=${SAGA_ORCHESTRATOR_PORT:-3108}
+      - NODE_ENV=${NODE_ENV:-production}
+      - JWT_KEY=${JWT_KEY}
+      - NATS_URL=${NATS_URL}
+      - NATS_CLUSTER_ID=${NATS_CLUSTER_ID}
+      - NATS_CLIENT_ID=${NATS_CLIENT_ID_SAGA}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_URL=${REDIS_URL}
+      - JAEGER_ENDPOINT=${JAEGER_ENDPOINT}
+      - OTEL_SERVICE_NAME=saga-orchestrator-service
+      - OTEL_RESOURCE_ATTRIBUTES=${OTEL_RESOURCE_ATTRIBUTES}
+      - OTEL_EXPORTER_JAEGER_ENDPOINT=${OTEL_EXPORTER_JAEGER_ENDPOINT}
+      - OTEL_TRACES_EXPORTER=${OTEL_TRACES_EXPORTER}
+      - OTEL_PROPAGATORS=tracecontext,baggage
+      - OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED=true
+    depends_on:
+      redis:
+        condition: service_healthy
+      nats-streaming:
+        condition: service_started
+    networks:
+      - auction-network
+    restart: unless-stopped
+
+  expiration:
+    image: pramithamj/auction-website-ms-expiration:${IMAGE_TAG:-latest}
+    container_name: auction-expiration
+    ports:
+      - "${EXPIRATION_PORT:-3107}:3107"
+    environment:
+      - PORT=${EXPIRATION_PORT:-3107}
+      - NODE_ENV=${NODE_ENV:-production}
+      - JWT_KEY=${JWT_KEY}
+      - NATS_URL=${NATS_URL}
+      - NATS_CLUSTER_ID=${NATS_CLUSTER_ID}
+      - NATS_CLIENT_ID=${NATS_CLIENT_ID_EXPIRATION}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - JAEGER_ENDPOINT=${JAEGER_ENDPOINT}
+      - OTEL_SERVICE_NAME=expiration-service
+      - OTEL_RESOURCE_ATTRIBUTES=${OTEL_RESOURCE_ATTRIBUTES}
+      - OTEL_EXPORTER_JAEGER_ENDPOINT=${OTEL_EXPORTER_JAEGER_ENDPOINT}
+      - OTEL_TRACES_EXPORTER=${OTEL_TRACES_EXPORTER}
+      - OTEL_PROPAGATORS=tracecontext,baggage
+      - OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED=true
+    depends_on:
+      redis:
+        condition: service_healthy
+      nats-streaming:
+        condition: service_started
+    networks:
+      - auction-network
+    restart: unless-stopped
+
+  frontend:
+    image: pramithamj/auction-website-ms-frontend:${IMAGE_TAG:-latest}
+    container_name: auction-frontend
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+    environment:
+      - NODE_ENV=${NODE_ENV:-production}
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+      - NEXT_PUBLIC_API_GATEWAY_PORT=${NEXT_PUBLIC_API_GATEWAY_PORT}
+      - SERVER_API_URL=${SERVER_API_URL}
+      - NEXT_PUBLIC_SERVER_IP=${NEXT_PUBLIC_SERVER_IP}
+      - NEXT_PUBLIC_LISTINGS_SOCKET_URL=${NEXT_PUBLIC_LISTINGS_SOCKET_URL}
+      - NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
+      - WATCHPACK_POLLING=${WATCHPACK_POLLING}
+    depends_on:
+      api-gateway:
+        condition: service_started
+    networks:
+      - auction-network
+    restart: unless-stopped
+
+volumes:
+  redis-data:
+  auth-mysql-data:
+  bid-mysql-data:
+  listings-mysql-data:
+  payments-mysql-data:
+  profile-mysql-data:
+
+networks:
+  auction-network:
+    driver: bridge

@@ -30,7 +30,7 @@ check_docker() {
 
 # Function to pull all images
 pull_images() {
-    echo -e "${YELLOW}📥 Pulling Docker images (version: ${VERSION})...${NC}"
+    echo -e "${YELLOW} Pulling Docker images (version: ${VERSION})...${NC}"
     
     services=("auth" "bid" "listing" "payment" "profile" "email" "expiration" "api-gateway" "frontend")
     
@@ -98,7 +98,7 @@ main() {
     if [[ "$VERSION" != "latest" ]]; then
         pull_images
     else
-        echo -e "${YELLOW}📥 Using latest images (pulling latest)...${NC}"
+        echo -e "${YELLOW} Using latest images (pulling latest)...${NC}"
         pull_images
     fi
     
