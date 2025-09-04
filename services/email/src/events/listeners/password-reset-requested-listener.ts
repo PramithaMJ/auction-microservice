@@ -81,5 +81,3 @@ export class PasswordResetRequestedListener extends Listener<PasswordResetReques
     }
   }
 }
-
-export { PasswordResetRequestedListener };
