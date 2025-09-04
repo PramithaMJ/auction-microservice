@@ -86,7 +86,7 @@ spec:
           claimName: listings-mysql-pvc
       - name: init-scripts
         configMap:
-          name: mysql-init-scripts
+          name: listings-mysql-init
 ---
 apiVersion: v1
 kind: Service

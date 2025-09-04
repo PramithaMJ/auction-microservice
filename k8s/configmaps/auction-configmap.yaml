@@ -11,6 +11,16 @@ data:
   NATS_URL: "nats://nats-streaming.auction-infrastructure.svc.cluster.local:4222"
   NATS_CLUSTER_ID: "auction"
   
+  # NATS Client IDs - matching Docker Compose configuration
+  NATS_CLIENT_ID_AUTH: "auth-service"
+  NATS_CLIENT_ID_BID: "bid-service"
+  NATS_CLIENT_ID_LISTINGS: "listings-service"
+  NATS_CLIENT_ID_PAYMENTS: "payments-service"
+  NATS_CLIENT_ID_PROFILE: "profile-service"
+  NATS_CLIENT_ID_EMAIL: "email-service"
+  NATS_CLIENT_ID_SAGA: "saga-orchestrator-service"
+  NATS_CLIENT_ID_EXPIRATION: "expiration-service"
+  
   # Redis Configuration
   REDIS_HOST: "redis.auction-infrastructure.svc.cluster.local"
   REDIS_PORT: "6379"
@@ -44,8 +54,13 @@ data:
   OTEL_PROPAGATORS: "tracecontext,baggage"
   OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED: "true"
   
-  # CORS Configuration - Updated for EC2
+  # CORS Configuration - Standardized IP
   CORS_ORIGIN: "http://localhost:3000,http://auction.local,http://api.auction.local,http://44.207.118.24:3000,http://44.207.118.24:3001,http://44.207.118.24"
+  
+  # Server Configuration
+  SERVER_IP: "44.207.118.24"
+  FRONTEND_PORT: "3000"
+  FRONTEND_URL: "http://44.207.118.24:3000"
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -53,26 +68,12 @@ metadata:
   name: frontend-config
   namespace: auction-system
 data:
-  # Frontend configuration for EC2
+  # Frontend configuration - Standardized with consistent IP
   NEXT_PUBLIC_API_URL: "http://44.207.118.24:3001"
   NEXT_PUBLIC_API_GATEWAY_PORT: "3001"
   SERVER_API_URL: "http://44.207.118.24:3001"
   NEXT_PUBLIC_SERVER_IP: "44.207.118.24"
-  NEXT_PUBLIC_LISTINGS_SOCKET_URL: "ws://44.207.118.24:3001/socket.io"
+  NEXT_PUBLIC_LISTINGS_SOCKET_URL: "http://44.207.118.24:3103/socket"
   WATCHPACK_POLLING: "true"
   # Stripe Publishable Key for Frontend
   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: "pk_test_51S2nYUISCKB90A64dJuGIucQ0uNyzegEJlX8to6xKtEZ2eJ4ghlH3oEknTSG3jfL91I7NbRaMHeVLtEHwmOodi4b00ZP9dyn0G"
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: frontend-config
-  namespace: auction-system
-data:
-  # Frontend configuration for EC2
-  NEXT_PUBLIC_API_URL: "http://184.72.190.43:3001"
-  NEXT_PUBLIC_API_GATEWAY_PORT: "3001"
-  SERVER_API_URL: "http://184.72.190.43:3001"
-  NEXT_PUBLIC_SERVER_IP: "184.72.190.43"
-  NEXT_PUBLIC_LISTINGS_SOCKET_URL: "ws://184.72.190.43:3001/socket.io"
-  WATCHPACK_POLLING: "true"

@@ -1,27 +1,99 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: mysql-init-scripts
+  name: auth-mysql-init
   namespace: auction-infrastructure
 data:
   01-init.sql: |
-    -- Initialize database with proper character set and collation
-    -- This script runs when the MySQL container starts for the first time
-
-    -- Set proper character set and collation for all databases
+    -- Initialize auth database
     SET NAMES utf8mb4;
     SET CHARACTER SET utf8mb4;
-
-    -- Create auction user with limited privileges (principle of least privilege)
-    CREATE USER IF NOT EXISTS 'auctionuser'@'%' IDENTIFIED BY 'auction_secure_pass_2024';
     
-    -- Grant only necessary privileges on the specific database
-    GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, INDEX, ALTER ON ${MYSQL_DATABASE}.* TO 'auctionuser'@'%';
-    FLUSH PRIVILEGES;
-
+    -- Create database if not exists
+    CREATE DATABASE IF NOT EXISTS auth;
+    USE auth;
+    
     -- Set session variables for better MySQL compatibility
     SET sql_mode = '';
     SET GLOBAL sql_mode = '';
-
-    -- Set timezone
+    SET time_zone = '+00:00';
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bid-mysql-init
+  namespace: auction-infrastructure
+data:
+  01-init.sql: |
+    -- Initialize bid database
+    SET NAMES utf8mb4;
+    SET CHARACTER SET utf8mb4;
+    
+    -- Create database if not exists
+    CREATE DATABASE IF NOT EXISTS bid;
+    USE bid;
+    
+    -- Set session variables for better MySQL compatibility
+    SET sql_mode = '';
+    SET GLOBAL sql_mode = '';
+    SET time_zone = '+00:00';
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: listings-mysql-init
+  namespace: auction-infrastructure
+data:
+  01-init.sql: |
+    -- Initialize listings database
+    SET NAMES utf8mb4;
+    SET CHARACTER SET utf8mb4;
+    
+    -- Create database if not exists
+    CREATE DATABASE IF NOT EXISTS listings;
+    USE listings;
+    
+    -- Set session variables for better MySQL compatibility
+    SET sql_mode = '';
+    SET GLOBAL sql_mode = '';
+    SET time_zone = '+00:00';
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: payments-mysql-init
+  namespace: auction-infrastructure
+data:
+  01-init.sql: |
+    -- Initialize payments database
+    SET NAMES utf8mb4;
+    SET CHARACTER SET utf8mb4;
+    
+    -- Create database if not exists
+    CREATE DATABASE IF NOT EXISTS payments;
+    USE payments;
+    
+    -- Set session variables for better MySQL compatibility
+    SET sql_mode = '';
+    SET GLOBAL sql_mode = '';
+    SET time_zone = '+00:00';
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: profile-mysql-init
+  namespace: auction-infrastructure
+data:
+  01-init.sql: |
+    -- Initialize profile database
+    SET NAMES utf8mb4;
+    SET CHARACTER SET utf8mb4;
+    
+    -- Create database if not exists
+    CREATE DATABASE IF NOT EXISTS profile;
+    USE profile;
+    
+    -- Set session variables for better MySQL compatibility
+    SET sql_mode = '';
+    SET GLOBAL sql_mode = '';
     SET time_zone = '+00:00';

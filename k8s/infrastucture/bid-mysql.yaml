@@ -85,7 +85,7 @@ spec:
           claimName: bid-mysql-pvc
       - name: init-scripts
         configMap:
-          name: mysql-init-scripts
+          name: bid-mysql-init
 ---
 apiVersion: v1
 kind: Service
