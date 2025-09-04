@@ -5,6 +5,7 @@ import tw from 'twin.macro';
 
 import { centsToDollars } from '../utils/cents-to-dollars';
 import Countdown from './Countdown';
+import OptimizedImage from './OptimizedImage';
 
 interface IProps {
   name: string;
@@ -187,81 +188,32 @@ const getEmojiForListing = (title: string): string => {
 };
 
 const ListingCard = ({ name, price, slug, smallImage, expiresAt, sellerName }: IProps) => {
-  const [imageError, setImageError] = React.useState(false);
-  const [imageLoaded, setImageLoaded] = React.useState(false);
-  const [imageLoading, setImageLoading] = React.useState(true);
+  const [imageStatus, setImageStatus] = React.useState<'loading' | 'loaded' | 'error'>('loading');
   const emojiIcon = getEmojiForListing(name);
   
-  // Debug: log the smallImage URL
+  // Log useful information about the image for debugging
   React.useEffect(() => {
-    console.log('=== ListingCard Debug ===', {
+    console.log('ListingCard:', {
       name,
-      smallImage,
-      hasSmallImage: !!smallImage,
+      smallImage: smallImage ? `${smallImage.substring(0, 50)}...` : 'NONE',
+      hasValidImage: smallImage && smallImage.trim() !== '' && smallImage.startsWith('http'),
       imageLength: smallImage?.length || 0,
-      emoji: emojiIcon,
-      imageType: typeof smallImage,
-      isValidUrl: smallImage && smallImage.startsWith('http')
+      status: imageStatus
     });
-    
-    // Also log if smallImage looks like a valid URL
-    if (smallImage) {
-      console.log('SmallImage URL check:', {
-        startsWithHttp: smallImage.startsWith('http'),
-        includesAws: smallImage.includes('amazonaws'),
-        fullUrl: smallImage
-      });
-    }
-    
-    // Reset image states when smallImage changes
-    if (smallImage && smallImage.trim() !== '') {
-      setImageError(false);
-      setImageLoaded(false);
-      setImageLoading(true);
-    } else {
-      setImageLoading(false);
-      setImageError(true);
-    }
-  }, [name, smallImage, emojiIcon]);
+  }, [name, smallImage, imageStatus]);
   
-  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-    console.error('=== Image Load Error ===', {
-      name,
-      smallImage,
-      errorSrc: e.currentTarget.src,
-      naturalWidth: e.currentTarget.naturalWidth,
-      naturalHeight: e.currentTarget.naturalHeight
-    });
-    setImageError(true);
-    setImageLoading(false);
-  };
-
   const handleImageLoad = () => {
-    console.log('=== Image Loaded Successfully ===', {
-      name,
-      smallImage,
-      naturalWidth: (document.querySelector(`img[alt="${name}"]`) as HTMLImageElement)?.naturalWidth,
-      naturalHeight: (document.querySelector(`img[alt="${name}"]`) as HTMLImageElement)?.naturalHeight
-    });
-    setImageLoaded(true);
-    setImageLoading(false);
+    console.log(`Image loaded successfully: ${name}`);
+    setImageStatus('loaded');
   };
 
-  const hasValidImage = smallImage && smallImage.trim() !== '' && smallImage.startsWith('http');
-  const showEmojiOverlay = hasValidImage && emojiIcon && imageLoaded && !imageError;
+  const handleImageError = () => {
+    console.log(`Image failed to load: ${name}`);
+    setImageStatus('error');
+  };
   
-  // Additional check for newly created listings - retry loading after a delay
-  React.useEffect(() => {
-    if (!hasValidImage && smallImage && !smallImage.startsWith('http')) {
-      console.log('Detected potentially incomplete image URL, will retry in 2 seconds:', smallImage);
-      const retryTimer = setTimeout(() => {
-        // Force a component re-render by updating a state
-        setImageLoading(false);
-      }, 2000);
-      
-      return () => clearTimeout(retryTimer);
-    }
-  }, [smallImage, hasValidImage]);
+  // Determine if we have a valid image URL to display
+  const hasValidImage = smallImage && smallImage.trim() !== '' && smallImage.startsWith('http');
   
   return (
     <StyledListingCard>
@@ -271,51 +223,34 @@ const ListingCard = ({ name, price, slug, smallImage, expiresAt, sellerName }: I
             {/* Debug info - only in development */}
             {typeof window !== 'undefined' && window.location?.hostname === 'localhost' && (
               <StyledDebugInfo>
-                IMG: {smallImage ? '' : ''} | ERR: {imageError ? '' : ''} | EMOJI: {emojiIcon ? '' : ''}
+                IMG: {hasValidImage ? '✓' : '✗'} | EMOJI: {emojiIcon}
               </StyledDebugInfo>
             )}
             
-            {(hasValidImage) ? (
+            {hasValidImage ? (
               <>
-                {/* S3 Image */}
-                <StyledImage
+                {/* Use our optimized image component for better loading and error handling */}
+                <OptimizedImage
                   src={smallImage}
                   alt={name}
-                  onError={handleImageError}
+                  fallbackIcon={emojiIcon}
                   onLoad={handleImageLoad}
-                  style={{ 
-                    opacity: imageLoaded ? 1 : 0,
-                    transition: 'opacity 0.3s ease-in-out'
-                  }}
+                  onError={handleImageError}
                 />
                 
-                {/* Loading spinner while image loads */}
-                {imageLoading && (
-                  <StyledImageFallback>
-                    <StyledLoadingSpinner />
-                  </StyledImageFallback>
-                )}
-                
-                {/* Error fallback if image fails to load */}
-                {imageError && (
-                  <StyledImageFallback>
-                    <StyledEmojiIcon>{emojiIcon}</StyledEmojiIcon>
-                  </StyledImageFallback>
-                )}
-                
-                {/* Emoji overlay on successful image load */}
-                {showEmojiOverlay && imageLoaded && (
+                {/* Emoji overlay shows on successful image load */}
+                {imageStatus === 'loaded' && (
                   <StyledEmojiOverlay>
                     {emojiIcon}
                   </StyledEmojiOverlay>
                 )}
               </>
             ) : (
-              /* Fallback to large emoji when no image or invalid URL */
+              /* Fallback to large emoji when no valid image URL */
               <StyledImageFallback>
                 <StyledEmojiIcon>{emojiIcon}</StyledEmojiIcon>
                 {/* Show "Image Loading" text for newly created listings */}
-                {smallImage === 'NO_IMAGE' && (
+                {smallImage === 'PROCESSING' && (
                   <div style={{ 
                     position: 'absolute', 
                     bottom: '10px', 
@@ -327,7 +262,7 @@ const ListingCard = ({ name, price, slug, smallImage, expiresAt, sellerName }: I
                     padding: '4px 8px',
                     borderRadius: '4px'
                   }}>
-                    Image Loading...
+                    Image Processing...
                   </div>
                 )}
               </StyledImageFallback>

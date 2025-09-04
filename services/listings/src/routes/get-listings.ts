@@ -42,48 +42,97 @@ router.get('/api/listings/', async (req: Request, res: Response) => {
   console.log('S3 bucket configured:', !!bucketName);
   
   if (bucketName) {
-    const refreshedListings = await Promise.all(
-      listings.map(async (listing) => {
-        try {
-          // Get the slug from the main listings table
-          const mainListing = await Listing.findByPk(listing.id);
-          const slug = mainListing ? mainListing.slug : listing.id;
-          
-          if (listing.imageId) {
-            console.log(`Generating S3 URLs for listing ${listing.id}:`, listing.imageId);
-            const refreshedUrls = await generateImageUrls(listing.imageId, bucketName);
-            console.log(`Generated URLs for ${listing.id}:`, refreshedUrls);
+    // Process listings in batches to avoid overwhelming the AWS SDK
+    const batchSize = 10;
+    const listingBatches = [];
+    
+    // Split listings into batches
+    for (let i = 0; i < listings.length; i += batchSize) {
+      listingBatches.push(listings.slice(i, i + batchSize));
+    }
+    
+    console.log(`[get-listings] Processing ${listings.length} listings in ${listingBatches.length} batches of ${batchSize}`);
+    
+    // Process each batch sequentially for better reliability
+    let refreshedListings = [];
+    for (const batch of listingBatches) {
+      const batchResults = await Promise.all(
+        batch.map(async (listing) => {
+          try {
+            // Get the slug from the main listings table
+            const mainListing = await Listing.findByPk(listing.id);
+            const slug = mainListing ? mainListing.slug : listing.id;
+            
+            if (listing.imageId) {
+              console.log(`[get-listings] Generating S3 URLs for listing ${listing.id}:`, listing.imageId);
+              
+              // Try twice with a retry mechanism
+              let refreshedUrls;
+              try {
+                refreshedUrls = await generateImageUrls(listing.imageId, bucketName);
+              } catch (urlError) {
+                console.error(`[get-listings] First attempt failed for ${listing.id}:`, urlError);
+                
+                // Wait a moment and retry
+                await new Promise(resolve => setTimeout(resolve, 100));
+                try {
+                  refreshedUrls = await generateImageUrls(listing.imageId, bucketName);
+                } catch (retryError) {
+                  console.error(`[get-listings] Retry also failed for ${listing.id}:`, retryError);
+                  // Continue with existing URLs if available
+                  return {
+                    ...listing.toJSON(),
+                    slug,
+                    expiresAt: listing.endDate,
+                  };
+                }
+              }
+              
+              console.log(`[get-listings] ✅ Generated URLs for ${listing.id}`);
+              return {
+                ...listing.toJSON(),
+                slug, // Add slug from main table
+                expiresAt: listing.endDate, // Map endDate to expiresAt for frontend compatibility
+                smallImage: refreshedUrls.small,
+                largeImage: refreshedUrls.large,
+              };
+            }
+            
+            console.log(`[get-listings] No imageId for listing ${listing.id}, returning without images`);
             return {
               ...listing.toJSON(),
               slug, // Add slug from main table
               expiresAt: listing.endDate, // Map endDate to expiresAt for frontend compatibility
-              smallImage: refreshedUrls.small,
-              largeImage: refreshedUrls.large,
+            };
+          } catch (error) {
+            console.error('[get-listings] Error refreshing URLs for listing:', listing.id, error);
+            return {
+              ...listing.toJSON(),
+              slug: listing.id, // Fallback to ID if slug not found
+              expiresAt: listing.endDate, // Map endDate to expiresAt for frontend compatibility
             };
           }
-          console.log(`No imageId for listing ${listing.id}, returning without images`);
-          return {
-            ...listing.toJSON(),
-            slug, // Add slug from main table
-            expiresAt: listing.endDate, // Map endDate to expiresAt for frontend compatibility
-          };
-        } catch (error) {
-          console.error('Error refreshing URLs for listing:', listing.id, error);
-          return {
-            ...listing.toJSON(),
-            slug: listing.id, // Fallback to ID if slug not found
-            expiresAt: listing.endDate, // Map endDate to expiresAt for frontend compatibility
-          };
-        }
-      })
-    );
+        })
+      );
+      
+      refreshedListings = [...refreshedListings, ...batchResults];
+      
+      // Add a small delay between batches to avoid overwhelming resources
+      if (batch !== listingBatches[listingBatches.length - 1]) {
+        await new Promise(resolve => setTimeout(resolve, 50));
+      }
+    }
     
-    console.log('Final response being sent to frontend:');
-    refreshedListings.forEach((listing, index) => {
-      console.log(`Response listing ${index + 1}:`, {
+    console.log('[get-listings] Final response being prepared for frontend:');
+    console.log(`[get-listings] Total processed listings: ${refreshedListings.length}`);
+    
+    // Log a sample of the listings for debug
+    const sampleSize = Math.min(5, refreshedListings.length);
+    refreshedListings.slice(0, sampleSize).forEach((listing, index) => {
+      console.log(`[get-listings] Sample listing ${index + 1}:`, {
         id: listing.id,
         title: listing.title,
-        smallImage: listing.smallImage || 'NO_IMAGE',
+        smallImage: listing.smallImage ? `${listing.smallImage.substring(0, 30)}...` : 'NO_IMAGE',
         smallImageLength: listing.smallImage?.length || 0,
         hasValidImage: !!(listing.smallImage && listing.smallImage.length > 10)
       });

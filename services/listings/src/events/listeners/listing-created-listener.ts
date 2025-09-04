@@ -64,23 +64,78 @@ export class ListingCreatedListener extends Listener<ListingCreatedEvent> {
         console.error(`[listings-service] Failed to fetch seller ${data.userId} for listing ${data.id}:`, error);
       }
 
-      // If listing has an image, generate S3 URLs
+      // If listing has an image, handle S3 URL generation with priority on quick response
       if (mainListing.imageId) {
         const bucketName = process.env.AWS_S3_BUCKET_NAME;
         if (bucketName) {
           try {
             console.log(`[listings-service] Generating S3 URLs for new listing ${data.id} with imageId: ${mainListing.imageId}`);
-            const imageUrls = await generateImageUrls(mainListing.imageId, bucketName);
-            readModelData.smallImage = imageUrls.small;
-            readModelData.largeImage = imageUrls.large;
-            readModelData.imageUrl = imageUrls.large; // For backward compatibility
-            console.log(`[listings-service] Generated image URLs for ${data.id}:`, {
-              smallImageLength: imageUrls.small.length,
-              largeImageLength: imageUrls.large.length
-            });
+            
+            // Create read model first with placeholder to make listing immediately visible
+            readModelData.imageId = mainListing.imageId; 
+            readModelData.smallImage = 'PROCESSING'; 
+            readModelData.largeImage = 'PROCESSING';
+            readModelData.imageUrl = 'PROCESSING';
+            
+            // Create record first to make it available in UI faster
+            const readModel = await ListingRead.create(readModelData);
+            console.log(`[listings-service] Created initial read model for listing ${data.id}`);
+            
+            // Now generate URLs asynchronously with retry mechanism
+            setTimeout(async () => {
+              // Add retry mechanism for the background URL generation
+              let retryCount = 0;
+              const maxRetries = 3;
+              const retryDelay = (attempt: number) => Math.min(1000 * Math.pow(2, attempt), 10000);
+              
+              while (retryCount <= maxRetries) {
+                try {
+                  console.log(`[listings-service] Generating S3 URLs for ${data.id} with imageId: ${mainListing.imageId} (Attempt ${retryCount + 1}/${maxRetries + 1})`);
+                  
+                  const imageUrls = await generateImageUrls(mainListing.imageId, bucketName);
+                  
+                  // Update the read model with actual URLs
+                  await readModel.update({
+                    smallImage: imageUrls.small,
+                    largeImage: imageUrls.large,
+                    imageUrl: imageUrls.large // For backward compatibility
+                  });
+                  
+                  console.log(`[listings-service] ✅ Successfully updated image URLs for ${data.id}:`, {
+                    smallImageLength: imageUrls.small.length,
+                    largeImageLength: imageUrls.large.length
+                  });
+                  
+                  // Success - exit retry loop
+                  break;
+                } catch (error) {
+                  retryCount++;
+                  console.error(`[listings-service] ⚠️ URL generation attempt ${retryCount}/${maxRetries + 1} failed for ${data.id}:`, error);
+                  
+                  if (retryCount <= maxRetries) {
+                    // Wait before next retry
+                    const delay = retryDelay(retryCount);
+                    console.log(`[listings-service] Retrying in ${delay/1000} seconds...`);
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                  } else {
+                    // All retries failed - update with empty strings
+                    console.error(`[listings-service] ❌ All attempts failed for ${data.id}, setting empty URLs`);
+                    await readModel.update({
+                      smallImage: '',
+                      largeImage: '',
+                      imageUrl: ''
+                    });
+                  }
+                }
+              }
+            }, 100); // Slightly longer timeout to let the DB transaction complete
+            
+            // Acknowledge message immediately
+            msg.ack();
+            return; // Exit early since we're handling acknowledgement here
           } catch (error) {
             console.error(`[listings-service] Failed to generate image URLs for ${mainListing.imageId}:`, error);
-            // Still create read model without URLs
+            // Continue with empty URLs
             readModelData.smallImage = '';
             readModelData.largeImage = '';
             readModelData.imageUrl = '';
@@ -98,6 +153,7 @@ export class ListingCreatedListener extends Listener<ListingCreatedEvent> {
         readModelData.imageUrl = '';
       }
 
+      // Create read model without image URLs if we reached here
       await ListingRead.create(readModelData);
       console.log(`[ListingCreatedListener] ✅ Successfully created read model for listing: ${data.id} with slug: ${data.slug} and imageId: ${mainListing.imageId}`);
       console.log(`[ListingCreatedListener] Read model data:`, {
@@ -117,7 +173,7 @@ export class ListingCreatedListener extends Listener<ListingCreatedEvent> {
         return;
       }
       
-      console.error(`[ListingCreatedListener] ❌ Failed to create read model for listing ${data.id}:`, error);
+      console.error(`[ListingCreatedListener]  Failed to create read model for listing ${data.id}:`, error);
       console.error(`[ListingCreatedListener] Error stack:`, error.stack);
       // Don't ack the message so it will be retried
     }

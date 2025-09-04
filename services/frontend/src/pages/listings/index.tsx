@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
 import Head from 'next/head';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import tw from 'twin.macro';
 
 import Breadcrumb from '../../components/Breadcrumb';
@@ -23,6 +23,70 @@ const Listings = ({ listings, search }) => {
   const [viewMode, setViewMode] = useState('grid');
   const [sortBy, setSortBy] = useState('ending-soon');
   const [filterBy, setFilterBy] = useState('all');
+  
+  // Enhanced image preloading for faster display with prioritization
+  useEffect(() => {
+    if (listings && listings.length > 0) {
+      // Track which images have been preloaded to avoid duplicates
+      const preloadedImages = new Set();
+      
+      // Helper function to preload an image with priority
+      const preloadImage = (url: string, priority: number) => {
+        if (!url || !url.startsWith('http') || url === 'PROCESSING' || preloadedImages.has(url)) {
+          return;
+        }
+        
+        preloadedImages.add(url);
+        
+        // Create a promise that resolves when the image loads or errors
+        const loadPromise = new Promise((resolve) => {
+          const img = new Image();
+          img.onload = () => {
+            console.log(`[Preload] Successfully preloaded: ${url.substring(0, 30)}...`);
+            resolve(true);
+          };
+          img.onerror = () => {
+            console.log(`[Preload] Failed to preload: ${url.substring(0, 30)}...`);
+            resolve(false);
+          };
+          img.src = url;
+        });
+        
+        // Set a timeout based on priority to avoid blocking the UI
+        setTimeout(() => {
+          loadPromise.catch(() => {}); // Silence any unhandled rejections
+        }, priority * 50);
+      };
+      
+      // First load above-the-fold listings (first 6-8 likely visible on most screens)
+      const visibleListings = listings.slice(0, 8);
+      visibleListings.forEach((listing, index) => {
+        if (listing.smallImage) {
+          preloadImage(listing.smallImage, index);
+        }
+      });
+      
+      // Then load the next batch that might be visible after a small scroll
+      setTimeout(() => {
+        const nextBatchListings = listings.slice(8, 20);
+        nextBatchListings.forEach((listing, index) => {
+          if (listing.smallImage) {
+            preloadImage(listing.smallImage, index);
+          }
+        });
+      }, 500);
+      
+      // Finally load the rest in the background with low priority
+      setTimeout(() => {
+        const remainingListings = listings.slice(20);
+        remainingListings.forEach((listing, index) => {
+          if (listing.smallImage) {
+            preloadImage(listing.smallImage, index + 20); // Higher base priority number = lower actual priority
+          }
+        });
+      }, 2000);
+    }
+  }, [listings]);
 
   const categories = [
     'All Categories',
