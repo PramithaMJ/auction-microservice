@@ -14,6 +14,7 @@ import Breadcrumb from '../../components/Breadcrumb';
 import Breadcrumbs from '../../components/Breadcrumbs';
 import Countdown from '../../components/Countdown';
 import Error from '../../components/ErrorMessage';
+import OptimizedImage from '../../components/OptimizedImage';
 import AppContext from '../../context/app-context';
 import { centsToDollars } from '../../utils/cents-to-dollars';
 import buildClient from '../../api/base-client';
@@ -201,13 +202,52 @@ const Listing = ({ listingData }) => {
     }
   }, [listing?.imageUrl]);
 
+  // Preload image when listing data changes
+  useEffect(() => {
+    if (listing?.largeImage && 
+        listing.largeImage !== 'PROCESSING' && 
+        listing.largeImage.startsWith('http')) {
+      console.log(`Preloading image: ${listing.largeImage.substring(0, 50)}...`);
+      const img = new Image();
+      img.src = listing.largeImage;
+    }
+  }, [listing?.largeImage]);
+
   // Get emoji icon for this listing
   const emojiIcon = listing ? getEmojiForListing(listing.title) : '🎁';
 
   // Image component with loading and error handling
   const ListingImage = () => {
-    if (!listing?.imageUrl) {
-      console.log('No imageUrl available');
+    // Check if we have a valid image URL
+    const hasValidImage = listing?.largeImage && 
+                         listing.largeImage.trim() !== '' && 
+                         listing.largeImage.startsWith('http');
+    
+    // For newly created listings that might still be processing the image
+    if (listing?.largeImage === 'PROCESSING') {
+      return (
+        <StyledEmojiDisplay>
+          <StyledLargeEmoji>{emojiIcon}</StyledLargeEmoji>
+          <div style={{ 
+            position: 'absolute', 
+            bottom: '20px', 
+            left: '50%', 
+            transform: 'translateX(-50%)',
+            fontSize: '14px',
+            color: '#666',
+            backgroundColor: 'rgba(255,255,255,0.8)',
+            padding: '8px 12px',
+            borderRadius: '4px',
+            fontWeight: '500'
+          }}>
+            Image Processing...
+          </div>
+        </StyledEmojiDisplay>
+      );
+    }
+
+    if (!hasValidImage) {
+      console.log('No valid image URL available');
       return (
         <StyledEmojiDisplay>
           <StyledLargeEmoji>{emojiIcon}</StyledLargeEmoji>
@@ -215,46 +255,22 @@ const Listing = ({ listingData }) => {
       );
     }
 
-    if (imageError) {
-      console.log('Image error, showing emoji fallback');
-      return (
-        <StyledEmojiDisplay>
-          <StyledLargeEmoji>{emojiIcon}</StyledLargeEmoji>
-        </StyledEmojiDisplay>
-      );
-    }
-
-    console.log('Rendering image:', {
-      imageUrl: listing.imageUrl,
-      imageLoading,
-      imageError
-    });
-
+    // Use the OptimizedImage component with larger size for detail page
     return (
-      <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-        <StyledImage
-          src={listing.imageUrl}
-          alt={listing.title}
-          onLoad={() => {
-            console.log('Image loaded successfully');
-            setImageLoading(false);
-          }}
-          onError={() => {
-            console.log('Image failed to load');
-            setImageLoading(false);
-            setImageError(true);
-          }}
-          style={{ 
-            opacity: imageLoading ? 0 : 1,
-            transition: 'opacity 0.3s ease-in-out'
-          }}
-        />
-        {imageLoading && (
-          <StyledLoadingContainer style={{ position: 'absolute', top: 0, left: 0 }}>
-            <StyledLoadingSpinner />
-          </StyledLoadingContainer>
-        )}
-      </div>
+      <OptimizedImage
+        src={listing.largeImage}
+        alt={listing.title}
+        fallbackIcon={emojiIcon}
+        className="w-full h-full"
+        onLoad={() => {
+          console.log('Detail image loaded successfully');
+          setImageLoading(false);
+        }}
+        onError={() => {
+          console.log('Detail image failed to load');
+          setImageError(true);
+        }}
+      />
     );
   };
 
@@ -273,8 +289,8 @@ const Listing = ({ listingData }) => {
 
     socket.on('bid', (data) => {
       setListing(data);
-      // Reset image state if listing data changes
-      if (data?.imageUrl !== listing?.imageUrl) {
+      // Reset image state if image data changes
+      if (data?.largeImage !== listing?.largeImage || data?.imageUrl !== listing?.imageUrl) {
         setImageLoading(true);
         setImageError(false);
       }
@@ -282,8 +298,8 @@ const Listing = ({ listingData }) => {
 
     socket.on('bid-deleted', (data) => {
       setListing(data);
-      // Reset image state if listing data changes
-      if (data?.imageUrl !== listing?.imageUrl) {
+      // Reset image state if image data changes
+      if (data?.largeImage !== listing?.largeImage || data?.imageUrl !== listing?.imageUrl) {
         setImageLoading(true);
         setImageError(false);
       }
@@ -291,8 +307,8 @@ const Listing = ({ listingData }) => {
 
     socket.on('listing-deleted', (data) => {
       setListing(data);
-      // Reset image state if listing data changes
-      if (data?.imageUrl !== listing?.imageUrl) {
+      // Reset image state if image data changes
+      if (data?.largeImage !== listing?.largeImage || data?.imageUrl !== listing?.imageUrl) {
         setImageLoading(true);
         setImageError(false);
       }
@@ -498,8 +514,20 @@ const Listing = ({ listingData }) => {
         </StyledTextContent>
         <StyledImgContainer>
           <StyledImageContainer>
-            <ListingImage />
+            {/* Use optimized image component directly instead of ListingImage component */}
+            <OptimizedImage
+              src={listing.largeImage || listing.imageUrl}
+              alt={listing.title}
+              fallbackIcon={emojiIcon}
+              onLoad={() => setImageLoading(false)}
+              onError={() => setImageError(true)}
+            />
           </StyledImageContainer>
+
+          {/* Display emoji icon alongside the image to maintain branding */}
+          <div className="text-center mt-4 text-3xl opacity-80">
+            {emojiIcon}
+          </div>
         </StyledImgContainer>
       </StyledListing>
     </>

@@ -265,9 +265,9 @@ router.post(
           };
 
           await ListingRead.create(readModelData, { transaction });
-          console.log('✅ Read model entry created immediately for listing:', listing.id);
+          console.log(' Read model entry created immediately for listing:', listing.id);
         } catch (readModelError) {
-          console.error('⚠️ Failed to create immediate read model entry:', readModelError);
+          console.error(' Failed to create immediate read model entry:', readModelError);
           // Don't fail the entire transaction, as the event listener will handle it
         }
 
