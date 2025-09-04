@@ -1,6 +1,6 @@
 import { BidCreatedEvent, Listener, Subjects } from '@jjmauction/common';
 import { Message } from 'node-nats-streaming';
-import nodemailer from 'nodemailer';
+import * as nodemailer from 'nodemailer';
 import axios from 'axios';
 
 import { queueGroupName } from './queue-group-name';

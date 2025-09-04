@@ -4,7 +4,7 @@ import { body } from 'express-validator';
 import { Op } from 'sequelize';
 
 import { User, PasswordReset } from '../models';
-import { Password } from '../services/password';
+import { toHash } from '../utils/to-hash';
 import { natsWrapper } from '../nats-wrapper-circuit-breaker';
 
 const router = express.Router();
@@ -50,7 +50,7 @@ router.post(
     }
 
     // Hash the new password
-    const hashedPassword = await Password.toHash(password);
+    const hashedPassword = await toHash(password);
 
     // Update the user's password
     await user.update({ password: hashedPassword });

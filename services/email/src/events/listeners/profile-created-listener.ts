@@ -1,6 +1,6 @@
 import { ProfileCreatedEvent, Listener, Subjects } from '@jjmauction/common';
 import { Message } from 'node-nats-streaming';
-import nodemailer from 'nodemailer';
+import * as nodemailer from 'nodemailer';
 
 import { queueGroupName } from './queue-group-name';
 import { WelcomeEmailSentPublisher } from '../publishers/welcome-email-sent-publisher';

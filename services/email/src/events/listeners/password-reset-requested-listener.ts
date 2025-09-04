@@ -1,6 +1,6 @@
 import { Listener, Subjects, PasswordResetRequestedEvent } from '@jjmauction/common';
 import { Message } from 'node-nats-streaming';
-import nodemailer from 'nodemailer';
+import * as nodemailer from 'nodemailer';
 
 import { queueGroupName } from './queue-group-name';
 
