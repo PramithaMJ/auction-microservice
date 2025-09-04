@@ -6,6 +6,7 @@ import { UserCreatedListener } from './events/listeners/user-created-listener';
 import { UserAccountCreatedListener } from './events/listeners/user-account-created-listener';
 import { db } from './models';
 import { natsWrapper } from './nats-wrapper-circuit-breaker';
+import { addImageIdColumnToProfiles } from './utils/migration-helper';
 
 (async () => {
   try {
@@ -46,6 +47,10 @@ import { natsWrapper } from './nats-wrapper-circuit-breaker';
     process.on('SIGTERM', () => natsWrapper.client.close());
 
     await db.authenticate();
+    
+    // Ensure imageId column exists in profiles table
+    await addImageIdColumnToProfiles();
+    
     await db.sync();
     console.log('Conneted to MySQL');
 
