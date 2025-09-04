@@ -42,12 +42,17 @@ router.get(
             const refreshedUrls = await generateImageUrls(listing.imageId, bucketName);
             
             if (refreshedUrls.small && refreshedUrls.large) {
+              const listingJson = listing.toJSON();
+              
+              // Add the properties from the model definition
               refreshedListing = {
-                ...listing.toJSON(),
+                ...listingJson,
                 smallImage: refreshedUrls.small,
                 largeImage: refreshedUrls.large,
-                imageUrl: refreshedUrls.large, // For backward compatibility
               };
+              
+              // Add imageUrl as a separate property not in the type definition
+              (refreshedListing as any).imageUrl = refreshedUrls.large; // For backward compatibility
               
               console.log(`[get-listing] ✅ Successfully refreshed URLs for listing ${listing.id}`);
               success = true;

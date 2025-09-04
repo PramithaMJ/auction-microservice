@@ -89,13 +89,20 @@ router.get('/api/listings/', async (req: Request, res: Response) => {
               }
               
               console.log(`[get-listings] ✅ Generated URLs for ${listing.id}`);
-              return {
+              
+              // Create the return object with the properties from model
+              const result = {
                 ...listing.toJSON(),
                 slug, // Add slug from main table
                 expiresAt: listing.endDate, // Map endDate to expiresAt for frontend compatibility
                 smallImage: refreshedUrls.small,
                 largeImage: refreshedUrls.large,
               };
+              
+              // Add imageUrl as a separate property (using type assertion to avoid TypeScript errors)
+              (result as any).imageUrl = refreshedUrls.large; // For backward compatibility
+              
+              return result;
             }
             
             console.log(`[get-listings] No imageId for listing ${listing.id}, returning without images`);
@@ -103,8 +110,7 @@ router.get('/api/listings/', async (req: Request, res: Response) => {
               ...listing.toJSON(),
               slug, // Add slug from main table
               expiresAt: listing.endDate, // Map endDate to expiresAt for frontend compatibility
-            };
-          } catch (error) {
+            };          } catch (error) {
             console.error('[get-listings] Error refreshing URLs for listing:', listing.id, error);
             return {
               ...listing.toJSON(),
