@@ -7,6 +7,7 @@ import express from 'express';
 
 import { getProfileRouter } from './routes/get-profile';
 import { updateProfileRouter } from './routes/update-profile';
+import { uploadProfileImageRouter } from './routes/upload-profile-image';
 import { natsWrapper } from './nats-wrapper-circuit-breaker';
 
 const app = express();
@@ -18,6 +19,7 @@ app.use(currentUser);
 
 app.use(getProfileRouter);
 app.use(updateProfileRouter);
+app.use(uploadProfileImageRouter);
 
 
 // NATS Circuit Breaker endpoints

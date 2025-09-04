@@ -28,6 +28,7 @@ export * from './events/user-created-event';
 export * from './events/email-created-event';
 export * from './events/listing-updated-event';
 export * from './events/payment-created-event';
+export * from './events/password-reset-events';
 export * from './events/saga-subjects';
 export * from './events/user-registration-saga-events';
 

@@ -7,6 +7,7 @@ export interface ProfileAttributes {
   firstName: string;
   lastName: string;
   country: string;
+  imageId?: string;
   createdAt?: Date;
   version?: number;
 }
@@ -41,6 +42,7 @@ const ProfileFactory = (sequelize: Sequelize): ProfileStatic => {
       firstName: { type: DataTypes.STRING, allowNull: false },
       lastName: { type: DataTypes.STRING, allowNull: false },
       country: { type: DataTypes.STRING, allowNull: false },
+      imageId: { type: DataTypes.STRING, allowNull: true },
       createdAt: {
         type: DataTypes.DATE,
         allowNull: false,

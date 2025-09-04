@@ -13,6 +13,10 @@ export enum Subjects {
 
   EmailCreated = 'email:created',
   
+  // Password Reset
+  PasswordResetRequested = 'password:reset-requested',
+  PasswordResetCompleted = 'password:reset-completed',
+  
   // Saga Subjects
   UserRegistrationSagaStarted = 'user-registration-saga:started',
   UserRegistrationSagaCompleted = 'user-registration-saga:completed',
