@@ -1,6 +1,7 @@
 import { Sequelize } from 'sequelize';
 
 import { UserFactory } from './user';
+import PasswordResetFactory from './password-reset';
 
 const db =
   process.env.NODE_ENV == 'test'
@@ -10,5 +11,6 @@ const db =
       });
 
 const User = UserFactory(db);
+const PasswordReset = PasswordResetFactory(db);
 
-export { db, User };
+export { db, User, PasswordReset };

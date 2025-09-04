@@ -17,7 +17,7 @@ NC='\033[0m' # No Color
 NAMESPACE_INFRA="auction-infrastructure"
 NAMESPACE_APP="auction-system"
 
-echo -e "${BLUE}🚀 Starting Enhanced Kubernetes Deployment with Jaeger${NC}"
+echo -e "${BLUE} Starting Enhanced Kubernetes Deployment with Jaeger${NC}"
 
 # Function to print status
 print_status() {

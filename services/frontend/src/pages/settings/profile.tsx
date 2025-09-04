@@ -2,7 +2,7 @@ import styled from '@emotion/styled';
 import axios from 'axios';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { NextPageContext } from 'next';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useRef } from 'react';
 import { toast } from 'react-toastify';
 import tw from 'twin.macro';
 import * as Yup from 'yup';
@@ -31,6 +31,38 @@ const Profile = ({ profileData }) => {
   } = useContext(AppContext);
   const [isUpdating, setIsUpdating] = useState(false);
   const [profile, setProfile] = useState(profileData);
+  const fileInputRef = useRef(null);
+
+  const handleImageClick = () => {
+    fileInputRef.current.click();
+  };
+
+  const handleImageUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('image', file);
+
+    setIsUpdating(true);
+    try {
+      const { data } = await axios.post('/api/profile/image', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      
+      // Update profile state with new image
+      setProfile({
+        ...profile,
+        imageUrl: data.imageUrl
+      });
+      
+      toast.success('Profile image updated successfully!');
+    } catch (err) {
+      err.response?.data?.errors?.forEach((err) => toast.error(err.message)) 
+        || toast.error('Failed to upload image');
+    }
+    setIsUpdating(false);
+  };
 
   const onSubmit = async (body) => {
     setIsUpdating(true);
@@ -94,22 +126,48 @@ const Profile = ({ profileData }) => {
                     htmlFor="photo"
                     className="block text-sm font-medium text-gray-700"
                   >
-                    Photo
+                    Profile Photo
                   </label>
                   <div className="mt-1 sm:mt-0 sm:col-span-2">
                     <div className="flex items-center">
-                      <span className="h-12 w-12 rounded-full overflow-hidden bg-gray-100">
-                        <svg
-                          className="h-full w-full text-gray-300"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
-                        </svg>
-                      </span>
-                      <p className="ml-5  text-sm text-gray-500">
-                        This site uses gravatar for user profile pictures.
-                        Change your gravatar here.
+                      <div
+                        className="h-12 w-12 rounded-full overflow-hidden bg-gray-100 cursor-pointer border border-gray-300"
+                        onClick={handleImageClick}
+                      >
+                        {profile?.imageUrl ? (
+                          <img
+                            src={profile.imageUrl}
+                            alt="Profile"
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          <svg
+                            className="h-full w-full text-gray-300"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
+                          </svg>
+                        )}
+                      </div>
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handleImageUpload}
+                        disabled={isUpdating}
+                      />
+                      <button
+                        type="button"
+                        className="ml-5 bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        onClick={handleImageClick}
+                        disabled={isUpdating}
+                      >
+                        {isUpdating ? 'Uploading...' : 'Change'}
+                      </button>
+                      <p className="ml-5 text-sm text-gray-500">
+                        JPG, PNG or GIF. Max file size 5MB.
                       </p>
                     </div>
                   </div>

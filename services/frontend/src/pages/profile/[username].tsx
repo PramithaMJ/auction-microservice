@@ -58,10 +58,20 @@ const Profile = ({ profile, userListings = [], error }: ProfileProps) => {
           <div className="bg-white shadow rounded-lg mb-8">
             <div className="px-6 py-8">
               <div className="flex items-center space-x-6">
-                <div className="w-20 h-20 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center">
-                  <span className="text-white text-2xl font-bold">
-                    {username?.toString().charAt(0).toUpperCase()}
-                  </span>
+                <div className="w-20 h-20 rounded-full flex items-center justify-center overflow-hidden">
+                  {profile?.imageUrl ? (
+                    <img
+                      src={profile.imageUrl}
+                      alt={`${username}'s profile`}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center">
+                      <span className="text-white text-2xl font-bold">
+                        {username?.toString().charAt(0).toUpperCase()}
+                      </span>
+                    </div>
+                  )}
                 </div>
                 <div className="flex-1">
                   <h1 className="text-3xl font-bold text-gray-900">{username}</h1>

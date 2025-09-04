@@ -1,11 +1,11 @@
 import { 
   Listener, 
-  ListingUpdatedEvent, 
+  ListingUpdatedEvent,
   ListingStatus,
   Subjects 
 } from '@jjmauction/common';
 import { Message } from 'node-nats-streaming';
-import nodemailer from 'nodemailer';
+import * as nodemailer from 'nodemailer';
 import axios from 'axios';
 
 import { queueGroupName } from './queue-group-name';
@@ -36,7 +36,11 @@ export class ListingUpdatedListener extends Listener<ListingUpdatedEvent> {
   queueGroupName = queueGroupName;
   subject: Subjects.ListingUpdated = Subjects.ListingUpdated;
 
-  private async sendAuctionWinnerEmail(listing: ListingData, winner: UserData) {
+  private async sendWinnerNotificationEmail(listing: ListingData, winner: UserData) {
+    // Get the frontend URL with proper fallback
+    const frontendUrl = process.env.FRONTEND_URL || process.env.FRONTEND_HOST || 'http://localhost:3000';
+    const dashboardUrl = frontendUrl.includes('://') ? `${frontendUrl}/dashboard/bids` : `http://${frontendUrl}/dashboard/bids`;
+
     const emailContent = `
       Congratulations ${winner.name}!
 
@@ -47,7 +51,7 @@ export class ListingUpdatedListener extends Listener<ListingUpdatedEvent> {
 
       Your payment is now required to complete the purchase. Please visit your dashboard to complete the payment process.
 
-      👉 Visit your bids dashboard: http://${process.env.FRONTEND_URL}:3000/dashboard/bids
+      👉 Visit your bids dashboard: ${dashboardUrl}
 
       You have 48 hours to complete payment. After this time, the auction may be offered to the next highest bidder.
 
@@ -68,6 +72,10 @@ export class ListingUpdatedListener extends Listener<ListingUpdatedEvent> {
   }
 
   private async sendSellerNotificationEmail(listing: ListingData, winner: UserData) {
+    // Get the frontend URL with proper fallback
+    const frontendUrl = process.env.FRONTEND_URL || process.env.FRONTEND_HOST || 'http://localhost:3000';
+    const dashboardUrl = frontendUrl.includes('://') ? `${frontendUrl}/dashboard/sold` : `http://${frontendUrl}/dashboard/sold`;
+
     const emailContent = `
       Hello ${listing.user.name},
 
@@ -79,7 +87,7 @@ export class ListingUpdatedListener extends Listener<ListingUpdatedEvent> {
 
       The winner has been notified and has 48 hours to complete payment. You'll receive another notification once payment is completed.
 
-      You can monitor the status in your dashboard: http://${process.env.FRONTEND_URL}:3000/dashboard/sold
+      You can monitor the status in your dashboard: ${dashboardUrl}
 
       Happy selling!
 
@@ -129,7 +137,7 @@ export class ListingUpdatedListener extends Listener<ListingUpdatedEvent> {
       }
 
       // Send winner notification email
-      await this.sendAuctionWinnerEmail(listing, winner);
+      await this.sendWinnerNotificationEmail(listing, winner);
 
       // Send seller notification email
       if (listing.user && listing.user.email) {

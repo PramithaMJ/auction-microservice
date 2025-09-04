@@ -115,6 +115,11 @@ const SignIn = () => {
                     component={StyledErrorMessage}
                     name="password"
                   />
+                  <div className="text-sm text-right mt-2">
+                    <a href="/auth/forgot-password" className="font-medium text-amber-600 hover:text-amber-500 transition-colors">
+                      Forgot your password?
+                    </a>
+                  </div>
                 </div>
 
                 <div>

@@ -34,7 +34,7 @@ const config: GatewayConfig = {
   services: {
     auth: {
       url: process.env.AUTH_SERVICE_URL || 'http://localhost:3101',
-      paths: ['/api/auth']
+      paths: ['/api/auth', '/api/users']
     },
     bid: {
       url: process.env.BID_SERVICE_URL || 'http://localhost:3102',

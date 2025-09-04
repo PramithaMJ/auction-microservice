@@ -64,18 +64,17 @@ services:
     image: mysql:8.0
     container_name: auction-auth-mysql
     environment:
-      MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: auth
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
     ports:
       - "3306:3306"
     volumes:
       - auth-mysql-data:/var/lib/mysql
-      - ./init-scripts:/docker-entrypoint-initdb.d
     networks:
       - auction-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-ppassword"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -91,12 +90,11 @@ services:
       - "3307:3306"
     volumes:
       - bid-mysql-data:/var/lib/mysql
-      - ./init-scripts:/docker-entrypoint-initdb.d
     networks:
       - auction-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-ppassword"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -112,12 +110,11 @@ services:
       - "3308:3306"
     volumes:
       - listings-mysql-data:/var/lib/mysql
-      - ./init-scripts:/docker-entrypoint-initdb.d
     networks:
       - auction-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-ppassword"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -133,12 +130,11 @@ services:
       - "3309:3306"
     volumes:
       - payments-mysql-data:/var/lib/mysql
-      - ./init-scripts:/docker-entrypoint-initdb.d
     networks:
       - auction-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-ppassword"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -154,12 +150,11 @@ services:
       - "3310:3306"
     volumes:
       - profile-mysql-data:/var/lib/mysql
-      - ./init-scripts:/docker-entrypoint-initdb.d
     networks:
       - auction-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-ppassword"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -168,15 +163,12 @@ services:
   # Application Services
   api-gateway:
     image: pramithamj/auction-website-ms-api-gateway:${IMAGE_TAG:-latest}
-    build:
-      context: .
-      dockerfile: ./services/api-gateway/Dockerfile
     container_name: auction-api-gateway
     ports:
       - "${API_GATEWAY_PORT:-3001}:3001"
     environment:
       - PORT=${API_GATEWAY_PORT:-3001}
-      - NODE_ENV=${NODE_ENV:-development}
+      - NODE_ENV=${NODE_ENV:-production}
       - AUTH_SERVICE_URL=${AUTH_SERVICE_URL}
       - BID_SERVICE_URL=${BID_SERVICE_URL}
       - LISTINGS_SERVICE_URL=${LISTINGS_SERVICE_URL}
@@ -188,9 +180,8 @@ services:
       - JAEGER_ENDPOINT=${JAEGER_ENDPOINT}
       - OTEL_SERVICE_NAME=api-gateway
       - OTEL_RESOURCE_ATTRIBUTES=${OTEL_RESOURCE_ATTRIBUTES}
-      # OpenTelemetry Jaeger configuration
-      - OTEL_EXPORTER_JAEGER_ENDPOINT=http://jaeger:14268/api/traces
-      - OTEL_TRACES_EXPORTER=jaeger
+      - OTEL_EXPORTER_JAEGER_ENDPOINT=${OTEL_EXPORTER_JAEGER_ENDPOINT}
+      - OTEL_TRACES_EXPORTER=${OTEL_TRACES_EXPORTER}
       - OTEL_PROPAGATORS=tracecontext,baggage
       - OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED=true
     depends_on:
@@ -213,20 +204,15 @@ services:
     networks:
       - auction-network
     restart: unless-stopped
-    volumes:
-      - ./logs:/app/logs
 
   auth:
     image: pramithamj/auction-website-ms-auth:${IMAGE_TAG:-latest}
-    build:
-      context: .
-      dockerfile: ./services/auth/Dockerfile
     container_name: auction-auth
     ports:
       - "${AUTH_PORT:-3101}:3101"
     environment:
-      - PORT=${AUTH_PORT}
-      - NODE_ENV=${NODE_ENV}
+      - PORT=${AUTH_PORT:-3101}
+      - NODE_ENV=${NODE_ENV:-production}
       - JWT_KEY=${JWT_KEY}
       - AUTH_MYSQL_URI=${AUTH_MYSQL_URI}
       - NATS_URL=${NATS_URL}
@@ -236,9 +222,8 @@ services:
       - JAEGER_ENDPOINT=${JAEGER_ENDPOINT}
       - OTEL_SERVICE_NAME=auth-service
       - OTEL_RESOURCE_ATTRIBUTES=${OTEL_RESOURCE_ATTRIBUTES}
-      # OpenTelemetry Jaeger configuration
-      - OTEL_EXPORTER_JAEGER_ENDPOINT=http://jaeger:14268/api/traces
-      - OTEL_TRACES_EXPORTER=jaeger
+      - OTEL_EXPORTER_JAEGER_ENDPOINT=${OTEL_EXPORTER_JAEGER_ENDPOINT}
+      - OTEL_TRACES_EXPORTER=${OTEL_TRACES_EXPORTER}
       - OTEL_PROPAGATORS=tracecontext,baggage
       - OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED=true
     depends_on:
@@ -252,15 +237,12 @@ services:
 
   bid:
     image: pramithamj/auction-website-ms-bid:${IMAGE_TAG:-latest}
-    build:
-      context: .
-      dockerfile: ./services/bid/Dockerfile
     container_name: auction-bid
     ports:
       - "${BID_PORT:-3102}:3102"
     environment:
-      - PORT=${BID_PORT}
-      - NODE_ENV=${NODE_ENV}
+      - PORT=${BID_PORT:-3102}
+      - NODE_ENV=${NODE_ENV:-production}
       - JWT_KEY=${JWT_KEY}
       - BID_MYSQL_URI=${BID_MYSQL_URI}
       - NATS_URL=${NATS_URL}
@@ -269,9 +251,8 @@ services:
       - JAEGER_ENDPOINT=${JAEGER_ENDPOINT}
       - OTEL_SERVICE_NAME=bid-service
       - OTEL_RESOURCE_ATTRIBUTES=${OTEL_RESOURCE_ATTRIBUTES}
-      # OpenTelemetry Jaeger configuration
-      - OTEL_EXPORTER_JAEGER_ENDPOINT=http://jaeger:14268/api/traces
-      - OTEL_TRACES_EXPORTER=jaeger
+      - OTEL_EXPORTER_JAEGER_ENDPOINT=${OTEL_EXPORTER_JAEGER_ENDPOINT}
+      - OTEL_TRACES_EXPORTER=${OTEL_TRACES_EXPORTER}
       - OTEL_PROPAGATORS=tracecontext,baggage
       - OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED=true
     depends_on:
@@ -287,15 +268,12 @@ services:
 
   listings:
     image: pramithamj/auction-website-ms-listing:${IMAGE_TAG:-latest}
-    build:
-      context: .
-      dockerfile: ./services/listings/Dockerfile
     container_name: auction-listings
     ports:
       - "${LISTINGS_PORT:-3103}:3103"
     environment:
-      - PORT=${LISTINGS_PORT}
-      - NODE_ENV=${NODE_ENV}
+      - PORT=${LISTINGS_PORT:-3103}
+      - NODE_ENV=${NODE_ENV:-production}
       - JWT_KEY=${JWT_KEY}
       - LISTINGS_MYSQL_URI=${LISTINGS_MYSQL_URI}
       - NATS_URL=${NATS_URL}
@@ -308,9 +286,8 @@ services:
       - JAEGER_ENDPOINT=${JAEGER_ENDPOINT}
       - OTEL_SERVICE_NAME=listings-service
       - OTEL_RESOURCE_ATTRIBUTES=${OTEL_RESOURCE_ATTRIBUTES}
-      # OpenTelemetry Jaeger configuration
-      - OTEL_EXPORTER_JAEGER_ENDPOINT=http://jaeger:14268/api/traces
-      - OTEL_TRACES_EXPORTER=jaeger
+      - OTEL_EXPORTER_JAEGER_ENDPOINT=${OTEL_EXPORTER_JAEGER_ENDPOINT}
+      - OTEL_TRACES_EXPORTER=${OTEL_TRACES_EXPORTER}
       - OTEL_PROPAGATORS=tracecontext,baggage
       - OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED=true
     depends_on:
@@ -324,15 +301,12 @@ services:
 
   payments:
     image: pramithamj/auction-website-ms-payment:${IMAGE_TAG:-latest}
-    build:
-      context: .
-      dockerfile: ./services/payments/Dockerfile
     container_name: auction-payments
     ports:
       - "${PAYMENTS_PORT:-3104}:3104"
     environment:
-      - PORT=${PAYMENTS_PORT}
-      - NODE_ENV=${NODE_ENV}
+      - PORT=${PAYMENTS_PORT:-3104}
+      - NODE_ENV=${NODE_ENV:-production}
       - JWT_KEY=${JWT_KEY}
       - PAYMENTS_MYSQL_URI=${PAYMENTS_MYSQL_URI}
       - NATS_URL=${NATS_URL}
@@ -342,9 +316,8 @@ services:
       - JAEGER_ENDPOINT=${JAEGER_ENDPOINT}
       - OTEL_SERVICE_NAME=payments-service
       - OTEL_RESOURCE_ATTRIBUTES=${OTEL_RESOURCE_ATTRIBUTES}
-      # OpenTelemetry Jaeger configuration
-      - OTEL_EXPORTER_JAEGER_ENDPOINT=http://jaeger:14268/api/traces
-      - OTEL_TRACES_EXPORTER=jaeger
+      - OTEL_EXPORTER_JAEGER_ENDPOINT=${OTEL_EXPORTER_JAEGER_ENDPOINT}
+      - OTEL_TRACES_EXPORTER=${OTEL_TRACES_EXPORTER}
       - OTEL_PROPAGATORS=tracecontext,baggage
       - OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED=true
     depends_on:
@@ -358,26 +331,26 @@ services:
 
   profile:
     image: pramithamj/auction-website-ms-profile:${IMAGE_TAG:-latest}
-    build:
-      context: .
-      dockerfile: ./services/profile/Dockerfile
     container_name: auction-profile
     ports:
       - "${PROFILE_PORT:-3105}:3105"
     environment:
-      - PORT=${PROFILE_PORT}
-      - NODE_ENV=${NODE_ENV}
+      - PORT=${PROFILE_PORT:-3105}
+      - NODE_ENV=${NODE_ENV:-production}
       - JWT_KEY=${JWT_KEY}
       - PROFILE_MYSQL_URI=${PROFILE_MYSQL_URI}
       - NATS_URL=${NATS_URL}
       - NATS_CLUSTER_ID=${NATS_CLUSTER_ID}
       - NATS_CLIENT_ID=${NATS_CLIENT_ID_PROFILE}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=${AWS_REGION}
+      - AWS_S3_BUCKET_NAME=${AWS_S3_BUCKET_NAME}
       - JAEGER_ENDPOINT=${JAEGER_ENDPOINT}
       - OTEL_SERVICE_NAME=profile-service
       - OTEL_RESOURCE_ATTRIBUTES=${OTEL_RESOURCE_ATTRIBUTES}
-      # OpenTelemetry Jaeger configuration
-      - OTEL_EXPORTER_JAEGER_ENDPOINT=http://jaeger:14268/api/traces
-      - OTEL_TRACES_EXPORTER=jaeger
+      - OTEL_EXPORTER_JAEGER_ENDPOINT=${OTEL_EXPORTER_JAEGER_ENDPOINT}
+      - OTEL_TRACES_EXPORTER=${OTEL_TRACES_EXPORTER}
       - OTEL_PROPAGATORS=tracecontext,baggage
       - OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED=true
     depends_on:
@@ -391,15 +364,12 @@ services:
 
   email:
     image: pramithamj/auction-website-ms-email:${IMAGE_TAG:-latest}
-    build:
-      context: .
-      dockerfile: ./services/email/Dockerfile
     container_name: auction-email
     ports:
       - "${EMAIL_PORT:-3106}:3106"
     environment:
-      - PORT=${EMAIL_PORT}
-      - NODE_ENV=${NODE_ENV}
+      - PORT=${EMAIL_PORT:-3106}
+      - NODE_ENV=${NODE_ENV:-production}
       - JWT_KEY=${JWT_KEY}
       - NATS_URL=${NATS_URL}
       - NATS_CLUSTER_ID=${NATS_CLUSTER_ID}
@@ -412,9 +382,8 @@ services:
       - JAEGER_ENDPOINT=${JAEGER_ENDPOINT}
       - OTEL_SERVICE_NAME=email-service
       - OTEL_RESOURCE_ATTRIBUTES=${OTEL_RESOURCE_ATTRIBUTES}
-      # OpenTelemetry Jaeger configuration
-      - OTEL_EXPORTER_JAEGER_ENDPOINT=http://jaeger:14268/api/traces
-      - OTEL_TRACES_EXPORTER=jaeger
+      - OTEL_EXPORTER_JAEGER_ENDPOINT=${OTEL_EXPORTER_JAEGER_ENDPOINT}
+      - OTEL_TRACES_EXPORTER=${OTEL_TRACES_EXPORTER}
       - OTEL_PROPAGATORS=tracecontext,baggage
       - OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED=true
     depends_on:
@@ -426,15 +395,12 @@ services:
 
   saga-orchestrator:
     image: pramithamj/auction-website-ms-saga-orchestrator:${IMAGE_TAG:-latest}
-    build:
-      context: .
-      dockerfile: ./services/saga-orchestrator/Dockerfile
     container_name: auction-saga-orchestrator
     ports:
       - "${SAGA_ORCHESTRATOR_PORT:-3108}:3108"
     environment:
-      - PORT=${SAGA_ORCHESTRATOR_PORT}
-      - NODE_ENV=${NODE_ENV}
+      - PORT=${SAGA_ORCHESTRATOR_PORT:-3108}
+      - NODE_ENV=${NODE_ENV:-production}
       - JWT_KEY=${JWT_KEY}
       - NATS_URL=${NATS_URL}
       - NATS_CLUSTER_ID=${NATS_CLUSTER_ID}
@@ -445,9 +411,8 @@ services:
       - JAEGER_ENDPOINT=${JAEGER_ENDPOINT}
       - OTEL_SERVICE_NAME=saga-orchestrator-service
       - OTEL_RESOURCE_ATTRIBUTES=${OTEL_RESOURCE_ATTRIBUTES}
-      # OpenTelemetry Jaeger configuration
-      - OTEL_EXPORTER_JAEGER_ENDPOINT=http://jaeger:14268/api/traces
-      - OTEL_TRACES_EXPORTER=jaeger
+      - OTEL_EXPORTER_JAEGER_ENDPOINT=${OTEL_EXPORTER_JAEGER_ENDPOINT}
+      - OTEL_TRACES_EXPORTER=${OTEL_TRACES_EXPORTER}
       - OTEL_PROPAGATORS=tracecontext,baggage
       - OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED=true
     depends_on:
@@ -461,15 +426,12 @@ services:
 
   expiration:
     image: pramithamj/auction-website-ms-expiration:${IMAGE_TAG:-latest}
-    build:
-      context: .
-      dockerfile: ./services/expiration/Dockerfile
     container_name: auction-expiration
     ports:
       - "${EXPIRATION_PORT:-3107}:3107"
     environment:
-      - PORT=${EXPIRATION_PORT}
-      - NODE_ENV=${NODE_ENV}
+      - PORT=${EXPIRATION_PORT:-3107}
+      - NODE_ENV=${NODE_ENV:-production}
       - JWT_KEY=${JWT_KEY}
       - NATS_URL=${NATS_URL}
       - NATS_CLUSTER_ID=${NATS_CLUSTER_ID}
@@ -479,9 +441,8 @@ services:
       - JAEGER_ENDPOINT=${JAEGER_ENDPOINT}
       - OTEL_SERVICE_NAME=expiration-service
       - OTEL_RESOURCE_ATTRIBUTES=${OTEL_RESOURCE_ATTRIBUTES}
-      # OpenTelemetry Jaeger configuration
-      - OTEL_EXPORTER_JAEGER_ENDPOINT=http://jaeger:14268/api/traces
-      - OTEL_TRACES_EXPORTER=jaeger
+      - OTEL_EXPORTER_JAEGER_ENDPOINT=${OTEL_EXPORTER_JAEGER_ENDPOINT}
+      - OTEL_TRACES_EXPORTER=${OTEL_TRACES_EXPORTER}
       - OTEL_PROPAGATORS=tracecontext,baggage
       - OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED=true
     depends_on:
@@ -495,14 +456,11 @@ services:
 
   frontend:
     image: pramithamj/auction-website-ms-frontend:${IMAGE_TAG:-latest}
-    build:
-      context: .
-      dockerfile: ./services/frontend/Dockerfile.dev
     container_name: auction-frontend
     ports:
       - "${FRONTEND_PORT:-3000}:3000"
     environment:
-      - NODE_ENV=${NODE_ENV:-development}
+      - NODE_ENV=${NODE_ENV:-production}
       - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
       - NEXT_PUBLIC_API_GATEWAY_PORT=${NEXT_PUBLIC_API_GATEWAY_PORT}
       - SERVER_API_URL=${SERVER_API_URL}
@@ -516,10 +474,6 @@ services:
     networks:
       - auction-network
     restart: unless-stopped
-    volumes:
-      - ./services/frontend:/app
-      - /app/node_modules
-      - /app/.next
 
 volumes:
   redis-data:

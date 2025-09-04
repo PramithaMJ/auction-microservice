@@ -2,6 +2,7 @@ import { NotFoundError, requireAuth } from '@jjmauction/common';
 import express, { Request, Response } from 'express';
 
 import { Profile } from '../models';
+import { generateImageUrls } from '../utils/s3-config';
 
 const router = express.Router();
 
@@ -20,7 +21,22 @@ router.get(
       throw new NotFoundError();
     }
 
-    res.status(200).send(profile);
+    // If profile has image, generate URL
+    const profileData = profile.toJSON();
+    
+    if (profile.imageId) {
+      const bucketName = process.env.AWS_S3_BUCKET_NAME;
+      if (bucketName) {
+        try {
+          const imageUrls = await generateImageUrls(profile.imageId, bucketName);
+          (profileData as any).imageUrl = imageUrls.small;
+        } catch (error) {
+          console.error(`Failed to generate image URL for profile ${profile.id}:`, error);
+        }
+      }
+    }
+
+    res.status(200).send(profileData);
   }
 );
 
