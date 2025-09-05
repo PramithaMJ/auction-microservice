@@ -68,10 +68,10 @@ spec:
               key: OTEL_RESOURCE_ATTRIBUTES
         resources:
           requests:
-            memory: "512Mi"
+            memory: "1Gi"
             cpu: "100m"
           limits:
-            memory: "1Gi"
+            memory: "2Gi"
             cpu: "250m"
         # startupProbe:
         #   httpGet:
