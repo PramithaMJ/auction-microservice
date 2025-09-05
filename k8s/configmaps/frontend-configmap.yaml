@@ -5,10 +5,10 @@ metadata:
   namespace: auction-system
 data:
   # Frontend configuration
-  NEXT_PUBLIC_API_URL: "http://184.72.190.43:3001"
+  NEXT_PUBLIC_API_URL: "http://a3076e6756f904120b9fb64a871ab910-829987256.us-east-2.elb.amazonaws.com/api"
   NEXT_PUBLIC_API_GATEWAY_PORT: "3001"
-  SERVER_API_URL: "http://184.72.190.43:3001"
-  NEXT_PUBLIC_SERVER_IP: "184.72.190.43"
-  NEXT_PUBLIC_LISTINGS_SOCKET_URL: "ws://184.72.190.43:3001/socket.io"
+  SERVER_API_URL: "http://a3076e6756f904120b9fb64a871ab910-829987256.us-east-2.elb.amazonaws.com/api"
+  NEXT_PUBLIC_SERVER_IP: "http://a3076e6756f904120b9fb64a871ab910-829987256.us-east-2.elb.amazonaws.com"
+  NEXT_PUBLIC_LISTINGS_SOCKET_URL: "ws://a3076e6756f904120b9fb64a871ab910-829987256.us-east-2.elb.amazonaws.com/socket.io"
   WATCHPACK_POLLING: "true"
   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: "pk_test_51S2nYUISCKB90A64dJuGIucQ0uNyzegEJlX8to6xKtEZ2eJ4ghlH3oEknTSG3jfL91I7NbRaMHeVLtEHwmOodi4b00ZP9dyn0G"
