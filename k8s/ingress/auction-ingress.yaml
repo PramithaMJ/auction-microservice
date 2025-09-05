@@ -6,7 +6,7 @@ metadata:
   namespace: auction-system
   annotations:
     nginx.ingress.kubernetes.io/use-regex: "true"
-    nginx.ingress.kubernetes.io/cors-allow-origin: "http://localhost:3000,http://auction.local,http://api.auction.local"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "http://localhost:3000,http://a3076e6756f904120b9fb64a871ab910-829987256.us-east-2.elb.amazonaws.com"
     nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, PUT, DELETE, OPTIONS"
     nginx.ingress.kubernetes.io/cors-allow-headers: "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization"
     nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
@@ -19,7 +19,7 @@ spec:
   ingressClassName: nginx
   rules:
   # API Gateway routing
-  - host: api.auction.local
+  - host: a3076e6756f904120b9fb64a871ab910-829987256.us-east-2.elb.amazonaws.com
     http:
       paths:
       - path: /
@@ -30,7 +30,7 @@ spec:
             port:
               number: 3001
   # Frontend routing
-  - host: auction.local
+  - host: a3076e6756f904120b9fb64a871ab910-829987256.us-east-2.elb.amazonaws.com
     http:
       paths:
       - path: /
