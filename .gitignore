@@ -21,3 +21,4 @@ services/*/.env.development
 
 # K8s Secrets
 k8s/secrets/auction-secrets.yaml
+k8s/secrets/mysql-secrets.yaml

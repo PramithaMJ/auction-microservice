@@ -1,0 +1,84 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: profile-mysql-pv
+  namespace: auction-infrastructure
+  labels:
+    type: local
+spec:
+  storageClassName: standard
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/data/profile-mysql"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: profile-mysql-pvc
+  namespace: auction-infrastructure
+spec:
+  storageClassName: standard
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: profile-mysql
+  namespace: auction-infrastructure
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: profile-mysql
+  template:
+    metadata:
+      labels:
+        app: profile-mysql
+    spec:
+      containers:
+      - name: profile-mysql
+        image: mysql:8.0
+        ports:
+        - containerPort: 3306
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secrets
+              key: PROFILE_MYSQL_ROOT_PASSWORD
+        - name: MYSQL_DATABASE
+          value: profile
+        volumeMounts:
+        - name: profile-mysql-persistent-storage
+          mountPath: /var/lib/mysql
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+      volumes:
+      - name: profile-mysql-persistent-storage
+        persistentVolumeClaim:
+          claimName: profile-mysql-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: profile-mysql
+  namespace: auction-infrastructure
+spec:
+  selector:
+    app: profile-mysql
+  ports:
+  - port: 3306
+    targetPort: 3306
+  type: ClusterIP
