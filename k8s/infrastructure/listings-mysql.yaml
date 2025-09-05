@@ -6,7 +6,6 @@ metadata:
   labels:
     type: local
 spec:
-  storageClassName: standard
   capacity:
     storage: 1Gi
   accessModes:
@@ -20,7 +19,6 @@ metadata:
   name: listings-mysql-pvc
   namespace: auction-infrastructure
 spec:
-  storageClassName: standard
   accessModes:
     - ReadWriteOnce
   resources:

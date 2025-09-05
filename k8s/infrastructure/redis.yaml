@@ -4,7 +4,6 @@ metadata:
   name: redis-pvc
   namespace: auction-infrastructure
 spec:
-  storageClassName: gp2
   accessModes:
     - ReadWriteOnce
   resources:
