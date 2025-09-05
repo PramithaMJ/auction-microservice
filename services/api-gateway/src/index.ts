@@ -9,6 +9,8 @@ import morgan from 'morgan';
 import FormData from 'form-data';
 import config from '../config/default';
 import { CircuitBreaker, CircuitState } from './circuit-breaker';
+import { Bulkhead } from './bulkhead';
+import { BulkheadMiddleware } from './bulkhead-middleware';
 // import { tracingMiddleware, addCorrelationId } from '@jjmauction/common';
 
 interface CustomError extends Error {
@@ -18,15 +20,30 @@ interface CustomError extends Error {
 class ApiGateway {
   private app: express.Application;
   private circuitBreaker: CircuitBreaker;
+  private bulkhead: Bulkhead;
+  private bulkheadMiddleware: BulkheadMiddleware;
 
   constructor() {
     this.app = express();
+    
+    // Initialize Circuit Breaker
     this.circuitBreaker = new CircuitBreaker({
       failureThreshold: 5,        // Open circuit after 5 failures
       resetTimeout: 30000,        // Try again after 30 seconds
       timeout: 10000,            // 10 second request timeout
       monitoringWindow: 60000     // 1 minute failure tracking window
     });
+    
+    // Initialize Bulkhead
+    this.bulkhead = new Bulkhead({
+      maxConcurrentRequests: 50,  // Default max concurrent requests
+      maxWaitTime: 1000,         // Default max wait time (1 second)
+      queueSize: 10              // Default queue size
+    });
+    
+    // Initialize Bulkhead Middleware
+    this.bulkheadMiddleware = new BulkheadMiddleware(this.bulkhead);
+    
     this.setupMiddleware();
     this.setupRoutes();
     this.setupErrorHandling();
@@ -87,6 +104,9 @@ class ApiGateway {
     // Health check endpoint
     this.app.get('/health', (req: Request, res: Response) => {
       const servicesHealth = this.circuitBreaker.getAllServicesHealth();
+      const bulkheadMetrics = this.bulkhead.getAllServicesMetrics();
+      
+      // Check both circuit breaker and bulkhead status
       const overallStatus = Object.values(servicesHealth).every(
         service => service.state === CircuitState.CLOSED
       ) ? 'healthy' : 'degraded';
@@ -95,7 +115,8 @@ class ApiGateway {
         status: overallStatus,
         timestamp: new Date().toISOString(),
         services: config.services,
-        circuitBreaker: servicesHealth
+        circuitBreaker: servicesHealth,
+        bulkhead: bulkheadMetrics
       });
     });
 
@@ -112,6 +133,23 @@ class ApiGateway {
       this.circuitBreaker.resetService(serviceName);
       res.status(200).json({
         message: `Circuit breaker for ${serviceName} has been reset`,
+        timestamp: new Date().toISOString()
+      });
+    });
+    
+    // Bulkhead management endpoints
+    this.app.get('/bulkhead/status', (req: Request, res: Response) => {
+      res.status(200).json({
+        timestamp: new Date().toISOString(),
+        services: this.bulkhead.getAllServicesMetrics()
+      });
+    });
+    
+    this.app.post('/bulkhead/reset/:serviceName', (req: Request, res: Response) => {
+      const { serviceName } = req.params;
+      this.bulkhead.resetService(serviceName);
+      res.status(200).json({
+        message: `Bulkhead for ${serviceName} has been reset`,
         timestamp: new Date().toISOString()
       });
     });
@@ -175,6 +213,19 @@ class ApiGateway {
       res.status(503).json(fallbackResponse);
       return;
     }
+    
+    // Check bulkhead before making request
+    const bulkheadCheck = this.bulkhead.canExecute(serviceName);
+    
+    if (!bulkheadCheck.allowed) {
+      console.log(` Bulkhead blocked request to ${serviceName}: ${bulkheadCheck.reason}`);
+      const fallbackResponse = this.bulkhead.createFallbackResponse(serviceName, req);
+      res.status(429).json(fallbackResponse); // 429 Too Many Requests
+      return;
+    }
+    
+    // Record start of request execution in bulkhead
+    this.bulkhead.recordExecutionStart(serviceName);
 
     try {
       console.log(
@@ -222,6 +273,9 @@ class ApiGateway {
       // Record success in circuit breaker
       this.circuitBreaker.recordSuccess(serviceName);
       
+      // Record completion in bulkhead
+      this.bulkhead.recordExecutionComplete(serviceName);
+      
       // Forward response headers
       Object.keys(response.headers).forEach(header => {
         if (header.toLowerCase() !== 'content-encoding') {
@@ -236,6 +290,9 @@ class ApiGateway {
       
       // Record failure in circuit breaker
       this.circuitBreaker.recordFailure(serviceName, error);
+      
+      // Record completion in bulkhead even on error
+      this.bulkhead.recordExecutionComplete(serviceName);
       
       if (error.response) {
         // The request was made and the server responded with a status code
@@ -281,6 +338,10 @@ class ApiGateway {
         console.log(`   - Reset Timeout: 30 seconds`);
         console.log(`   - Request Timeout: 10 seconds`);
         console.log(`   - Monitoring Window: 1 minute`);
+        console.log(' Bulkhead Configuration:');
+        console.log(`   - Default Max Concurrent Requests: 50`);
+        console.log(`   - Default Queue Size: 10`);
+        console.log(`   - Default Max Wait Time: 1 second`);
         console.log(' Service Routes:');
         
         Object.entries(config.services).forEach(([name, service]) => {
@@ -290,10 +351,12 @@ class ApiGateway {
         });
         
         console.log('\n Available Endpoints:');
-        console.log(`   GET  /health - Health check with circuit breaker status`);
+        console.log(`   GET  /health - Health check with circuit breaker and bulkhead status`);
         console.log(`   GET  /api - API documentation`);
         console.log(`   GET  /circuit-breaker/status - Circuit breaker status`);
         console.log(`   POST /circuit-breaker/reset/:serviceName - Reset circuit breaker`);
+        console.log(`   GET  /bulkhead/status - Bulkhead status`);
+        console.log(`   POST /bulkhead/reset/:serviceName - Reset bulkhead`);
         console.log('');
       });
 

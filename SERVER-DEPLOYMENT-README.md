@@ -277,7 +277,3 @@ kubectl delete namespace auction-infrastructure
 # Stop minikube
 minikube stop
 ```
-
----
-
-**Note:** Remember to keep your AWS credentials secure and regularly update your security groups based on your access requirements.
