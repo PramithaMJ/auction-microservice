@@ -3,15 +3,14 @@ kind: Service
 metadata:
   name: auth-service
   namespace: auction-system
-  labels:
-    app: auth
 spec:
   selector:
     app: auth
   ports:
-  - port: 3101
-    targetPort: 3101
-    name: http
+    - name: auth
+      protocol: TCP
+      port: 3101
+      targetPort: 3101
   type: ClusterIP
 ---
 apiVersion: v1
@@ -19,15 +18,14 @@ kind: Service
 metadata:
   name: bid-service
   namespace: auction-system
-  labels:
-    app: bid
 spec:
   selector:
     app: bid
   ports:
-  - port: 3102
-    targetPort: 3102
-    name: http
+    - name: bid
+      protocol: TCP
+      port: 3102
+      targetPort: 3102
   type: ClusterIP
 ---
 apiVersion: v1
@@ -35,15 +33,14 @@ kind: Service
 metadata:
   name: listings-service
   namespace: auction-system
-  labels:
-    app: listings
 spec:
   selector:
     app: listings
   ports:
-  - port: 3103
-    targetPort: 3103
-    name: http
+    - name: listings
+      protocol: TCP
+      port: 3103
+      targetPort: 3103
   type: ClusterIP
 ---
 apiVersion: v1
@@ -51,15 +48,14 @@ kind: Service
 metadata:
   name: payments-service
   namespace: auction-system
-  labels:
-    app: payments
 spec:
   selector:
     app: payments
   ports:
-  - port: 3104
-    targetPort: 3104
-    name: http
+    - name: payments
+      protocol: TCP
+      port: 3104
+      targetPort: 3104
   type: ClusterIP
 ---
 apiVersion: v1
@@ -67,15 +63,14 @@ kind: Service
 metadata:
   name: profile-service
   namespace: auction-system
-  labels:
-    app: profile
 spec:
   selector:
     app: profile
   ports:
-  - port: 3105
-    targetPort: 3105
-    name: http
+    - name: profile
+      protocol: TCP
+      port: 3105
+      targetPort: 3105
   type: ClusterIP
 ---
 apiVersion: v1
@@ -89,9 +84,9 @@ spec:
   selector:
     app: email
   ports:
-  - port: 3106
-    targetPort: 3106
-    name: http
+    - port: 3106
+      targetPort: 3106
+      name: http
   type: ClusterIP
 ---
 apiVersion: v1
@@ -105,9 +100,9 @@ spec:
   selector:
     app: expiration
   ports:
-  - port: 3107
-    targetPort: 3107
-    name: http
+    - port: 3107
+      targetPort: 3107
+      name: http
   type: ClusterIP
 ---
 apiVersion: v1
@@ -121,7 +116,7 @@ spec:
   selector:
     app: saga-orchestrator
   ports:
-  - port: 3108
-    targetPort: 3108
-    name: http
+    - port: 3108
+      targetPort: 3108
+      name: http
   type: ClusterIP

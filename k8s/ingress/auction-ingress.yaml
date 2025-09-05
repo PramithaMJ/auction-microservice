@@ -4,46 +4,96 @@ metadata:
   name: auction-ingress
   namespace: auction-system
   annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/use-regex: 'true'
     nginx.ingress.kubernetes.io/cors-allow-origin: '*'
     nginx.ingress.kubernetes.io/cors-allow-methods: 'GET, POST, PUT, DELETE, OPTIONS'
     nginx.ingress.kubernetes.io/cors-allow-headers: 'DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization'
     nginx.ingress.kubernetes.io/cors-allow-credentials: 'true'
     nginx.ingress.kubernetes.io/enable-cors: 'true'
     nginx.ingress.kubernetes.io/proxy-body-size: '10m'
-    # Next.js specific configurations
-    nginx.ingress.kubernetes.io/proxy-connect-timeout: '60'
-    nginx.ingress.kubernetes.io/proxy-send-timeout: '60'
-    nginx.ingress.kubernetes.io/proxy-read-timeout: '60'
-    nginx.ingress.kubernetes.io/proxy-buffering: 'off'
-    # Handle Next.js routing
-    nginx.ingress.kubernetes.io/configuration-snippet: |
-      proxy_set_header Accept-Encoding "";
-      more_set_headers "X-Frame-Options: SAMEORIGIN";
-      more_set_headers "X-Content-Type-Options: nosniff";
+    # WebSocket support for real-time features
+    nginx.ingress.kubernetes.io/websocket-services: 'listings-service'
 spec:
   ingressClassName: nginx
   rules:
     - http:
         paths:
+          # Auth service
+          - path: /api/auth(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: auth-service
+                port:
+                  number: 3101
+
+          # Users endpoint (often part of auth)
+          - path: /api/users(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: auth-service
+                port:
+                  number: 3101
+
+          # Bid service
+          - path: /api/bids(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: bid-service
+                port:
+                  number: 3102
+
+          # Listings service
+          - path: /api/listings(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: listings-service
+                port:
+                  number: 3103
+
+          # Payments service
+          - path: /api/payments(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: payments-service
+                port:
+                  number: 3104
+
+          # Profile service
+          - path: /api/profile(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: profile-service
+                port:
+                  number: 3105
+
+          # Socket.io for real-time features (if you have WebSocket support)
+          - path: /socket.io(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: listings-service
+                port:
+                  number: 3103
+
           # Next.js static files
-          - path: /_next
-            pathType: Prefix
+          - path: /_next(/|$)(.*)
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: frontend-service
                 port:
                   number: 3000
-          # API routes - should come after _next but before /
-          - path: /api
-            pathType: Prefix
-            backend:
-              service:
-                name: api-gateway-service
-                port:
-                  number: 3001
-          # Frontend routes (catch-all) - should come last
-          - path: /
-            pathType: Prefix
+
+          # Frontend catch-all (must be last)
+          - path: /(.*)
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: frontend-service
