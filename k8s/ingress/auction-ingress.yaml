@@ -4,25 +4,18 @@ metadata:
   name: auction-ingress
   namespace: auction-system
   annotations:
-    alb.ingress.kubernetes.io/scheme: internet-facing
-    alb.ingress.kubernetes.io/target-type: ip
-    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
-    alb.ingress.kubernetes.io/ssl-redirect: '443'
-    alb.ingress.kubernetes.io/healthcheck-path: /health
-    alb.ingress.kubernetes.io/healthcheck-interval-seconds: '30'
-    alb.ingress.kubernetes.io/healthcheck-timeout-seconds: '5'
-    alb.ingress.kubernetes.io/success-codes: '200'
-    alb.ingress.kubernetes.io/cors.enabled: 'true'
-    alb.ingress.kubernetes.io/cors.allow-origin: '*'
-    alb.ingress.kubernetes.io/cors.allow-methods: 'GET,POST,PUT,DELETE,OPTIONS'
-    alb.ingress.kubernetes.io/cors.allow-headers: 'DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization'
+    nginx.ingress.kubernetes.io/cors-allow-origin: '*'
+    nginx.ingress.kubernetes.io/cors-allow-methods: 'GET, POST, PUT, DELETE, OPTIONS'
+    nginx.ingress.kubernetes.io/cors-allow-headers: 'DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization'
+    nginx.ingress.kubernetes.io/cors-allow-credentials: 'true'
+    nginx.ingress.kubernetes.io/enable-cors: 'true'
+    nginx.ingress.kubernetes.io/proxy-body-size: '10m'
 spec:
-  ingressClassName: alb
+  ingressClassName: nginx
   rules:
-    # Default rule for ALB - no host restriction
     - http:
         paths:
-          # API routes
+          # API routes - should come first to match before frontend
           - path: /api
             pathType: Prefix
             backend:
@@ -30,7 +23,7 @@ spec:
                 name: api-gateway-service
                 port:
                   number: 3001
-          # Frontend routes (catch-all)
+          # Frontend routes (catch-all) - should come last
           - path: /
             pathType: Prefix
             backend:
