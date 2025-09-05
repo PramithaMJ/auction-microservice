@@ -7,7 +7,7 @@ metadata:
   labels:
     app: listings
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: listings
@@ -16,6 +16,8 @@ spec:
       labels:
         app: listings
     spec:
+      imagePullSecrets:
+      - name: dockerhub-secret
       containers:
       - name: listings
         image: pramithamj/auction-website-ms-listing:latest
@@ -111,20 +113,28 @@ spec:
           limits:
             memory: "512Mi"
             cpu: "250m"
+        startupProbe:
+          httpGet:
+            path: /healthcheck
+            port: 3103
+          failureThreshold: 30
+          periodSeconds: 10
         livenessProbe:
           httpGet:
             path: /healthcheck
             port: 3103
-          initialDelaySeconds: 30
-          periodSeconds: 10
-          failureThreshold: 3
+          initialDelaySeconds: 60
+          periodSeconds: 15
+          timeoutSeconds: 5
+          failureThreshold: 5
         readinessProbe:
           httpGet:
             path: /healthcheck
             port: 3103
-          initialDelaySeconds: 10
-          periodSeconds: 5
-          failureThreshold: 3
+          initialDelaySeconds: 45
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 6
 ---
 apiVersion: v1
 kind: Service
