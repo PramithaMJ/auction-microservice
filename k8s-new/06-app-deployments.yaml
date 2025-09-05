@@ -1,0 +1,1243 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-gateway
+  namespace: auction
+  labels:
+    app: auction-microservices
+    component: api-gateway
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: auction-microservices
+      component: api-gateway
+  template:
+    metadata:
+      labels:
+        app: auction-microservices
+        component: api-gateway
+    spec:
+      containers:
+      - name: api-gateway
+        image: pramithamj/auction-website-ms-api-gateway:latest
+        ports:
+        - containerPort: 3001
+        env:
+        - name: PORT
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: API_GATEWAY_PORT
+        - name: NODE_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: NODE_ENV
+        - name: AUTH_SERVICE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: AUTH_SERVICE_URL
+        - name: BID_SERVICE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: BID_SERVICE_URL
+        - name: LISTINGS_SERVICE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: LISTINGS_SERVICE_URL
+        - name: PAYMENTS_SERVICE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: PAYMENTS_SERVICE_URL
+        - name: PROFILE_SERVICE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: PROFILE_SERVICE_URL
+        - name: EMAIL_SERVICE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: EMAIL_SERVICE_URL
+        - name: SAGA_ORCHESTRATOR_URL
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: SAGA_ORCHESTRATOR_URL
+        - name: CORS_ORIGIN
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: CORS_ORIGIN
+        - name: JAEGER_ENDPOINT
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: JAEGER_ENDPOINT
+        - name: OTEL_SERVICE_NAME
+          value: "api-gateway"
+        - name: OTEL_RESOURCE_ATTRIBUTES
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: OTEL_RESOURCE_ATTRIBUTES
+        - name: OTEL_EXPORTER_JAEGER_ENDPOINT
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: OTEL_EXPORTER_JAEGER_ENDPOINT
+        - name: OTEL_TRACES_EXPORTER
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: OTEL_TRACES_EXPORTER
+        - name: OTEL_PROPAGATORS
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: OTEL_PROPAGATORS
+        - name: OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED
+        livenessProbe:
+          httpGet:
+            path: /api/health
+            port: 3001
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /api/health
+            port: 3001
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 5
+          failureThreshold: 3
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "200m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth
+  namespace: auction
+  labels:
+    app: auction-microservices
+    component: auth
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: auction-microservices
+      component: auth
+  template:
+    metadata:
+      labels:
+        app: auction-microservices
+        component: auth
+    spec:
+      containers:
+      - name: auth
+        image: pramithamj/auction-website-ms-auth:latest
+        ports:
+        - containerPort: 3101
+        env:
+        - name: PORT
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: AUTH_PORT
+        - name: NODE_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: NODE_ENV
+        - name: JWT_KEY
+          valueFrom:
+            secretKeyRef:
+              name: auction-secrets
+              key: JWT_KEY
+        - name: AUTH_MYSQL_URI
+          valueFrom:
+            secretKeyRef:
+              name: auction-secrets
+              key: AUTH_MYSQL_URI
+        - name: NATS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: NATS_URL
+        - name: NATS_CLUSTER_ID
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: NATS_CLUSTER_ID
+        - name: NATS_CLIENT_ID
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: NATS_CLIENT_ID_AUTH
+        - name: SAGA_ORCHESTRATOR_URL
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: SAGA_ORCHESTRATOR_URL
+        - name: JAEGER_ENDPOINT
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: JAEGER_ENDPOINT
+        - name: OTEL_SERVICE_NAME
+          value: "auth-service"
+        - name: OTEL_RESOURCE_ATTRIBUTES
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: OTEL_RESOURCE_ATTRIBUTES
+        - name: OTEL_EXPORTER_JAEGER_ENDPOINT
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: OTEL_EXPORTER_JAEGER_ENDPOINT
+        - name: OTEL_TRACES_EXPORTER
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: OTEL_TRACES_EXPORTER
+        - name: OTEL_PROPAGATORS
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: OTEL_PROPAGATORS
+        - name: OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED
+        livenessProbe:
+          httpGet:
+            path: /api/users/health
+            port: 3101
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /api/users/health
+            port: 3101
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 5
+          failureThreshold: 3
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "200m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bid
+  namespace: auction
+  labels:
+    app: auction-microservices
+    component: bid
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: auction-microservices
+      component: bid
+  template:
+    metadata:
+      labels:
+        app: auction-microservices
+        component: bid
+    spec:
+      containers:
+      - name: bid
+        image: pramithamj/auction-website-ms-bid:latest
+        ports:
+        - containerPort: 3102
+        env:
+        - name: PORT
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: BID_PORT
+        - name: NODE_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: NODE_ENV
+        - name: JWT_KEY
+          valueFrom:
+            secretKeyRef:
+              name: auction-secrets
+              key: JWT_KEY
+        - name: BID_MYSQL_URI
+          valueFrom:
+            secretKeyRef:
+              name: auction-secrets
+              key: BID_MYSQL_URI
+        - name: NATS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: NATS_URL
+        - name: NATS_CLUSTER_ID
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: NATS_CLUSTER_ID
+        - name: NATS_CLIENT_ID
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: NATS_CLIENT_ID_BID
+        - name: JAEGER_ENDPOINT
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: JAEGER_ENDPOINT
+        - name: OTEL_SERVICE_NAME
+          value: "bid-service"
+        - name: OTEL_RESOURCE_ATTRIBUTES
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: OTEL_RESOURCE_ATTRIBUTES
+        - name: OTEL_EXPORTER_JAEGER_ENDPOINT
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: OTEL_EXPORTER_JAEGER_ENDPOINT
+        - name: OTEL_TRACES_EXPORTER
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: OTEL_TRACES_EXPORTER
+        - name: OTEL_PROPAGATORS
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: OTEL_PROPAGATORS
+        - name: OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED
+        livenessProbe:
+          httpGet:
+            path: /api/bids/health
+            port: 3102
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /api/bids/health
+            port: 3102
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 5
+          failureThreshold: 3
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "200m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: listings
+  namespace: auction
+  labels:
+    app: auction-microservices
+    component: listings
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: auction-microservices
+      component: listings
+  template:
+    metadata:
+      labels:
+        app: auction-microservices
+        component: listings
+    spec:
+      containers:
+      - name: listings
+        image: pramithamj/auction-website-ms-listing:latest
+        ports:
+        - containerPort: 3103
+        env:
+        - name: PORT
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: LISTINGS_PORT
+        - name: NODE_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: NODE_ENV
+        - name: JWT_KEY
+          valueFrom:
+            secretKeyRef:
+              name: auction-secrets
+              key: JWT_KEY
+        - name: LISTINGS_MYSQL_URI
+          valueFrom:
+            secretKeyRef:
+              name: auction-secrets
+              key: LISTINGS_MYSQL_URI
+        - name: NATS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: NATS_URL
+        - name: NATS_CLUSTER_ID
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: NATS_CLUSTER_ID
+        - name: NATS_CLIENT_ID
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: NATS_CLIENT_ID_LISTINGS
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: auction-secrets
+              key: AWS_ACCESS_KEY_ID
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: auction-secrets
+              key: AWS_SECRET_ACCESS_KEY
+        - name: AWS_REGION
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: AWS_REGION
+        - name: AWS_S3_BUCKET_NAME
+          valueFrom:
+            secretKeyRef:
+              name: auction-secrets
+              key: AWS_S3_BUCKET_NAME
+        - name: JAEGER_ENDPOINT
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: JAEGER_ENDPOINT
+        - name: OTEL_SERVICE_NAME
+          value: "listings-service"
+        - name: OTEL_RESOURCE_ATTRIBUTES
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: OTEL_RESOURCE_ATTRIBUTES
+        - name: OTEL_EXPORTER_JAEGER_ENDPOINT
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: OTEL_EXPORTER_JAEGER_ENDPOINT
+        - name: OTEL_TRACES_EXPORTER
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: OTEL_TRACES_EXPORTER
+        - name: OTEL_PROPAGATORS
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: OTEL_PROPAGATORS
+        - name: OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED
+        livenessProbe:
+          httpGet:
+            path: /api/listings/health
+            port: 3103
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /api/listings/health
+            port: 3103
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 5
+          failureThreshold: 3
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "200m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payments
+  namespace: auction
+  labels:
+    app: auction-microservices
+    component: payments
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: auction-microservices
+      component: payments
+  template:
+    metadata:
+      labels:
+        app: auction-microservices
+        component: payments
+    spec:
+      containers:
+      - name: payments
+        image: pramithamj/auction-website-ms-payment:latest
+        ports:
+        - containerPort: 3104
+        env:
+        - name: PORT
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: PAYMENTS_PORT
+        - name: NODE_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: NODE_ENV
+        - name: JWT_KEY
+          valueFrom:
+            secretKeyRef:
+              name: auction-secrets
+              key: JWT_KEY
+        - name: PAYMENTS_MYSQL_URI
+          valueFrom:
+            secretKeyRef:
+              name: auction-secrets
+              key: PAYMENTS_MYSQL_URI
+        - name: NATS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: NATS_URL
+        - name: NATS_CLUSTER_ID
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: NATS_CLUSTER_ID
+        - name: NATS_CLIENT_ID
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: NATS_CLIENT_ID_PAYMENTS
+        - name: STRIPE_KEY
+          valueFrom:
+            secretKeyRef:
+              name: auction-secrets
+              key: STRIPE_SECRET_KEY
+        - name: JAEGER_ENDPOINT
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: JAEGER_ENDPOINT
+        - name: OTEL_SERVICE_NAME
+          value: "payments-service"
+        - name: OTEL_RESOURCE_ATTRIBUTES
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: OTEL_RESOURCE_ATTRIBUTES
+        - name: OTEL_EXPORTER_JAEGER_ENDPOINT
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: OTEL_EXPORTER_JAEGER_ENDPOINT
+        - name: OTEL_TRACES_EXPORTER
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: OTEL_TRACES_EXPORTER
+        - name: OTEL_PROPAGATORS
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: OTEL_PROPAGATORS
+        - name: OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED
+        livenessProbe:
+          httpGet:
+            path: /api/payments/health
+            port: 3104
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /api/payments/health
+            port: 3104
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 5
+          failureThreshold: 3
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "200m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: profile
+  namespace: auction
+  labels:
+    app: auction-microservices
+    component: profile
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: auction-microservices
+      component: profile
+  template:
+    metadata:
+      labels:
+        app: auction-microservices
+        component: profile
+    spec:
+      containers:
+      - name: profile
+        image: pramithamj/auction-website-ms-profile:latest
+        ports:
+        - containerPort: 3105
+        env:
+        - name: PORT
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: PROFILE_PORT
+        - name: NODE_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: NODE_ENV
+        - name: JWT_KEY
+          valueFrom:
+            secretKeyRef:
+              name: auction-secrets
+              key: JWT_KEY
+        - name: PROFILE_MYSQL_URI
+          valueFrom:
+            secretKeyRef:
+              name: auction-secrets
+              key: PROFILE_MYSQL_URI
+        - name: NATS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: NATS_URL
+        - name: NATS_CLUSTER_ID
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: NATS_CLUSTER_ID
+        - name: NATS_CLIENT_ID
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: NATS_CLIENT_ID_PROFILE
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: auction-secrets
+              key: AWS_ACCESS_KEY_ID
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: auction-secrets
+              key: AWS_SECRET_ACCESS_KEY
+        - name: AWS_REGION
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: AWS_REGION
+        - name: AWS_S3_BUCKET_NAME
+          valueFrom:
+            secretKeyRef:
+              name: auction-secrets
+              key: AWS_S3_BUCKET_NAME
+        - name: JAEGER_ENDPOINT
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: JAEGER_ENDPOINT
+        - name: OTEL_SERVICE_NAME
+          value: "profile-service"
+        - name: OTEL_RESOURCE_ATTRIBUTES
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: OTEL_RESOURCE_ATTRIBUTES
+        - name: OTEL_EXPORTER_JAEGER_ENDPOINT
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: OTEL_EXPORTER_JAEGER_ENDPOINT
+        - name: OTEL_TRACES_EXPORTER
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: OTEL_TRACES_EXPORTER
+        - name: OTEL_PROPAGATORS
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: OTEL_PROPAGATORS
+        - name: OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED
+        livenessProbe:
+          httpGet:
+            path: /api/profile/health
+            port: 3105
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /api/profile/health
+            port: 3105
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 5
+          failureThreshold: 3
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "200m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: email
+  namespace: auction
+  labels:
+    app: auction-microservices
+    component: email
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auction-microservices
+      component: email
+  template:
+    metadata:
+      labels:
+        app: auction-microservices
+        component: email
+    spec:
+      containers:
+      - name: email
+        image: pramithamj/auction-website-ms-email:latest
+        ports:
+        - containerPort: 3106
+        env:
+        - name: PORT
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: EMAIL_PORT
+        - name: NODE_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: NODE_ENV
+        - name: JWT_KEY
+          valueFrom:
+            secretKeyRef:
+              name: auction-secrets
+              key: JWT_KEY
+        - name: NATS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: NATS_URL
+        - name: NATS_CLUSTER_ID
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: NATS_CLUSTER_ID
+        - name: NATS_CLIENT_ID
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: NATS_CLIENT_ID_EMAIL
+        - name: EMAIL
+          valueFrom:
+            secretKeyRef:
+              name: auction-secrets
+              key: EMAIL
+        - name: EMAIL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: auction-secrets
+              key: EMAIL_PASSWORD
+        - name: AUTH_SERVICE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: AUTH_SERVICE_URL
+        - name: LISTINGS_SERVICE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: LISTINGS_SERVICE_URL
+        - name: FRONTEND_URL
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: FRONTEND_URL
+        - name: JAEGER_ENDPOINT
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: JAEGER_ENDPOINT
+        - name: OTEL_SERVICE_NAME
+          value: "email-service"
+        - name: OTEL_RESOURCE_ATTRIBUTES
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: OTEL_RESOURCE_ATTRIBUTES
+        - name: OTEL_EXPORTER_JAEGER_ENDPOINT
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: OTEL_EXPORTER_JAEGER_ENDPOINT
+        - name: OTEL_TRACES_EXPORTER
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: OTEL_TRACES_EXPORTER
+        - name: OTEL_PROPAGATORS
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: OTEL_PROPAGATORS
+        - name: OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED
+        livenessProbe:
+          httpGet:
+            path: /api/email/health
+            port: 3106
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /api/email/health
+            port: 3106
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 5
+          failureThreshold: 3
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: saga-orchestrator
+  namespace: auction
+  labels:
+    app: auction-microservices
+    component: saga-orchestrator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auction-microservices
+      component: saga-orchestrator
+  template:
+    metadata:
+      labels:
+        app: auction-microservices
+        component: saga-orchestrator
+    spec:
+      containers:
+      - name: saga-orchestrator
+        image: pramithamj/auction-website-ms-saga-orchestrator:latest
+        ports:
+        - containerPort: 3108
+        env:
+        - name: PORT
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: SAGA_ORCHESTRATOR_PORT
+        - name: NODE_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: NODE_ENV
+        - name: JWT_KEY
+          valueFrom:
+            secretKeyRef:
+              name: auction-secrets
+              key: JWT_KEY
+        - name: NATS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: NATS_URL
+        - name: NATS_CLUSTER_ID
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: NATS_CLUSTER_ID
+        - name: NATS_CLIENT_ID
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: NATS_CLIENT_ID_SAGA
+        - name: REDIS_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: REDIS_HOST
+        - name: REDIS_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: REDIS_PORT
+        - name: REDIS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: REDIS_URL
+        - name: JAEGER_ENDPOINT
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: JAEGER_ENDPOINT
+        - name: OTEL_SERVICE_NAME
+          value: "saga-orchestrator-service"
+        - name: OTEL_RESOURCE_ATTRIBUTES
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: OTEL_RESOURCE_ATTRIBUTES
+        - name: OTEL_EXPORTER_JAEGER_ENDPOINT
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: OTEL_EXPORTER_JAEGER_ENDPOINT
+        - name: OTEL_TRACES_EXPORTER
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: OTEL_TRACES_EXPORTER
+        - name: OTEL_PROPAGATORS
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: OTEL_PROPAGATORS
+        - name: OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED
+        livenessProbe:
+          httpGet:
+            path: /api/saga/health
+            port: 3108
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /api/saga/health
+            port: 3108
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 5
+          failureThreshold: 3
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: expiration
+  namespace: auction
+  labels:
+    app: auction-microservices
+    component: expiration
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auction-microservices
+      component: expiration
+  template:
+    metadata:
+      labels:
+        app: auction-microservices
+        component: expiration
+    spec:
+      containers:
+      - name: expiration
+        image: pramithamj/auction-website-ms-expiration:latest
+        ports:
+        - containerPort: 3107
+        env:
+        - name: PORT
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: EXPIRATION_PORT
+        - name: NODE_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: NODE_ENV
+        - name: JWT_KEY
+          valueFrom:
+            secretKeyRef:
+              name: auction-secrets
+              key: JWT_KEY
+        - name: NATS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: NATS_URL
+        - name: NATS_CLUSTER_ID
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: NATS_CLUSTER_ID
+        - name: NATS_CLIENT_ID
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: NATS_CLIENT_ID_EXPIRATION
+        - name: REDIS_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: REDIS_HOST
+        - name: REDIS_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: REDIS_PORT
+        - name: JAEGER_ENDPOINT
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: JAEGER_ENDPOINT
+        - name: OTEL_SERVICE_NAME
+          value: "expiration-service"
+        - name: OTEL_RESOURCE_ATTRIBUTES
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: OTEL_RESOURCE_ATTRIBUTES
+        - name: OTEL_EXPORTER_JAEGER_ENDPOINT
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: OTEL_EXPORTER_JAEGER_ENDPOINT
+        - name: OTEL_TRACES_EXPORTER
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: OTEL_TRACES_EXPORTER
+        - name: OTEL_PROPAGATORS
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: OTEL_PROPAGATORS
+        - name: OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED
+        livenessProbe:
+          httpGet:
+            path: /api/expiration/health
+            port: 3107
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /api/expiration/health
+            port: 3107
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 5
+          failureThreshold: 3
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: auction
+  labels:
+    app: auction-microservices
+    component: frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: auction-microservices
+      component: frontend
+  template:
+    metadata:
+      labels:
+        app: auction-microservices
+        component: frontend
+    spec:
+      containers:
+      - name: frontend
+        image: pramithamj/auction-website-ms-frontend:latest
+        ports:
+        - containerPort: 3000
+        env:
+        - name: NODE_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: NODE_ENV
+        - name: NEXT_PUBLIC_API_URL
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: NEXT_PUBLIC_API_URL
+        - name: NEXT_PUBLIC_API_GATEWAY_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: NEXT_PUBLIC_API_GATEWAY_PORT
+        - name: SERVER_API_URL
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: SERVER_API_URL
+        - name: NEXT_PUBLIC_SERVER_IP
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: NEXT_PUBLIC_SERVER_IP
+        - name: NEXT_PUBLIC_LISTINGS_SOCKET_URL
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: NEXT_PUBLIC_LISTINGS_SOCKET_URL
+        - name: NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+          valueFrom:
+            secretKeyRef:
+              name: auction-secrets
+              key: NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+        - name: WATCHPACK_POLLING
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: WATCHPACK_POLLING
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 5
+          failureThreshold: 3
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "300m"
+          limits:
+            memory: "1Gi"
+            cpu: "600m"
+---

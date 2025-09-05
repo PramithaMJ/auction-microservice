@@ -1,0 +1,395 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-mysql
+  namespace: auction
+  labels:
+    app: auction-microservices
+    component: auth-mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auction-microservices
+      component: auth-mysql
+  template:
+    metadata:
+      labels:
+        app: auction-microservices
+        component: auth-mysql
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:8.0
+        ports:
+        - containerPort: 3306
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: auction-secrets
+              key: MYSQL_ROOT_PASSWORD
+        - name: MYSQL_DATABASE
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: MYSQL_DATABASE
+        volumeMounts:
+        - name: mysql-storage
+          mountPath: /var/lib/mysql
+        livenessProbe:
+          exec:
+            command:
+            - mysqladmin
+            - ping
+            - -h
+            - localhost
+            - -u
+            - root
+            - -p$(MYSQL_ROOT_PASSWORD)
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 5
+        readinessProbe:
+          exec:
+            command:
+            - mysqladmin
+            - ping
+            - -h
+            - localhost
+            - -u
+            - root
+            - -p$(MYSQL_ROOT_PASSWORD)
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 5
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+      volumes:
+      - name: mysql-storage
+        persistentVolumeClaim:
+          claimName: auth-mysql-pvc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bid-mysql
+  namespace: auction
+  labels:
+    app: auction-microservices
+    component: bid-mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auction-microservices
+      component: bid-mysql
+  template:
+    metadata:
+      labels:
+        app: auction-microservices
+        component: bid-mysql
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:8.0
+        ports:
+        - containerPort: 3306
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: auction-secrets
+              key: MYSQL_ROOT_PASSWORD
+        - name: MYSQL_DATABASE
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: BID_MYSQL_DATABASE
+        volumeMounts:
+        - name: mysql-storage
+          mountPath: /var/lib/mysql
+        livenessProbe:
+          exec:
+            command:
+            - mysqladmin
+            - ping
+            - -h
+            - localhost
+            - -u
+            - root
+            - -p$(MYSQL_ROOT_PASSWORD)
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 5
+        readinessProbe:
+          exec:
+            command:
+            - mysqladmin
+            - ping
+            - -h
+            - localhost
+            - -u
+            - root
+            - -p$(MYSQL_ROOT_PASSWORD)
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 5
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+      volumes:
+      - name: mysql-storage
+        persistentVolumeClaim:
+          claimName: bid-mysql-pvc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: listings-mysql
+  namespace: auction
+  labels:
+    app: auction-microservices
+    component: listings-mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auction-microservices
+      component: listings-mysql
+  template:
+    metadata:
+      labels:
+        app: auction-microservices
+        component: listings-mysql
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:8.0
+        ports:
+        - containerPort: 3306
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: auction-secrets
+              key: MYSQL_ROOT_PASSWORD
+        - name: MYSQL_DATABASE
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: LISTINGS_MYSQL_DATABASE
+        volumeMounts:
+        - name: mysql-storage
+          mountPath: /var/lib/mysql
+        livenessProbe:
+          exec:
+            command:
+            - mysqladmin
+            - ping
+            - -h
+            - localhost
+            - -u
+            - root
+            - -p$(MYSQL_ROOT_PASSWORD)
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 5
+        readinessProbe:
+          exec:
+            command:
+            - mysqladmin
+            - ping
+            - -h
+            - localhost
+            - -u
+            - root
+            - -p$(MYSQL_ROOT_PASSWORD)
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 5
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+      volumes:
+      - name: mysql-storage
+        persistentVolumeClaim:
+          claimName: listings-mysql-pvc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payments-mysql
+  namespace: auction
+  labels:
+    app: auction-microservices
+    component: payments-mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auction-microservices
+      component: payments-mysql
+  template:
+    metadata:
+      labels:
+        app: auction-microservices
+        component: payments-mysql
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:8.0
+        ports:
+        - containerPort: 3306
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: auction-secrets
+              key: MYSQL_ROOT_PASSWORD
+        - name: MYSQL_DATABASE
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: PAYMENTS_MYSQL_DATABASE
+        volumeMounts:
+        - name: mysql-storage
+          mountPath: /var/lib/mysql
+        livenessProbe:
+          exec:
+            command:
+            - mysqladmin
+            - ping
+            - -h
+            - localhost
+            - -u
+            - root
+            - -p$(MYSQL_ROOT_PASSWORD)
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 5
+        readinessProbe:
+          exec:
+            command:
+            - mysqladmin
+            - ping
+            - -h
+            - localhost
+            - -u
+            - root
+            - -p$(MYSQL_ROOT_PASSWORD)
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 5
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+      volumes:
+      - name: mysql-storage
+        persistentVolumeClaim:
+          claimName: payments-mysql-pvc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: profile-mysql
+  namespace: auction
+  labels:
+    app: auction-microservices
+    component: profile-mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auction-microservices
+      component: profile-mysql
+  template:
+    metadata:
+      labels:
+        app: auction-microservices
+        component: profile-mysql
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:8.0
+        ports:
+        - containerPort: 3306
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: auction-secrets
+              key: MYSQL_ROOT_PASSWORD
+        - name: MYSQL_DATABASE
+          valueFrom:
+            configMapKeyRef:
+              name: auction-config
+              key: PROFILE_MYSQL_DATABASE
+        volumeMounts:
+        - name: mysql-storage
+          mountPath: /var/lib/mysql
+        livenessProbe:
+          exec:
+            command:
+            - mysqladmin
+            - ping
+            - -h
+            - localhost
+            - -u
+            - root
+            - -p$(MYSQL_ROOT_PASSWORD)
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 5
+        readinessProbe:
+          exec:
+            command:
+            - mysqladmin
+            - ping
+            - -h
+            - localhost
+            - -u
+            - root
+            - -p$(MYSQL_ROOT_PASSWORD)
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 5
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+      volumes:
+      - name: mysql-storage
+        persistentVolumeClaim:
+          claimName: profile-mysql-pvc
+---
