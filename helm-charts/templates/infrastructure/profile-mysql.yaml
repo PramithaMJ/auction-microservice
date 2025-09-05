@@ -1,0 +1,65 @@
+{{- if .Values.infrastructure.mysql.enabled }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: profile-mysql
+  namespace: {{ .Values.namespace }}
+spec:
+  serviceName: profile-mysql
+  replicas: 1
+  selector:
+    matchLabels:
+      app: profile-mysql
+  template:
+    metadata:
+      labels:
+        app: profile-mysql
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:5.7
+          ports:
+            - containerPort: 3306
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: {{ .Values.infrastructure.mysql.auth.rootPassword }}
+            - name: MYSQL_DATABASE
+              value: {{ .Values.services.profile.database.name }}
+          volumeMounts:
+            - name: mysql-persistent-storage
+              mountPath: /var/lib/mysql
+            - name: mysql-initdb
+              mountPath: /docker-entrypoint-initdb.d
+      volumes:
+        - name: mysql-persistent-storage
+          persistentVolumeClaim:
+            claimName: profile-mysql-pvc
+        - name: mysql-initdb
+          configMap:
+            name: mysql-init-scripts
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: profile-mysql-pvc
+  namespace: {{ .Values.namespace }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: {{ .Values.infrastructure.mysql.storageClass }}
+  resources:
+    requests:
+      storage: {{ .Values.infrastructure.mysql.storage }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: profile-mysql
+  namespace: {{ .Values.namespace }}
+spec:
+  ports:
+    - port: 3306
+  selector:
+    app: profile-mysql
+  clusterIP: None
+{{- end }}

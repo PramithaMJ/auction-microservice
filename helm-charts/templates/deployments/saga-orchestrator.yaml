@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.services.sagaOrchestrator.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.services.sagaOrchestrator.name }}
+    {{- include "auction.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.services.sagaOrchestrator.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.services.sagaOrchestrator.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.services.sagaOrchestrator.name }}
+    spec:
+      containers:
+        - name: {{ .Values.services.sagaOrchestrator.name }}
+          image: "{{ .Values.global.imageRegistry }}/{{ .Values.services.sagaOrchestrator.image.repository }}:{{ .Values.services.sagaOrchestrator.image.tag }}"
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          ports:
+            - containerPort: 3000
+          env:
+            {{- if .Values.infrastructure.nats.enabled }}
+            - name: NATS_URL
+              value: "nats://nats-streaming:4222"
+            {{- end }}
+          envFrom:
+            - configMapRef:
+                name: auction-config

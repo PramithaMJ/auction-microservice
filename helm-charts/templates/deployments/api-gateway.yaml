@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.services.apiGateway.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.services.apiGateway.name }}
+    {{- with .Values.commonLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  replicas: {{ .Values.services.apiGateway.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.services.apiGateway.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.services.apiGateway.name }}
+    spec:
+      containers:
+        - name: {{ .Values.services.apiGateway.name }}
+          image: "{{ .Values.global.imageRegistry }}/{{ .Values.services.apiGateway.image.repository }}:{{ .Values.services.apiGateway.image.tag }}"
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          ports:
+            - containerPort: 3000
+          resources:
+            {{- toYaml .Values.services.apiGateway.resources | nindent 12 }}
+          env:
+            - name: NODE_ENV
+              value: {{ .Values.global.environment }}
+            {{- if .Values.infrastructure.nats.enabled }}
+            - name: NATS_URL
+              value: "nats://nats-streaming:4222"
+            {{- end }}

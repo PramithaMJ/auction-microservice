@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.services.frontend.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.services.frontend.name }}
+    {{- include "auction.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.services.frontend.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.services.frontend.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.services.frontend.name }}
+    spec:
+      containers:
+        - name: {{ .Values.services.frontend.name }}
+          image: "{{ .Values.global.imageRegistry }}/{{ .Values.services.frontend.image.repository }}:{{ .Values.services.frontend.image.tag }}"
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          ports:
+            - containerPort: 3000
+          env:
+            - name: NEXT_PUBLIC_API_URL
+              value: "http://{{ .Values.services.apiGateway.name }}:3000"
+          envFrom:
+            - configMapRef:
+                name: auction-config

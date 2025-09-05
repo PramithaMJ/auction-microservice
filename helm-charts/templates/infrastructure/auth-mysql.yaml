@@ -1,0 +1,60 @@
+{{- if .Values.infrastructure.mysql.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-pvc
+  namespace: {{ .Values.namespace }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: {{ .Values.infrastructure.mysql.storageClass }}
+  resources:
+    requests:
+      storage: {{ .Values.infrastructure.mysql.storage }}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: auth-mysql
+  namespace: {{ .Values.namespace }}
+spec:
+  serviceName: auth-mysql
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth-mysql
+  template:
+    metadata:
+      labels:
+        app: auth-mysql
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:5.7
+          ports:
+            - containerPort: 3306
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: {{ .Values.infrastructure.mysql.auth.rootPassword }}
+            - name: MYSQL_DATABASE
+              value: {{ .Values.services.auth.database.name }}
+          volumeMounts:
+            - name: mysql-persistent-storage
+              mountPath: /var/lib/mysql
+      volumes:
+        - name: mysql-persistent-storage
+          persistentVolumeClaim:
+            claimName: mysql-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-mysql
+  namespace: {{ .Values.namespace }}
+spec:
+  ports:
+    - port: 3306
+  selector:
+    app: auth-mysql
+  clusterIP: None
+{{- end }}

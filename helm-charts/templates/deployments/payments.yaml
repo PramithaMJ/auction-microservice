@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.services.payments.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.services.payments.name }}
+    {{- include "auction.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.services.payments.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.services.payments.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.services.payments.name }}
+    spec:
+      containers:
+        - name: {{ .Values.services.payments.name }}
+          image: "{{ .Values.global.imageRegistry }}/{{ .Values.services.payments.image.repository }}:{{ .Values.services.payments.image.tag }}"
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          ports:
+            - containerPort: 3000
+          env:
+            - name: MYSQL_HOST
+              value: {{ .Values.services.payments.database.host }}
+            - name: MYSQL_DATABASE
+              value: {{ .Values.services.payments.database.name }}
+            - name: MYSQL_PORT
+              value: "{{ .Values.services.payments.database.port }}"
+            {{- if .Values.services.payments.stripe }}
+            - name: STRIPE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: auction-secrets
+                  key: stripe-key
+            {{- end }}
+          envFrom:
+            - configMapRef:
+                name: auction-config

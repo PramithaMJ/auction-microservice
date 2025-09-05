@@ -1,0 +1,22 @@
+{{- range $key, $service := .Values.services }}
+{{- if not (eq $key "frontend") }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $service.name }}
+  namespace: {{ $.Values.namespace }}
+  labels:
+    app: {{ $service.name }}
+    {{- include "auction.labels" $ | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: 3000
+      targetPort: 3000
+      protocol: TCP
+      name: http
+  selector:
+    app: {{ $service.name }}
+{{- end }}
+{{- end }}
