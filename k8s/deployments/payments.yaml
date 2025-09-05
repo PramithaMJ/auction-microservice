@@ -78,13 +78,13 @@ spec:
           limits:
             memory: "1Gi"
             cpu: "250m"
-        startupProbe:
-          httpGet:
-            path: /health
-            port: 3104
-          failureThreshold: 60
-          periodSeconds: 5
-          timeoutSeconds: 10
+        # startupProbe:
+        #   httpGet:
+        #     path: /health
+        #     port: 3104
+        #   failureThreshold: 60
+        #   periodSeconds: 5
+        #   timeoutSeconds: 10
         livenessProbe:
           httpGet:
             path: /health
