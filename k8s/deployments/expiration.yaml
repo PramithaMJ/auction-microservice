@@ -16,6 +16,8 @@ spec:
       labels:
         app: expiration
     spec:
+      imagePullSecrets:
+      - name: dockerhub-secret
       containers:
       - name: expiration
         image: pramithamj/auction-website-ms-expiration:latest
@@ -71,26 +73,34 @@ spec:
               key: OTEL_RESOURCE_ATTRIBUTES
         resources:
           requests:
-            memory: "128Mi"
+            memory: "256Mi"
             cpu: "50m"
           limits:
-            memory: "256Mi"
+            memory: "512Mi"
             cpu: "100m"
-        # Disable health checks temporarily
-        # livenessProbe:
-        #   httpGet:
-        #     path: /health
-        #     port: 3107
-        #   initialDelaySeconds: 30
-        #   periodSeconds: 10
-        #   failureThreshold: 3
-        # readinessProbe:
-        #   httpGet:
-        #     path: /ready
-        #     port: 3107
-        #   initialDelaySeconds: 10
-        #   periodSeconds: 5
-        #   failureThreshold: 3
+        startupProbe:
+          httpGet:
+            path: /health
+            port: 3107
+          failureThreshold: 60
+          periodSeconds: 5
+          timeoutSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3107
+          initialDelaySeconds: 90
+          periodSeconds: 15
+          timeoutSeconds: 10
+          failureThreshold: 6
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 3107
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          timeoutSeconds: 10
+          failureThreshold: 8
 ---
 apiVersion: v1
 kind: Service
