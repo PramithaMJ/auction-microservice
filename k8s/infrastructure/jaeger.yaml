@@ -132,6 +132,23 @@ spec:
     app: jaeger
 
 ---
+# Jaeger PVC for persistent storage
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: jaeger-pvc
+  namespace: auction-infrastructure
+  annotations:
+    volume.beta.kubernetes.io/storage-class: auction-storage
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: auction-storage
+  resources:
+    requests:
+      storage: 20Gi
+
+---
 # Jaeger UI Service (NodePort for external access)
 apiVersion: v1
 kind: Service
