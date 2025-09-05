@@ -1,8 +1,0 @@
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: auction
-  labels:
-    name: auction
-    app: auction-microservices
----
