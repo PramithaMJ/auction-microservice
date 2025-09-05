@@ -86,7 +86,7 @@ spec:
           claimName: profile-mysql-pvc
       - name: init-scripts
         configMap:
-          name: mysql-init-scripts
+          name: profile-mysql-init
 ---
 apiVersion: v1
 kind: Service

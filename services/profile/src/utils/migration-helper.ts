@@ -5,6 +5,13 @@ export const addImageIdColumnToProfiles = async (): Promise<void> => {
   const queryInterface = db.getQueryInterface();
   
   try {
+    // Check if the profiles table exists
+    const tables = await queryInterface.showAllTables();
+    if (!tables.includes('profiles')) {
+      console.log('Profiles table does not exist yet, skipping column addition');
+      return;
+    }
+    
     // Check if the imageId column already exists
     const tableDescription = await queryInterface.describeTable('profiles');
     

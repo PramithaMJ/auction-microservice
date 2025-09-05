@@ -5,11 +5,15 @@ metadata:
   namespace: auction-system
   labels:
     app: frontend
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+    service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
 spec:
   selector:
     app: frontend
   ports:
   - port: 3000
     targetPort: 3000
+    nodePort: 30000
     name: http
-  type: LoadBalancer
+  type: NodePort

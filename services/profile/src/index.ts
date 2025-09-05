@@ -47,13 +47,12 @@ import { addImageIdColumnToProfiles } from './utils/migration-helper';
     process.on('SIGTERM', () => natsWrapper.client.close());
 
     await db.authenticate();
-    
-    // Ensure imageId column exists in profiles table
-    await addImageIdColumnToProfiles();
-    
     await db.sync();
     console.log('Conneted to MySQL');
 
+    // Ensure imageId column exists in profiles table
+    await addImageIdColumnToProfiles();
+    
     const port = process.env.PORT || 3105;
     app.listen(port, () => console.log(`Listening on port ${port}!`));
 
