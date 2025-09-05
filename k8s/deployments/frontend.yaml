@@ -16,6 +16,8 @@ spec:
       labels:
         app: frontend
     spec:
+      imagePullSecrets:
+      - name: dockerhub-secret
       containers:
       - name: frontend
         image: pramithamj/auction-website-ms-frontend:latest
