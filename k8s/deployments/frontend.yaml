@@ -64,13 +64,7 @@ spec:
             configMapKeyRef:
               name: frontend-config
               key: NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
-        resources:
-          requests:
-            memory: "4Gi"
-            cpu: "800m"
-          limits:
-            memory: "5Gi"
-            cpu: "900m"
+
         # Disable health checks temporarily
         # livenessProbe:
         #   httpGet:
