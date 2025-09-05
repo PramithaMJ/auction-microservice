@@ -22,7 +22,7 @@ spec:
   - host: a3076e6756f904120b9fb64a871ab910-829987256.us-east-2.elb.amazonaws.com
     http:
       paths:
-      - path: /
+      - path: /api
         pathType: Prefix
         backend:
           service:
