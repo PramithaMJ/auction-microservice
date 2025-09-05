@@ -1,26 +1,10 @@
 apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: redis-pv
-  namespace: auction-infrastructure
-  labels:
-    type: local
-spec:
-  storageClassName: standard
-  capacity:
-    storage: 1Gi
-  accessModes:
-    - ReadWriteOnce
-  hostPath:
-    path: "/mnt/data/redis"
----
-apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: redis-pvc
   namespace: auction-infrastructure
 spec:
-  storageClassName: standard
+  storageClassName: gp2
   accessModes:
     - ReadWriteOnce
   resources:
