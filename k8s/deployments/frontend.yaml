@@ -7,7 +7,7 @@ metadata:
   labels:
     app: frontend
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: frontend
@@ -66,11 +66,11 @@ spec:
               key: NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
         resources:
           requests:
-            memory: "512Mi"
-            cpu: "200m"
+            memory: "4Gi"
+            cpu: "800m"
           limits:
-            memory: "1Gi"
-            cpu: "500m"
+            memory: "5Gi"
+            cpu: "900m"
         # Disable health checks temporarily
         # livenessProbe:
         #   httpGet:

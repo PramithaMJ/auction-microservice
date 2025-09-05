@@ -7,7 +7,7 @@ metadata:
   labels:
     app: profile
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: profile
@@ -68,11 +68,11 @@ spec:
               key: OTEL_RESOURCE_ATTRIBUTES
         resources:
           requests:
-            memory: "1Gi"
-            cpu: "100m"
-          limits:
             memory: "2Gi"
-            cpu: "250m"
+            cpu: "500m"
+          limits:
+            memory: "3Gi"
+            cpu: "600m"
         # startupProbe:
         #   httpGet:
         #     path: /health
