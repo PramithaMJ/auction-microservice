@@ -10,12 +10,30 @@ metadata:
     nginx.ingress.kubernetes.io/cors-allow-credentials: 'true'
     nginx.ingress.kubernetes.io/enable-cors: 'true'
     nginx.ingress.kubernetes.io/proxy-body-size: '10m'
+    # Next.js specific configurations
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: '60'
+    nginx.ingress.kubernetes.io/proxy-send-timeout: '60'
+    nginx.ingress.kubernetes.io/proxy-read-timeout: '60'
+    nginx.ingress.kubernetes.io/proxy-buffering: 'off'
+    # Handle Next.js routing
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      proxy_set_header Accept-Encoding "";
+      more_set_headers "X-Frame-Options: SAMEORIGIN";
+      more_set_headers "X-Content-Type-Options: nosniff";
 spec:
   ingressClassName: nginx
   rules:
     - http:
         paths:
-          # API routes - should come first to match before frontend
+          # Next.js static files
+          - path: /_next
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend-service
+                port:
+                  number: 3000
+          # API routes - should come after _next but before /
           - path: /api
             pathType: Prefix
             backend:
