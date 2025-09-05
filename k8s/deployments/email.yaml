@@ -94,14 +94,14 @@ spec:
         #     port: 3106
         #   failureThreshold: 30
         #   periodSeconds: 10
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 3106
-          initialDelaySeconds: 60
-          periodSeconds: 15
-          timeoutSeconds: 5
-          failureThreshold: 5
+        # livenessProbe:
+        #   httpGet:
+        #     path: /health
+        #     port: 3106
+        #   initialDelaySeconds: 60
+        #   periodSeconds: 15
+        #   timeoutSeconds: 5
+        #   failureThreshold: 5
         # readinessProbe:
         #   httpGet:
         #     path: /ready
