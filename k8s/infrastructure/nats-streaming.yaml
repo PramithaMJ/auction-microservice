@@ -45,6 +45,29 @@ spec:
           limits:
             memory: "512Mi"
             cpu: "200m"
+        volumeMounts:
+        - name: nats-data
+          mountPath: /data
+      volumes:
+      - name: nats-data
+        persistentVolumeClaim:
+          claimName: nats-streaming-pvc
+      securityContext:
+        fsGroup: 999
+      nodeSelector:
+        kubernetes.io/os: linux
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - nats-streaming
+              topologyKey: kubernetes.io/hostname
 ---
 apiVersion: v1
 kind: Service
@@ -62,3 +85,18 @@ spec:
     port: 8222
     targetPort: 8222
   type: ClusterIP
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nats-streaming-pvc
+  namespace: auction-infrastructure
+  annotations:
+    volume.beta.kubernetes.io/storage-class: auction-storage
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: auction-storage
+  resources:
+    requests:
+      storage: 10Gi

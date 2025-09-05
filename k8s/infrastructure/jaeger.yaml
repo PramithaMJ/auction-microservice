@@ -40,9 +40,18 @@ spec:
         - name: COLLECTOR_ZIPKIN_HOST_PORT
           value: ":9411"
         - name: SPAN_STORAGE_TYPE
-          value: "memory"
+          value: "badger"
+        - name: BADGER_EPHEMERAL
+          value: "false"
+        - name: BADGER_DIRECTORY_VALUE
+          value: "/badger/data"
+        - name: BADGER_DIRECTORY_KEY
+          value: "/badger/key"
         - name: JAEGER_DISABLED
           value: "false"
+        volumeMounts:
+        - name: jaeger-data
+          mountPath: /badger
         resources:
           requests:
             memory: "256Mi"
@@ -66,6 +75,26 @@ spec:
           periodSeconds: 5
           timeoutSeconds: 3
           failureThreshold: 3
+      volumes:
+      - name: jaeger-data
+        persistentVolumeClaim:
+          claimName: jaeger-pvc
+      securityContext:
+        fsGroup: 1000
+      nodeSelector:
+        kubernetes.io/os: linux
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - jaeger
+              topologyKey: kubernetes.io/hostname
 
 ---
 # Jaeger Service

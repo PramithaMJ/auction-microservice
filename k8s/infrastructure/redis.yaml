@@ -1,20 +1,11 @@
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: redis-pvc
-  namespace: auction-infrastructure
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 1Gi
----
+# Redis
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: redis
   namespace: auction-infrastructure
+  labels:
+    app: redis
 spec:
   replicas: 1
   selector:
@@ -27,24 +18,59 @@ spec:
     spec:
       containers:
       - name: redis
-        image: redis:6.2-alpine
+        image: redis:7-alpine
         ports:
         - containerPort: 6379
+        command: ["redis-server"]
+        args: ["--appendonly", "yes"]
         volumeMounts:
-        - name: redis-persistent-storage
+        - name: redis-data
           mountPath: /data
         resources:
           requests:
             memory: "128Mi"
-            cpu: "100m"
+            cpu: "50m"
           limits:
             memory: "256Mi"
-            cpu: "200m"
-        args: ["--appendonly", "yes"]  # Enable persistence
+            cpu: "100m"
+        livenessProbe:
+          exec:
+            command:
+            - redis-cli
+            - ping
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 5
+        readinessProbe:
+          exec:
+            command:
+            - redis-cli
+            - ping
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 5
+          failureThreshold: 3
       volumes:
-      - name: redis-persistent-storage
+      - name: redis-data
         persistentVolumeClaim:
           claimName: redis-pvc
+      securityContext:
+        fsGroup: 1000  # redis user
+      nodeSelector:
+        kubernetes.io/os: linux
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - redis
+              topologyKey: kubernetes.io/hostname
 ---
 apiVersion: v1
 kind: Service
@@ -58,3 +84,18 @@ spec:
   - port: 6379
     targetPort: 6379
   type: ClusterIP
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: redis-pvc
+  namespace: auction-infrastructure
+  annotations:
+    volume.beta.kubernetes.io/storage-class: auction-storage
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: auction-storage
+  resources:
+    requests:
+      storage: 10Gi
