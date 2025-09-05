@@ -81,6 +81,8 @@ spec:
           claimName: jaeger-pvc
       securityContext:
         fsGroup: 1000
+      imagePullSecrets:
+      - name: dockerhub-secret
       nodeSelector:
         kubernetes.io/os: linux
       affinity:

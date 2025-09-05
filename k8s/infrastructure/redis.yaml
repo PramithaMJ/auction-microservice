@@ -57,6 +57,8 @@ spec:
           claimName: redis-pvc
       securityContext:
         fsGroup: 1000  # redis user
+      imagePullSecrets:
+      - name: dockerhub-secret
       nodeSelector:
         kubernetes.io/os: linux
       affinity:

@@ -54,6 +54,8 @@ spec:
           claimName: nats-streaming-pvc
       securityContext:
         fsGroup: 999
+      imagePullSecrets:
+      - name: dockerhub-secret
       nodeSelector:
         kubernetes.io/os: linux
       affinity:
