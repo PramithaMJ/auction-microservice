@@ -1,4 +1,4 @@
-# User Registration Saga Implementation Guide
+# User Registration Saga Implementation
 
 ## Overview
 
@@ -7,12 +7,14 @@ The User Registration Saga implements a distributed transaction pattern that coo
 ## Architecture
 
 ### Saga Orchestration Pattern
+
 - **Orchestrator**: Centralized saga coordinator service
 - **Participants**: Auth, Profile, and Email services
 - **State Management**: Redis for saga state persistence
 - **Communication**: NATS messaging with circuit breaker protection
 
 ### Saga Flow
+
 ```
 User Signup Request → Auth Service → Saga Orchestrator
                                            ↓
@@ -27,12 +29,13 @@ User Signup Request → Auth Service → Saga Orchestrator
 
 ## Services and Ports
 
-| Service | Port | Purpose |
-|---------|------|---------|
-| Auth Service | 3100 | User account management |
-| Profile Service | 3103 | User profile management |
-| Email Service | 3106 | Email notifications |
-| Saga Orchestrator | 3107 | Saga coordination |
+
+| Service           | Port | Purpose                 |
+| ----------------- | ---- | ----------------------- |
+| Auth Service      | 3100 | User account management |
+| Profile Service   | 3103 | User profile management |
+| Email Service     | 3106 | Email notifications     |
+| Saga Orchestrator | 3107 | Saga coordination       |
 
 ## Implementation Details
 
@@ -64,12 +67,14 @@ enum UserRegistrationSagaState {
 ### 2. Saga Orchestrator Service
 
 **Key Components:**
+
 - **SagaStateManager**: Redis-based state persistence
 - **UserRegistrationSagaOrchestrator**: Main coordination logic
 - **Event Listeners**: Handle saga step completions
 - **REST API**: Manual saga management endpoints
 
 **State Management:**
+
 ```typescript
 interface SagaState {
   sagaId: string;
@@ -85,6 +90,7 @@ interface SagaState {
 ```
 
 **Compensation Logic:**
+
 - **Account Deletion**: Removes user account if profile creation fails
 - **Profile Cleanup**: Removes profile if email sending fails
 - **Automatic Rollback**: Triggered when any step fails
@@ -92,16 +98,19 @@ interface SagaState {
 ### 3. Service Modifications
 
 #### Auth Service
+
 - **Saga Integration**: Calls saga orchestrator before publishing events
 - **Event Publishing**: Publishes UserAccountCreated with saga context
 - **Rollback Handler**: Listens for account deletion commands
 
 #### Profile Service
+
 - **Saga Listener**: Responds to UserAccountCreated saga events
 - **Profile Creation**: Creates user profile and publishes ProfileCreated
 - **Compensation**: Handles profile deletion requests
 
 #### Email Service
+
 - **Welcome Email**: Sends personalized welcome emails
 - **Saga Completion**: Publishes WelcomeEmailSent event
 - **Email Content**: Customized with user name and platform info
@@ -111,6 +120,7 @@ interface SagaState {
 ### Environment Variables
 
 Each service requires:
+
 ```bash
 # NATS Configuration
 NATS_CLIENT_ID=service-name-client
@@ -127,6 +137,7 @@ REDIS_PORT=6379
 ```
 
 ### Circuit Breaker Settings
+
 - **Failure Threshold**: 3 failures
 - **Timeout**: 30 seconds
 - **Retry Logic**: Exponential backoff
@@ -134,6 +145,7 @@ REDIS_PORT=6379
 ## Testing the Saga
 
 ### 1. Start All Services
+
 ```bash
 # Start infrastructure
 docker-compose up -d redis nats mysql
@@ -146,11 +158,13 @@ cd services/saga-orchestrator && npm start &
 ```
 
 ### 2. Run Demo Script
+
 ```bash
 ./demo-user-registration-saga.sh
 ```
 
 ### 3. Manual Testing
+
 ```bash
 # Create user account (triggers saga)
 curl -X POST http://localhost:3100/api/auth/signup \
@@ -169,24 +183,28 @@ curl http://localhost:3107/api/saga/status
 ## Monitoring and Debugging
 
 ### Health Endpoints
+
 - Auth: `GET /api/auth/health`
 - Profile: `GET /api/profile/health`
 - Email: `GET /api/email/health`
 - Saga: `GET /api/saga/health`
 
 ### NATS Health Endpoints
+
 - Auth: `GET /api/auth/health/nats`
 - Profile: `GET /api/profile/health/nats`
 - Email: `GET /api/email/health/nats`
 - Saga: `GET /api/saga/health/nats`
 
 ### Saga Management Endpoints
+
 - Status: `GET /api/saga/status`
 - Specific Saga: `GET /api/saga/status/:sagaId`
 - Retry Failed: `POST /api/saga/retry/:sagaId`
 - Cancel: `POST /api/saga/cancel/:sagaId`
 
 ### Log Monitoring
+
 ```bash
 # Real-time logs
 tail -f logs/auth.log
@@ -198,21 +216,25 @@ tail -f logs/saga-orchestrator.log
 ## Failure Scenarios and Recovery
 
 ### 1. Profile Creation Failure
+
 - **Detection**: Profile service fails to create profile
 - **Compensation**: Saga orchestrator deletes user account
 - **Recovery**: User can try registration again
 
 ### 2. Email Service Failure
+
 - **Detection**: Email service unavailable or SMTP issues
 - **Compensation**: Saga orchestrator removes profile and account
 - **Recovery**: Manual retry or automatic retry after service recovery
 
 ### 3. Network Partition
+
 - **Detection**: NATS circuit breaker opens
 - **Behavior**: Services fail fast, prevent cascade failures
 - **Recovery**: Automatic reconnection when network recovers
 
 ### 4. Saga Orchestrator Failure
+
 - **State Persistence**: Saga state stored in Redis
 - **Recovery**: On restart, saga orchestrator resumes from saved state
 - **Timeout Handling**: Redis TTL ensures stale sagas are cleaned up
@@ -220,21 +242,25 @@ tail -f logs/saga-orchestrator.log
 ## Best Practices
 
 ### 1. Idempotency
+
 - All saga operations are idempotent
 - Duplicate events are safely ignored
 - Retry-safe operations
 
 ### 2. Timeout Management
+
 - Saga state expires after 1 hour
 - Step-level timeouts prevent hanging sagas
 - Automatic cleanup of expired sagas
 
 ### 3. Error Handling
+
 - Comprehensive error logging
 - Circuit breaker protection
 - Graceful degradation
 
 ### 4. Monitoring
+
 - Health check endpoints
 - Real-time status monitoring
 - Performance metrics
@@ -242,17 +268,20 @@ tail -f logs/saga-orchestrator.log
 ## Future Enhancements
 
 ### 1. Additional Sagas
+
 - Bid Placement Saga
 - Auction Completion Saga
 - Payment Processing Saga
 
 ### 2. Advanced Features
+
 - Saga visualization dashboard
 - Metrics and alerting
 - Distributed tracing
 - Performance optimization
 
 ### 3. Scalability
+
 - Multiple saga orchestrator instances
 - Partitioned saga processing
 - Event sourcing integration
@@ -262,26 +291,28 @@ tail -f logs/saga-orchestrator.log
 ### Common Issues
 
 1. **Services not starting**
+
    - Check port availability
    - Verify environment variables
    - Ensure dependencies are running
-
 2. **Saga not progressing**
+
    - Check NATS connectivity
    - Verify event publishing/listening
    - Check Redis connection
-
 3. **Compensation not working**
+
    - Verify compensation handlers
    - Check error propagation
    - Review saga state transitions
-
 4. **Email not sending**
+
    - Verify SMTP configuration
    - Check email service logs
    - Validate email credentials
 
 ### Debug Commands
+
 ```bash
 # Check service connectivity
 curl http://localhost:3100/api/auth/health

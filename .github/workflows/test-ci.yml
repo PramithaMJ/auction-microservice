@@ -1,0 +1,43 @@
+name: Test ArgoCD Update
+
+on:
+  workflow_dispatch: # run manually from Actions tab
+
+jobs:
+  update-argocd:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up test version
+        id: meta
+        run: |
+          SHORT_SHA=$(echo $GITHUB_SHA | cut -c1-7)
+          VERSION="v1.0.${GITHUB_RUN_NUMBER}"
+          FULL_TAG="${VERSION}-${SHORT_SHA}"
+          echo "SHORT_SHA=${SHORT_SHA}" >> $GITHUB_OUTPUT
+          echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
+          echo "FULL_TAG=${FULL_TAG}" >> $GITHUB_OUTPUT
+
+      - name: Update ArgoCD manifests
+        env:
+          ARGOCD_REPO: https://github.com/PramithaMJ/argocd-auctionhub.git
+          ARGOCD_BRANCH: main
+          FULL_TAG: ${{ steps.meta.outputs.FULL_TAG }}
+          DOCKER_USERNAME: pramithamj
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.G_TOKEN }}
+        run: |
+          # Clone the ArgoCD repo
+          git clone --branch $ARGOCD_BRANCH $ARGOCD_REPO argocd
+          cd argocd/k8s
+
+          # Update deployment files (adjust paths if needed)
+          sed -i "s#image: .*/auction-website-ms-payment:.*#image: $DOCKER_USERNAME/auction-website-ms-payment:${FULL_TAG}#" ./deployments/payments.yaml
+          
+          # Configure Git
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
+          # Commit and push
+          git add .
+          git commit -m "Test update image tags to ${FULL_TAG} [ci skip]" || echo "No changes to commit"
+          git push https://$GITHUB_ACTOR:${GITHUB_TOKEN}@github.com/PramithaMJ/argocd-auctionhub.git $ARGOCD_BRANCH

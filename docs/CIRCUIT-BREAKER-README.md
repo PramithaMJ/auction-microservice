@@ -118,11 +118,11 @@ curl http://localhost:3001/health
 
 ## Benefits for Your Auction Platform
 
-### 🛡️ **Prevents Cascade Failures**
+###  **Prevents Cascade Failures**
 - If one service goes down, others remain functional
 - Users can still browse listings even if bidding is temporarily unavailable
 
-### ⚡ **Improved Performance**
+###  **Improved Performance**
 - Fast-fail responses instead of hanging requests
 - No waiting for timeouts on known failed services
 

@@ -5,11 +5,15 @@ metadata:
   namespace: auction-system
   labels:
     app: api-gateway
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+    service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
 spec:
   selector:
     app: api-gateway
   ports:
   - port: 3001
     targetPort: 3001
+    nodePort: 30001
     name: http
-  type: LoadBalancer
+  type: NodePort

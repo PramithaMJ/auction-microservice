@@ -196,7 +196,7 @@ export class AuctionCompletionSagaOrchestrator implements BaseSagaOrchestrator<A
     };
 
     await natsWrapper.client.publish('finalize-auction', JSON.stringify(event));
-    console.log(`📤 Published auction finalization event for saga: ${sagaId}`);
+    console.log(` Published auction finalization event for saga: ${sagaId}`);
   }
 
   private async handleAuctionFinalized(data: AuctionFinalizedEvent): Promise<void> {
@@ -234,7 +234,7 @@ export class AuctionCompletionSagaOrchestrator implements BaseSagaOrchestrator<A
     await enhancedSagaStateManager.saveSagaState(saga);
 
     await natsWrapper.client.publish('initiate-payment', JSON.stringify(event));
-    console.log(`📤 Published payment initiation event for saga: ${saga.sagaId}`);
+    console.log(` Published payment initiation event for saga: ${saga.sagaId}`);
   }
 
   private async handlePaymentInitiated(data: PaymentInitiatedEvent): Promise<void> {
@@ -275,7 +275,7 @@ export class AuctionCompletionSagaOrchestrator implements BaseSagaOrchestrator<A
     };
 
     await natsWrapper.client.publish('transfer-item', JSON.stringify(event));
-    console.log(`📤 Published item transfer event for saga: ${saga.sagaId}`);
+    console.log(` Published item transfer event for saga: ${saga.sagaId}`);
   }
 
   private async handleItemTransferred(data: ItemTransferredEvent): Promise<void> {
@@ -307,7 +307,7 @@ export class AuctionCompletionSagaOrchestrator implements BaseSagaOrchestrator<A
     };
 
     await natsWrapper.client.publish('pay-seller', JSON.stringify(event));
-    console.log(`📤 Published seller payment event for saga: ${saga.sagaId}`);
+    console.log(` Published seller payment event for saga: ${saga.sagaId}`);
   }
 
   private async handleSellerPaid(data: SellerPaidEvent): Promise<void> {
@@ -349,7 +349,7 @@ export class AuctionCompletionSagaOrchestrator implements BaseSagaOrchestrator<A
       await natsWrapper.client.publish('send-notification', JSON.stringify(event));
     }
 
-    console.log(`📤 Published completion notifications for saga: ${saga.sagaId}`);
+    console.log(` Published completion notifications for saga: ${saga.sagaId}`);
   }
 
   private async publishNoWinnerNotificationEvent(saga: SagaState): Promise<void> {
@@ -362,7 +362,7 @@ export class AuctionCompletionSagaOrchestrator implements BaseSagaOrchestrator<A
     };
 
     await natsWrapper.client.publish('send-notification', JSON.stringify(event));
-    console.log(`📤 Published no winner notification for saga: ${saga.sagaId}`);
+    console.log(` Published no winner notification for saga: ${saga.sagaId}`);
   }
 
   private async completeSaga(saga: SagaState): Promise<void> {
