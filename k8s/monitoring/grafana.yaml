@@ -311,6 +311,9 @@ spec:
             - mountPath: /var/lib/grafana/dashboards/microservices
               name: grafana-microservices-dashboards
               readOnly: false
+            - mountPath: /var/lib/grafana/dashboards/vpa
+              name: grafana-vpa-dashboards
+              readOnly: false
       volumes:
         - name: grafana-datasources
           configMap:
@@ -328,6 +331,10 @@ spec:
           configMap:
             defaultMode: 420
             name: grafana-microservices-dashboard
+        - name: grafana-vpa-dashboards
+          configMap:
+            defaultMode: 420
+            name: grafana-vpa-dashboard
 ---
 apiVersion: v1
 kind: Service
