@@ -13,15 +13,15 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: api-gateway
-  minReplicas: 1
-  maxReplicas: 4
+  minReplicas: 2
+  maxReplicas: 6
   metrics:
     - type: Resource
       resource:
         name: cpu
         target:
           type: Utilization
-          averageUtilization: 90
+          averageUtilization: 60
 
 ---
 # Frontend HPA
@@ -35,15 +35,15 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: frontend
-  minReplicas: 1
-  maxReplicas: 4
+  minReplicas: 2
+  maxReplicas: 5
   metrics:
     - type: Resource
       resource:
         name: cpu
         target:
           type: Utilization
-          averageUtilization: 90
+          averageUtilization: 70
 
 ---
 # Auth Service HPA
@@ -57,15 +57,15 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: auth
-  minReplicas: 1
-  maxReplicas: 4
+  minReplicas: 2
+  maxReplicas: 5
   metrics:
     - type: Resource
       resource:
         name: cpu
         target:
           type: Utilization
-          averageUtilization: 90
+          averageUtilization: 70
 
 ---
 # Bid Service HPA
@@ -79,15 +79,15 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: bid
-  minReplicas: 1
-  maxReplicas: 4
+  minReplicas: 2
+  maxReplicas: 8
   metrics:
     - type: Resource
       resource:
         name: cpu
         target:
           type: Utilization
-          averageUtilization: 90
+          averageUtilization: 60
 
 ---
 # Listings Service HPA
@@ -101,15 +101,15 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: listings
-  minReplicas: 1
-  maxReplicas: 4
+  minReplicas: 2
+  maxReplicas: 6
   metrics:
     - type: Resource
       resource:
         name: cpu
         target:
           type: Utilization
-          averageUtilization: 90
+          averageUtilization: 65
 
 ---
 # Payments Service HPA
@@ -123,15 +123,15 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: payments
-  minReplicas: 1
-  maxReplicas: 4
+  minReplicas: 2
+  maxReplicas: 5
   metrics:
     - type: Resource
       resource:
         name: cpu
         target:
           type: Utilization
-          averageUtilization: 90
+          averageUtilization: 70
 
 ---
 # Profile Service HPA
@@ -146,14 +146,14 @@ spec:
     kind: Deployment
     name: profile
   minReplicas: 1
-  maxReplicas: 4
+  maxReplicas: 3
   metrics:
     - type: Resource
       resource:
         name: cpu
         target:
           type: Utilization
-          averageUtilization: 90
+          averageUtilization: 75
 
 ---
 # Email Service HPA
@@ -168,14 +168,14 @@ spec:
     kind: Deployment
     name: email
   minReplicas: 1
-  maxReplicas: 4
+  maxReplicas: 3
   metrics:
     - type: Resource
       resource:
         name: cpu
         target:
           type: Utilization
-          averageUtilization: 90
+          averageUtilization: 75
 
 ---
 # Expiration Service HPA
@@ -190,14 +190,14 @@ spec:
     kind: Deployment
     name: expiration
   minReplicas: 1
-  maxReplicas: 4
+  maxReplicas: 3
   metrics:
     - type: Resource
       resource:
         name: cpu
         target:
           type: Utilization
-          averageUtilization: 90
+          averageUtilization: 75
 
 ---
 # Saga Orchestrator HPA
@@ -212,11 +212,11 @@ spec:
     kind: Deployment
     name: saga-orchestrator
   minReplicas: 1
-  maxReplicas: 4
+  maxReplicas: 3
   metrics:
     - type: Resource
       resource:
         name: cpu
         target:
           type: Utilization
-          averageUtilization: 90
+          averageUtilization: 75
