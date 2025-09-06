@@ -265,3 +265,19 @@ spec:
         controlled:
           - cpu
           - memory
+
+---
+# ServiceMonitor for VPA Metrics
+apiVersion: v1
+kind: ServiceMonitor
+metadata:
+  name: vpa-metrics
+  namespace: monitoring
+spec:
+  selector:
+    matchLabels:
+      app: vpa-recommender
+  endpoints:
+    - port: metrics
+      interval: 30s
+      path: /metrics
