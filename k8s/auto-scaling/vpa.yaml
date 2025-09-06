@@ -11,11 +11,11 @@ metadata:
   namespace: auction-system
 spec:
   targetRef:
-    apiVersion: apps/v1
+    apiVersion: 'apps/v1'
     kind: Deployment
     name: api-gateway
   updatePolicy:
-    updateMode: 'Off' # Only provide recommendations, don't update pods
+    updateMode: 'Off'
   resourcePolicy:
     containerPolicies:
       - containerName: api-gateway
@@ -23,8 +23,11 @@ spec:
           cpu: 100m
           memory: 128Mi
         maxAllowed:
-          cpu: 2
+          cpu: '2' # 2 CPU cores for gateway
           memory: 2Gi
+        controlled:
+          - cpu
+          - memory
 
 ---
 # Frontend VPA
@@ -59,20 +62,23 @@ metadata:
   namespace: auction-system
 spec:
   targetRef:
-    apiVersion: apps/v1
+    apiVersion: 'apps/v1'
     kind: Deployment
-    name: auth
+    name: auth-service
   updatePolicy:
     updateMode: 'Off'
   resourcePolicy:
     containerPolicies:
-      - containerName: auth
+      - containerName: auth-service
         minAllowed:
-          cpu: 100m
-          memory: 128Mi
+          cpu: 50m
+          memory: 64Mi
         maxAllowed:
-          cpu: 1
-          memory: 1Gi
+          cpu: '500m' # 0.5 CPU cores
+          memory: 512Mi
+        controlled:
+          - cpu
+          - memory
 
 ---
 # Bid Service VPA
@@ -83,20 +89,23 @@ metadata:
   namespace: auction-system
 spec:
   targetRef:
-    apiVersion: apps/v1
+    apiVersion: 'apps/v1'
     kind: Deployment
-    name: bid
+    name: bid-service
   updatePolicy:
     updateMode: 'Off'
   resourcePolicy:
     containerPolicies:
-      - containerName: bid
+      - containerName: bid-service
         minAllowed:
           cpu: 100m
           memory: 128Mi
         maxAllowed:
-          cpu: 2
-          memory: 2Gi
+          cpu: '1' # 1 CPU core for bid service
+          memory: 1Gi
+        controlled:
+          - cpu
+          - memory
 
 ---
 # Listings Service VPA
@@ -107,20 +116,23 @@ metadata:
   namespace: auction-system
 spec:
   targetRef:
-    apiVersion: apps/v1
+    apiVersion: 'apps/v1'
     kind: Deployment
-    name: listings
+    name: listings-service
   updatePolicy:
     updateMode: 'Off'
   resourcePolicy:
     containerPolicies:
-      - containerName: listings
+      - containerName: listings-service
         minAllowed:
           cpu: 100m
           memory: 128Mi
         maxAllowed:
-          cpu: 1.5
-          memory: 1.5Gi
+          cpu: '1' # Changed from "number" to "1" (1 CPU core)
+          memory: 1Gi
+        controlled:
+          - cpu
+          - memory
 
 ---
 # Payments Service VPA
@@ -131,20 +143,23 @@ metadata:
   namespace: auction-system
 spec:
   targetRef:
-    apiVersion: apps/v1
+    apiVersion: 'apps/v1'
     kind: Deployment
-    name: payments
+    name: payments-service
   updatePolicy:
     updateMode: 'Off'
   resourcePolicy:
     containerPolicies:
-      - containerName: payments
+      - containerName: payments-service
         minAllowed:
-          cpu: 100m
-          memory: 128Mi
+          cpu: 50m
+          memory: 64Mi
         maxAllowed:
-          cpu: 1
-          memory: 1Gi
+          cpu: '500m' # 0.5 CPU cores
+          memory: 512Mi
+        controlled:
+          - cpu
+          - memory
 
 ---
 # Profile Service VPA
@@ -155,20 +170,23 @@ metadata:
   namespace: auction-system
 spec:
   targetRef:
-    apiVersion: apps/v1
+    apiVersion: 'apps/v1'
     kind: Deployment
-    name: profile
+    name: profile-service
   updatePolicy:
     updateMode: 'Off'
   resourcePolicy:
     containerPolicies:
-      - containerName: profile
+      - containerName: profile-service
         minAllowed:
           cpu: 50m
           memory: 64Mi
         maxAllowed:
-          cpu: 500m
+          cpu: '500m' # 0.5 CPU cores
           memory: 512Mi
+        controlled:
+          - cpu
+          - memory
 
 ---
 # Email Service VPA
@@ -179,20 +197,23 @@ metadata:
   namespace: auction-system
 spec:
   targetRef:
-    apiVersion: apps/v1
+    apiVersion: 'apps/v1'
     kind: Deployment
-    name: email
+    name: email-service
   updatePolicy:
     updateMode: 'Off'
   resourcePolicy:
     containerPolicies:
-      - containerName: email
+      - containerName: email-service
         minAllowed:
-          cpu: 50m
-          memory: 64Mi
+          cpu: 25m
+          memory: 32Mi
         maxAllowed:
-          cpu: 500m
-          memory: 512Mi
+          cpu: '200m' # 0.2 CPU cores
+          memory: 256Mi
+        controlled:
+          - cpu
+          - memory
 
 ---
 # Expiration Service VPA
@@ -227,7 +248,7 @@ metadata:
   namespace: auction-system
 spec:
   targetRef:
-    apiVersion: apps/v1
+    apiVersion: 'apps/v1'
     kind: Deployment
     name: saga-orchestrator
   updatePolicy:
@@ -239,5 +260,8 @@ spec:
           cpu: 50m
           memory: 64Mi
         maxAllowed:
-          cpu: 500m
+          cpu: '500m' # 0.5 CPU cores
           memory: 512Mi
+        controlled:
+          - cpu
+          - memory
