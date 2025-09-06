@@ -79,6 +79,10 @@ pipeline {
 
                     # Build and push images with docker-compose
                     sudo docker-compose build --progress=plain
+                    
+                    # List all built images
+                    echo "==== List of Docker images on EC2 ===="
+                    sudo docker images
                
                 """
 
