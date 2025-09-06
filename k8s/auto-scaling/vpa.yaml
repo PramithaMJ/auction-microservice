@@ -74,7 +74,7 @@ spec:
           cpu: 50m
           memory: 64Mi
         maxAllowed:
-          cpu: '500m' # 0.5 CPU cores
+          cpu: 500m # 0.5 CPU cores
           memory: 512Mi
         controlled:
           - cpu
@@ -155,7 +155,7 @@ spec:
           cpu: 50m
           memory: 64Mi
         maxAllowed:
-          cpu: '500m' # 0.5 CPU cores
+          cpu: 500m # 0.5 CPU cores
           memory: 512Mi
         controlled:
           - cpu
@@ -182,7 +182,7 @@ spec:
           cpu: 50m
           memory: 64Mi
         maxAllowed:
-          cpu: '500m' # 0.5 CPU cores
+          cpu: 500m # 0.5 CPU cores
           memory: 512Mi
         controlled:
           - cpu
@@ -209,7 +209,7 @@ spec:
           cpu: 25m
           memory: 32Mi
         maxAllowed:
-          cpu: '200m' # 0.2 CPU cores
+          cpu: 200m # 0.2 CPU cores
           memory: 256Mi
         controlled:
           - cpu
@@ -260,7 +260,7 @@ spec:
           cpu: 50m
           memory: 64Mi
         maxAllowed:
-          cpu: '500m' # 0.5 CPU cores
+          cpu: 500m # 0.5 CPU cores
           memory: 512Mi
         controlled:
           - cpu
