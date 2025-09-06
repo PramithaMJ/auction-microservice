@@ -4,7 +4,7 @@
 
 This guide documents the complete **two-layer circuit breaker implementation** for your auction website microservices architecture. The implementation provides comprehensive protection against cascade failures at both the HTTP service communication level and the NATS event messaging level.
 
-##  Architecture Overview
+## Architecture Overview
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
@@ -13,11 +13,11 @@ This guide documents the complete **two-layer circuit breaker implementation** f
                       │
 ┌─────────────────────▼───────────────────────────────────────────────┐
 │                   API GATEWAY                                       │
-│  🛡️ Layer 1: HTTP Circuit Breaker                                   │
-│  • Service-to-service protection                                   │
-│  • 5 failure threshold                                             │
-│  • 30s reset timeout                                               │
-│  • Service-specific fallbacks                                      │
+│   Layer 1: HTTP Circuit Breaker                                     │
+│  • Service-to-service protection                                    │
+│  • 5 failure threshold                                              │
+│  • 30s reset timeout                                                │
+│  • Service-specific fallbacks                                       │
 └─────────┬─────────┬─────────┬─────────┬─────────┬───────────────────┘
           │         │         │         │         │
     ┌─────▼───┐ ┌───▼───┐ ┌───▼───┐ ┌───▼───┐ ┌───▼───┐
@@ -29,7 +29,7 @@ This guide documents the complete **two-layer circuit breaker implementation** f
                     │         │         │
     ┌───────────────▼─────────▼─────────▼───────────────┐
     │               NATS STREAMING                      │
-    │  🛡️ Layer 2: NATS Circuit Breaker                │
+    │   Layer 2: NATS Circuit Breaker                   │
     │  • Event messaging protection                     │
     │  • 3 failure threshold per service                │
     │  • 30s reset timeout                              │
@@ -38,23 +38,26 @@ This guide documents the complete **two-layer circuit breaker implementation** f
     └───────────────────────────────────────────────────┘
 ```
 
-##  Implementation Summary
+## Implementation Summary
 
-###  **Layer 1: API Gateway Circuit Breaker**
+### **Layer 1: API Gateway Circuit Breaker**
+
 - **Location**: `/services/api-gateway/src/circuit-breaker.ts`
 - **Protection**: HTTP requests between API Gateway and microservices
 - **Configuration**: 5 failures, 30s timeout, 10s request timeout
 - **Features**: Service health monitoring, fallback responses, manual reset
 
-###  **Layer 2: NATS Messaging Circuit Breaker**
+### **Layer 2: NATS Messaging Circuit Breaker**
+
 - **Location**: Each service's `nats-wrapper-circuit-breaker.ts`
 - **Protection**: Event publishing/subscribing via NATS
 - **Configuration**: 3 failures, 30s timeout, 3 retries with backoff
 - **Features**: Auto-reconnection, health monitoring, graceful degradation
 
-##  Files Modified/Added
+## Files Modified/Added
 
 ### API Gateway
+
 ```
 services/api-gateway/src/
 ├── circuit-breaker.ts                    #  NEW - Circuit breaker logic
@@ -64,6 +67,7 @@ services/api-gateway/src/
 ```
 
 ### Each Service (auth, bid, listings, payments, profile)
+
 ```
 services/{service}/src/
 ├── nats-wrapper-circuit-breaker.ts      #  NEW - Enhanced NATS wrapper
@@ -76,6 +80,7 @@ services/{service}/src/
 ```
 
 ### Scripts
+
 ```
 services/
 ├── implement-nats-circuit-breaker.sh    #  NEW - Implementation script
@@ -83,21 +88,24 @@ services/
 └── demo-nats-circuit-breaker.sh         #  NEW - Complete demo
 ```
 
-##  Quick Start
+## Quick Start
 
 ### 1. Test API Gateway Circuit Breaker
+
 ```bash
 cd services/api-gateway
 ./demo-circuit-breaker.sh
 ```
 
 ### 2. Test NATS Circuit Breaker
+
 ```bash
 cd services
 ./demo-nats-circuit-breaker.sh
 ```
 
 ### 3. Start Services with Circuit Breaker Protection
+
 ```bash
 # Start infrastructure
 docker-compose -f docker-compose.infrastructure.yml up -d
@@ -109,27 +117,32 @@ cd services/bid && npm start &
 # ... etc
 ```
 
-##  Monitoring Endpoints
+## Monitoring Endpoints
 
 ### API Gateway (Layer 1)
-| Endpoint | Purpose | Response |
-|----------|---------|----------|
-| `GET /health` | Overall health + circuit breaker status | 200/503 |
-| `GET /circuit-breaker/status` | All services circuit breaker state | Service states |
-| `POST /circuit-breaker/reset/:service` | Reset specific service circuit breaker | Reset confirmation |
+
+
+| Endpoint                               | Purpose                                 | Response           |
+| -------------------------------------- | --------------------------------------- | ------------------ |
+| `GET /health`                          | Overall health + circuit breaker status | 200/503            |
+| `GET /circuit-breaker/status`          | All services circuit breaker state      | Service states     |
+| `POST /circuit-breaker/reset/:service` | Reset specific service circuit breaker  | Reset confirmation |
 
 ### Service NATS Endpoints (Layer 2)
-| Service | Port | NATS Health | Reset Circuit Breaker |
-|---------|------|-------------|----------------------|
-| Auth | 3101 | `GET /nats/health` | `POST /nats/circuit-breaker/reset` |
-| Bid | 3102 | `GET /nats/health` | `POST /nats/circuit-breaker/reset` |
+
+
+| Service  | Port | NATS Health        | Reset Circuit Breaker              |
+| -------- | ---- | ------------------ | ---------------------------------- |
+| Auth     | 3101 | `GET /nats/health` | `POST /nats/circuit-breaker/reset` |
+| Bid      | 3102 | `GET /nats/health` | `POST /nats/circuit-breaker/reset` |
 | Listings | 3103 | `GET /nats/health` | `POST /nats/circuit-breaker/reset` |
 | Payments | 3104 | `GET /nats/health` | `POST /nats/circuit-breaker/reset` |
-| Profile | 3105 | `GET /nats/health` | `POST /nats/circuit-breaker/reset` |
+| Profile  | 3105 | `GET /nats/health` | `POST /nats/circuit-breaker/reset` |
 
-##  Testing Scenarios
+## Testing Scenarios
 
 ### Scenario 1: API Gateway Circuit Breaker
+
 ```bash
 # Test when a service is down
 curl http://localhost:3001/api/auth/currentuser  # Will fail
@@ -139,6 +152,7 @@ curl http://localhost:3001/circuit-breaker/status # Check state
 ```
 
 ### Scenario 2: NATS Circuit Breaker
+
 ```bash
 # Stop NATS server
 docker stop auction-nats
@@ -154,6 +168,7 @@ curl -X POST http://localhost:3001/api/auth/signup \
 ```
 
 ### Scenario 3: Recovery Testing
+
 ```bash
 # Start NATS server again
 docker start auction-nats
@@ -163,48 +178,56 @@ curl -X POST http://localhost:3101/nats/circuit-breaker/reset
 curl http://localhost:3101/nats/health  # Should show healthy
 ```
 
-##  Circuit Breaker States
+## Circuit Breaker States
 
 ### API Gateway Circuit Breaker
+
 - **CLOSED**:  Normal operation (all requests pass through)
 - **OPEN**:  Service is down (requests blocked, fallback responses)
 - **HALF_OPEN**:  Testing recovery (limited requests allowed)
 
 ### NATS Circuit Breaker
+
 - **CLOSED**:  NATS healthy (events publish normally)
 - **OPEN**:  NATS down (event publishing blocked)
 - **HALF_OPEN**:  Testing NATS recovery (test publishes)
 
-## 🔥 Benefits for Your Auction Platform
+## Benefits
 
-### 🛡️ **Prevents Cascade Failures**
+### **Prevents Cascade Failures**
+
 - One service failure doesn't bring down the entire platform
 - Users can still browse listings even if bidding is temporarily unavailable
 - Payment failures don't affect user authentication
 
-### ⚡ **Improved Performance**
+### **Improved Performance**
+
 - Fast-fail responses (no waiting for timeouts)
 - Reduced resource consumption on failed services
 - Better response times under load
 
-###  **Better User Experience**
+### **Better User Experience**
+
 - Informative error messages with suggestions
 - Graceful degradation of features
 - System remains partially functional during outages
 
-###  **Enhanced Observability**
+### **Enhanced Observability**
+
 - Real-time visibility into service health
 - Circuit breaker state tracking
 - Failure pattern detection and alerting
 
-###  **Operational Excellence**
+### **Operational Excellence**
+
 - Manual circuit breaker reset capability
 - Service-specific configuration
 - Automated recovery testing
 
-## ⚙️ Configuration
+## Configuration
 
 ### API Gateway Circuit Breaker
+
 ```typescript
 new CircuitBreaker({
   failureThreshold: 5,        // Open after 5 failures
@@ -215,6 +238,7 @@ new CircuitBreaker({
 ```
 
 ### NATS Circuit Breaker
+
 ```typescript
 new NatsWrapper({
   failureThreshold: 3,        // Open after 3 failures
@@ -224,24 +248,10 @@ new NatsWrapper({
 })
 ```
 
-## 🔮 Future Enhancements
-
-### Possible Additions
-1. **Database Circuit Breakers** - Protect MySQL connections
-2. **External API Circuit Breakers** - Stripe, AWS S3, Email providers
-3. **Metrics Collection** - Prometheus/Grafana integration
-4. **Alerting** - Slack/email notifications on circuit breaker state changes
-5. **Dynamic Configuration** - Runtime circuit breaker threshold adjustments
-
-### Advanced Features
-- Circuit breaker bulkhead pattern
-- Adaptive timeout based on service response patterns
-- Circuit breaker per API endpoint granularity
-- Distributed circuit breaker state sharing
-
-##  Log Examples
+## Log Examples
 
 ### API Gateway Circuit Breaker Logs
+
 ```
  Proxying GET /api/auth/currentuser → auth (Circuit: CLOSED)
  Circuit breaker failure recorded for auth: 5/5
@@ -252,6 +262,7 @@ new NatsWrapper({
 ```
 
 ### NATS Circuit Breaker Logs
+
 ```
  Connected to NATS
  Event published to subject: user:created
@@ -260,15 +271,3 @@ new NatsWrapper({
  Attempting automatic NATS reconnection...
  NATS circuit breaker transitioning to CLOSED (service recovered)
 ```
-
-## 🏆 Implementation Complete!
-
-Your auction website now has **comprehensive circuit breaker protection** at both the HTTP service communication layer and the NATS event messaging layer. This implementation provides:
-
--  **Fault Tolerance** - System remains functional during partial outages
--  **Performance** - Fast-fail responses and reduced resource consumption  
--  **Observability** - Real-time health monitoring and state tracking
--  **Resilience** - Automatic recovery and graceful degradation
--  **Operational Control** - Manual management and configuration flexibility
-
-The circuit breaker pattern is now protecting your entire microservices architecture! 

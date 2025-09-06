@@ -194,7 +194,7 @@ export class PaymentProcessingSagaOrchestrator implements BaseSagaOrchestrator<P
     };
 
     await natsWrapper.client.publish('validate-payment', JSON.stringify(event));
-    console.log(`📤 Published payment validation event for saga: ${sagaId}`);
+    console.log(` Published payment validation event for saga: ${sagaId}`);
   }
 
   private async handlePaymentValidated(data: PaymentValidatedEvent): Promise<void> {
@@ -224,7 +224,7 @@ export class PaymentProcessingSagaOrchestrator implements BaseSagaOrchestrator<P
     };
 
     await natsWrapper.client.publish('authorize-funds', JSON.stringify(event));
-    console.log(`📤 Published funds authorization event for saga: ${saga.sagaId}`);
+    console.log(` Published funds authorization event for saga: ${saga.sagaId}`);
   }
 
   private async handleFundsAuthorized(data: FundsAuthorizedEvent): Promise<void> {
@@ -250,7 +250,7 @@ export class PaymentProcessingSagaOrchestrator implements BaseSagaOrchestrator<P
     };
 
     await natsWrapper.client.publish('capture-payment', JSON.stringify(event));
-    console.log(`📤 Published payment capture event for saga: ${saga.sagaId}`);
+    console.log(` Published payment capture event for saga: ${saga.sagaId}`);
   }
 
   private async handlePaymentCaptured(data: PaymentCapturedEvent): Promise<void> {
@@ -282,7 +282,7 @@ export class PaymentProcessingSagaOrchestrator implements BaseSagaOrchestrator<P
     };
 
     await natsWrapper.client.publish('generate-invoice', JSON.stringify(event));
-    console.log(`📤 Published invoice generation event for saga: ${saga.sagaId}`);
+    console.log(` Published invoice generation event for saga: ${saga.sagaId}`);
   }
 
   private async handleInvoiceGenerated(data: InvoiceGeneratedEvent): Promise<void> {
@@ -314,7 +314,7 @@ export class PaymentProcessingSagaOrchestrator implements BaseSagaOrchestrator<P
     };
 
     await natsWrapper.client.publish('send-receipt', JSON.stringify(event));
-    console.log(`📤 Published receipt sending event for saga: ${saga.sagaId}`);
+    console.log(` Published receipt sending event for saga: ${saga.sagaId}`);
   }
 
   private async handleReceiptSent(data: ReceiptSentEvent): Promise<void> {

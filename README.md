@@ -6,7 +6,7 @@
 
 This repository contains a full-featured auction platform built with a microservices architecture. It leverages Docker for containerization and Kubernetes for orchestration, supporting local development and production deployments.
 
-## ⚙️ Configuration
+##  Configuration
 
 ### Environment Variables
 

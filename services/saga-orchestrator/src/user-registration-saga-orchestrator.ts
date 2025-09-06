@@ -175,7 +175,7 @@ export class UserRegistrationSagaOrchestrator implements BaseSagaOrchestrator<Us
   async handleAccountCreated(event: UserAccountCreatedEvent['data']): Promise<void> {
     const { sagaId, userId, userEmail, userName, userAvatar, timestamp } = event;
     
-    console.log(`📧 Processing Account Created for saga: ${sagaId}`);
+    console.log(` Processing Account Created for saga: ${sagaId}`);
 
     try {
       const sagaState = await this.getSagaStatus(sagaId);
@@ -234,7 +234,7 @@ export class UserRegistrationSagaOrchestrator implements BaseSagaOrchestrator<Us
   async handleWelcomeEmailSent(event: WelcomeEmailSentEvent['data']): Promise<void> {
     const { sagaId, userId, email, timestamp } = event;
     
-    console.log(`📧 Processing Welcome Email Sent for saga: ${sagaId}`);
+    console.log(` Processing Welcome Email Sent for saga: ${sagaId}`);
 
     try {
       const sagaState = await this.getSagaStatus(sagaId);
@@ -308,7 +308,7 @@ export class UserRegistrationSagaOrchestrator implements BaseSagaOrchestrator<Us
     };
 
     await natsWrapper.client.publish('profile:create', JSON.stringify(profileData));
-    console.log(`📤 Triggered profile creation for saga: ${sagaId}`);
+    console.log(` Triggered profile creation for saga: ${sagaId}`);
   }
 
   // Trigger Welcome Email
@@ -322,7 +322,7 @@ export class UserRegistrationSagaOrchestrator implements BaseSagaOrchestrator<Us
     };
 
     await natsWrapper.client.publish('email:send', JSON.stringify(emailData));
-    console.log(`📤 Triggered welcome email for saga: ${sagaId}`);
+    console.log(` Triggered welcome email for saga: ${sagaId}`);
   }
 
   // Complete Saga

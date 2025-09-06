@@ -92,7 +92,7 @@ class EnhancedSagaStateManager {
       this.client.hIncrBy('saga:metrics:daily', `total:${sagaState.sagaType}`, 1)
     ]);
 
-    console.log(`💾 Saved saga state: ${sagaState.sagaId} - ${sagaState.state}`);
+    console.log(` Saved saga state: ${sagaState.sagaId} - ${sagaState.state}`);
   }
 
   async getSagaState(sagaType: string, sagaId: string): Promise<SagaState | null> {
