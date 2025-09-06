@@ -91,7 +91,7 @@ pipeline {
         }
     }
 
-    post post {
+ post {
     always {
         script {
             try {
