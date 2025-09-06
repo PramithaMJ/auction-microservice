@@ -148,90 +148,11 @@ spec:
   selector:
     app: alertmanager
   ports:
-    - name: web
-      port: 9093
-      targetPort: 9093
-      protocol: TCP
-    - name: cluster
-      port: 9094
-      targetPort: 9094
-      protocol: TCP
----
-# PrometheusRule for VPA alerts
-apiVersion: monitoring.coreos.com/v1
-kind: PrometheusRule
-metadata:
-  name: vpa-alerts
-  namespace: auction-infrastructure
-  labels:
-    app: prometheus
-    role: alert-rules
-spec:
-  groups:
-    - name: vpa.rules
-      rules:
-        - alert: VPAHighCPURecommendation
-          expr: kube_verticalpodautoscaler_status_recommendation{resource="cpu", unit="core", namespace="auction-system"} > 1
-          for: 5m
-          labels:
-            severity: warning
-            service: '{{ $labels.target_name }}'
-          annotations:
-            summary: 'High CPU recommendation for {{ $labels.target_name }}'
-            description: 'VPA recommends {{ $value }} CPU cores for {{ $labels.target_name }} in namespace {{ $labels.namespace }}'
-            runbook_url: 'https://kubernetes.io/docs/tasks/run-application/vertical-pod-autoscale/'
-
-        - alert: VPAHighMemoryRecommendation
-          expr: kube_verticalpodautoscaler_status_recommendation{resource="memory", unit="byte", namespace="auction-system"} / 1024 / 1024 / 1024 > 2
-          for: 5m
-          labels:
-            severity: warning
-            service: '{{ $labels.target_name }}'
-          annotations:
-            summary: 'High memory recommendation for {{ $labels.target_name }}'
-            description: 'VPA recommends {{ $value | humanize1024 }}B memory for {{ $labels.target_name }} in namespace {{ $labels.namespace }}'
-            runbook_url: 'https://kubernetes.io/docs/tasks/run-application/vertical-pod-autoscale/'
-
-        - alert: VPAUnderProvisionedCPU
-          expr: (kube_verticalpodautoscaler_status_recommendation{resource="cpu", unit="core", namespace="auction-system"} / on(target_name) kube_pod_container_resource_requests{resource="cpu", unit="core", namespace="auction-system"}) > 1.5
-          for: 10m
-          labels:
-            severity: critical
-            service: '{{ $labels.target_name }}'
-          annotations:
-            summary: 'Pod {{ $labels.target_name }} severely under-provisioned for CPU'
-            description: 'VPA CPU recommendation is {{ $value | humanizePercentage }} higher than current allocation for {{ $labels.target_name }}'
-            runbook_url: 'https://kubernetes.io/docs/tasks/run-application/vertical-pod-autoscale/'
-
-        - alert: VPAUnderProvisionedMemory
-          expr: (kube_verticalpodautoscaler_status_recommendation{resource="memory", unit="byte", namespace="auction-system"} / on(target_name) kube_pod_container_resource_requests{resource="memory", unit="byte", namespace="auction-system"}) > 1.5
-          for: 10m
-          labels:
-            severity: critical
-            service: '{{ $labels.target_name }}'
-          annotations:
-            summary: 'Pod {{ $labels.target_name }} severely under-provisioned for Memory'
-            description: 'VPA Memory recommendation is {{ $value | humanizePercentage }} higher than current allocation for {{ $labels.target_name }}'
-            runbook_url: 'https://kubernetes.io/docs/tasks/run-application/vertical-pod-autoscale/'
-
-        - alert: VPAOverProvisionedCPU
-          expr: (kube_verticalpodautoscaler_status_recommendation{resource="cpu", unit="core", namespace="auction-system"} / on(target_name) kube_pod_container_resource_requests{resource="cpu", unit="core", namespace="auction-system"}) < 0.5
-          for: 15m
-          labels:
-            severity: info
-            service: '{{ $labels.target_name }}'
-          annotations:
-            summary: 'Pod {{ $labels.target_name }} over-provisioned for CPU'
-            description: 'VPA CPU recommendation is {{ $value | humanizePercentage }} lower than current allocation for {{ $labels.target_name }}'
-            runbook_url: 'https://kubernetes.io/docs/tasks/run-application/vertical-pod-autoscale/'
-
-        - alert: VPAOverProvisionedMemory
-          expr: (kube_verticalpodautoscaler_status_recommendation{resource="memory", unit="byte", namespace="auction-system"} / on(target_name) kube_pod_container_resource_requests{resource="memory", unit="byte", namespace="auction-system"}) < 0.5
-          for: 15m
-          labels:
-            severity: info
-            service: '{{ $labels.target_name }}'
-          annotations:
-            summary: 'Pod {{ $labels.target_name }} over-provisioned for Memory'
-            description: 'VPA Memory recommendation is {{ $value | humanizePercentage }} lower than current allocation for {{ $labels.target_name }}'
-            runbook_url: 'https://kubernetes.io/docs/tasks/run-application/vertical-pod-autoscale/'
+  - name: web
+    port: 9093
+    targetPort: 9093
+    protocol: TCP
+  - name: cluster
+    port: 9094
+    targetPort: 9094
+    protocol: TCP

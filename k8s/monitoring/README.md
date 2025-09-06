@@ -61,7 +61,6 @@ kubectl apply -f k8s/monitoring/vpa-recommender.yaml
 ```
 
 ### 3. Deploy Visualization and Alerting
-
 ```bash
 # Deploy Grafana with dashboards
 kubectl apply -f k8s/monitoring/grafana.yaml
@@ -69,9 +68,6 @@ kubectl apply -f k8s/monitoring/additional-dashboards.yaml
 
 # Deploy AlertManager
 kubectl apply -f k8s/monitoring/alertmanager.yaml
-
-# Deploy Service Monitors (if using Prometheus Operator)
-kubectl apply -f k8s/monitoring/service-monitors.yaml
 ```
 
 ### 4. Deploy Ingress
