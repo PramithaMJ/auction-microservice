@@ -13,8 +13,8 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: api-gateway
-  minReplicas: 2
-  maxReplicas: 10
+  minReplicas: 1
+  maxReplicas: 4
   metrics:
     - type: Resource
       resource:
@@ -35,8 +35,8 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: frontend
-  minReplicas: 2
-  maxReplicas: 8
+  minReplicas: 1
+  maxReplicas: 4
   metrics:
     - type: Resource
       resource:
@@ -57,8 +57,8 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: auth
-  minReplicas: 2
-  maxReplicas: 6
+  minReplicas: 1
+  maxReplicas: 4
   metrics:
     - type: Resource
       resource:
@@ -79,8 +79,8 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: bid
-  minReplicas: 3
-  maxReplicas: 12
+  minReplicas: 1
+  maxReplicas: 4
   metrics:
     - type: Resource
       resource:
@@ -101,8 +101,8 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: listings
-  minReplicas: 2
-  maxReplicas: 8
+  minReplicas: 1
+  maxReplicas: 4
   metrics:
     - type: Resource
       resource:
@@ -123,8 +123,8 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: payments
-  minReplicas: 2
-  maxReplicas: 6
+  minReplicas: 1
+  maxReplicas: 4
   metrics:
     - type: Resource
       resource:
@@ -190,7 +190,7 @@ spec:
     kind: Deployment
     name: expiration
   minReplicas: 1
-  maxReplicas: 3
+  maxReplicas: 4
   metrics:
     - type: Resource
       resource:
