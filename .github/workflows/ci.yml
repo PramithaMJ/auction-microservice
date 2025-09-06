@@ -249,3 +249,37 @@ jobs:
         echo "  - saga-orchestrator: ${{ env.DOCKER_USERNAME }}/auction-website-ms-saga-orchestrator:${{ steps.meta.outputs.VERSION }}"
         echo "  - api-gateway: ${{ env.DOCKER_USERNAME }}/auction-website-ms-api-gateway:${{ steps.meta.outputs.VERSION }}"
         echo "  - frontend: ${{ env.DOCKER_USERNAME }}/auction-website-ms-frontend:${{ steps.meta.outputs.VERSION }}"
+    
+    - name: Update ArgoCD manifests
+      env:
+        ARGOCD_REPO: https://github.com/PramithaMJ/argocd-auctionhub.git
+        ARGOCD_BRANCH: main
+        FULL_TAG: ${{ steps.meta.outputs.FULL_TAG }}
+        DOCKER_USERNAME: ${{ env.DOCKER_USERNAME }}
+        GITHUB_ACTOR: ${{ github.actor }}
+        GITHUB_TOKEN: ${{ secrets.G_TOKEN }}
+      run: |
+        # Clone the ArgoCD repo
+        git clone --branch $ARGOCD_BRANCH $ARGOCD_REPO argocd
+        cd argocd/k8s
+
+        # Update deployment files with new image tags
+        sed -i "s#image: .*/auction-website-ms-auth:.*#image: $DOCKER_USERNAME/auction-website-ms-auth:${FULL_TAG}#" ./deployments/auth.yaml
+        sed -i "s#image: .*/auction-website-ms-bid:.*#image: $DOCKER_USERNAME/auction-website-ms-bid:${FULL_TAG}#" ./deployments/bid.yaml
+        sed -i "s#image: .*/auction-website-ms-listing:.*#image: $DOCKER_USERNAME/auction-website-ms-listing:${FULL_TAG}#" ./deployments/listings.yaml
+        sed -i "s#image: .*/auction-website-ms-payment:.*#image: $DOCKER_USERNAME/auction-website-ms-payment:${FULL_TAG}#" ./deployments/payments.yaml
+        sed -i "s#image: .*/auction-website-ms-profile:.*#image: $DOCKER_USERNAME/auction-website-ms-profile:${FULL_TAG}#" ./deployments/profile.yaml
+        sed -i "s#image: .*/auction-website-ms-email:.*#image: $DOCKER_USERNAME/auction-website-ms-email:${FULL_TAG}#" ./deployments/email.yaml
+        sed -i "s#image: .*/auction-website-ms-expiration:.*#image: $DOCKER_USERNAME/auction-website-ms-expiration:${FULL_TAG}#" ./deployments/expiration.yaml
+        sed -i "s#image: .*/auction-website-ms-saga-orchestrator:.*#image: $DOCKER_USERNAME/auction-website-ms-saga-orchestrator:${FULL_TAG}#" ./deployments/saga-orchestrator.yaml
+        sed -i "s#image: .*/auction-website-ms-api-gateway:.*#image: $DOCKER_USERNAME/auction-website-ms-api-gateway:${FULL_TAG}#" ./deployments/api-gateway.yaml
+        sed -i "s#image: .*/auction-website-ms-frontend:.*#image: $DOCKER_USERNAME/auction-website-ms-frontend:${FULL_TAG}#" ./deployments/frontend.yaml
+
+        # Configure Git
+        git config user.name "$GITHUB_ACTOR"
+        git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
+        # Commit and push changes
+        git add .
+        git commit -m "Update image tags to ${FULL_TAG} [ci skip]" || echo "No changes to commit"
+        git push https://$GITHUB_ACTOR:${GITHUB_TOKEN}@github.com/PramithaMJ/argocd-auctionhub.git $ARGOCD_BRANCH
