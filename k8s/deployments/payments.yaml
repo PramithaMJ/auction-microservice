@@ -7,7 +7,7 @@ metadata:
   labels:
     app: payments
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: payments
@@ -21,6 +21,7 @@ spec:
       containers:
       - name: payments
         image: pramithamj/auction-website-ms-payment:latest
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 3104
         env:
