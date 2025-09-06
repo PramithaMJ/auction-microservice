@@ -17,12 +17,6 @@ This repository contains a full-featured auction platform built with a microserv
 | EG/2020/3996 | Jayawardhana M.V.T.I. | [![GitHub](https://img.shields.io/badge/GitHub-Profile-blue?style=flat&logo=github)](https://github.com/TheTharz) |
 | EG/2020/4040 | Lakpahana A.G.S.      | [![GitHub](https://img.shields.io/badge/GitHub-Profile-blue?style=flat&logo=github)](https://github.com/lakpahana) |
 
-### Team Roles
-
-- **EG/2020/3990 (Jayasooriya L.P.M.)** - Project Lead & DevOps Engineer
-- **EG/2020/3994 (Jayathilake H.A.C.P.)** - Backend Developer & Architecture
-- **EG/2020/3996 (Jayawardhana M.V.T.I.)** - Frontend Developer & UI/UX
-- **EG/2020/4040 (Lakpahana A.G.S.)** - Database Design & Testing
 
 Configuration
 
