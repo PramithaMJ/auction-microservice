@@ -20,6 +20,9 @@ This repository contains a full-featured auction platform built with a microserv
 ## GitOps Deployment
 - **[ArgoCD Configuration](https://github.com/PramithaMJ/argocd-auctionhub)** - GitOps continuous deployment setup
 
+## Full Details Report
+
+For the complete architecture overview, see the [Full Details Report](https://docs.google.com/document/d/...).
 
 ## Configuration
 
