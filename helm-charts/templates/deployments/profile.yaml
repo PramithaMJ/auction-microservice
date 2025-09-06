@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.services.profile.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.services.profile.name }}
+    {{- include "auction.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.services.profile.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.services.profile.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.services.profile.name }}
+    spec:
+      containers:
+        - name: {{ .Values.services.profile.name }}
+          image: "{{ .Values.global.imageRegistry }}/{{ .Values.services.profile.image.repository }}:{{ .Values.services.profile.image.tag }}"
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          ports:
+            - containerPort: 3000
+          env:
+            - name: MYSQL_HOST
+              value: {{ .Values.services.profile.database.host }}
+            - name: MYSQL_DATABASE
+              value: {{ .Values.services.profile.database.name }}
+            - name: MYSQL_PORT
+              value: "{{ .Values.services.profile.database.port }}"
+          envFrom:
+            - configMapRef:
+                name: auction-config

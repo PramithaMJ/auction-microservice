@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: auction-config
+  namespace: {{ .Values.namespace }}
+data:
+  NODE_ENV: {{ .Values.global.environment }}
+  {{- if .Values.infrastructure.nats.enabled }}
+  NATS_URL: "nats://nats-streaming:4222"
+  {{- end }}
+  {{- if .Values.infrastructure.redis.enabled }}
+  REDIS_HOST: "redis"
+  {{- end }}
+  {{- if .Values.infrastructure.jaeger.enabled }}
+  JAEGER_HOST: "jaeger-collector"
+  {{- end }}

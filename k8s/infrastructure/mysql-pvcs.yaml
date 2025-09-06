@@ -1,0 +1,75 @@
+# Persistent Volume Claims for MySQL databases - EKS Configuration
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: auth-mysql-pvc
+  namespace: auction-infrastructure
+  annotations:
+    volume.beta.kubernetes.io/storage-class: auction-storage
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: auction-storage
+  resources:
+    requests:
+      storage: 20Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: bid-mysql-pvc
+  namespace: auction-infrastructure
+  annotations:
+    volume.beta.kubernetes.io/storage-class: auction-storage
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: auction-storage
+  resources:
+    requests:
+      storage: 20Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: listings-mysql-pvc
+  namespace: auction-infrastructure
+  annotations:
+    volume.beta.kubernetes.io/storage-class: auction-storage
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: auction-storage
+  resources:
+    requests:
+      storage: 20Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: payments-mysql-pvc
+  namespace: auction-infrastructure
+  annotations:
+    volume.beta.kubernetes.io/storage-class: auction-storage
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: auction-storage
+  resources:
+    requests:
+      storage: 20Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: profile-mysql-pvc
+  namespace: auction-infrastructure
+  annotations:
+    volume.beta.kubernetes.io/storage-class: auction-storage
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: auction-storage
+  resources:
+    requests:
+      storage: 20Gi

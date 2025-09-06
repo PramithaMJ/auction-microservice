@@ -1,0 +1,65 @@
+{{- if .Values.infrastructure.mysql.enabled }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: payments-mysql
+  namespace: {{ .Values.namespace }}
+spec:
+  serviceName: payments-mysql
+  replicas: 1
+  selector:
+    matchLabels:
+      app: payments-mysql
+  template:
+    metadata:
+      labels:
+        app: payments-mysql
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:5.7
+          ports:
+            - containerPort: 3306
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: {{ .Values.infrastructure.mysql.auth.rootPassword }}
+            - name: MYSQL_DATABASE
+              value: {{ .Values.services.payments.database.name }}
+          volumeMounts:
+            - name: mysql-persistent-storage
+              mountPath: /var/lib/mysql
+            - name: mysql-initdb
+              mountPath: /docker-entrypoint-initdb.d
+      volumes:
+        - name: mysql-persistent-storage
+          persistentVolumeClaim:
+            claimName: payments-mysql-pvc
+        - name: mysql-initdb
+          configMap:
+            name: mysql-init-scripts
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: payments-mysql-pvc
+  namespace: {{ .Values.namespace }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: {{ .Values.infrastructure.mysql.storageClass }}
+  resources:
+    requests:
+      storage: {{ .Values.infrastructure.mysql.storage }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: payments-mysql
+  namespace: {{ .Values.namespace }}
+spec:
+  ports:
+    - port: 3306
+  selector:
+    app: payments-mysql
+  clusterIP: None
+{{- end }}

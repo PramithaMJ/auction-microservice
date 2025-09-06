@@ -1,0 +1,267 @@
+# Vertical Pod Autoscaler Configurations for Auction Microservice
+# These VPAs will provide resource recommendations without conflicting with HPAs
+# updateMode is set to "Off" to avoid conflicts with HPA
+
+---
+# API Gateway VPA
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: api-gateway-vpa
+  namespace: auction-system
+spec:
+  targetRef:
+    apiVersion: 'apps/v1'
+    kind: Deployment
+    name: api-gateway
+  updatePolicy:
+    updateMode: 'Off'
+  resourcePolicy:
+    containerPolicies:
+      - containerName: api-gateway
+        minAllowed:
+          cpu: 100m
+          memory: 128Mi
+        maxAllowed:
+          cpu: '2' # 2 CPU cores for gateway
+          memory: 2Gi
+        controlled:
+          - cpu
+          - memory
+
+---
+# Frontend VPA
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: frontend-vpa
+  namespace: auction-system
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: frontend
+  updatePolicy:
+    updateMode: 'Off'
+  resourcePolicy:
+    containerPolicies:
+      - containerName: frontend
+        minAllowed:
+          cpu: 100m
+          memory: 128Mi
+        maxAllowed:
+          cpu: 1
+          memory: 1Gi
+
+---
+# Auth Service VPA
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: auth-vpa
+  namespace: auction-system
+spec:
+  targetRef:
+    apiVersion: 'apps/v1'
+    kind: Deployment
+    name: auth-service
+  updatePolicy:
+    updateMode: 'Off'
+  resourcePolicy:
+    containerPolicies:
+      - containerName: auth-service
+        minAllowed:
+          cpu: 50m
+          memory: 64Mi
+        maxAllowed:
+          cpu: 500m # 0.5 CPU cores
+          memory: 512Mi
+        controlled:
+          - cpu
+          - memory
+
+---
+# Bid Service VPA
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: bid-vpa
+  namespace: auction-system
+spec:
+  targetRef:
+    apiVersion: 'apps/v1'
+    kind: Deployment
+    name: bid-service
+  updatePolicy:
+    updateMode: 'Off'
+  resourcePolicy:
+    containerPolicies:
+      - containerName: bid-service
+        minAllowed:
+          cpu: 100m
+          memory: 128Mi
+        maxAllowed:
+          cpu: '1' # 1 CPU core for bid service
+          memory: 1Gi
+        controlled:
+          - cpu
+          - memory
+
+---
+# Listings Service VPA
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: listings-vpa
+  namespace: auction-system
+spec:
+  targetRef:
+    apiVersion: 'apps/v1'
+    kind: Deployment
+    name: listings-service
+  updatePolicy:
+    updateMode: 'Off'
+  resourcePolicy:
+    containerPolicies:
+      - containerName: listings-service
+        minAllowed:
+          cpu: 100m
+          memory: 128Mi
+        maxAllowed:
+          cpu: '1' # Changed from "number" to "1" (1 CPU core)
+          memory: 1Gi
+        controlled:
+          - cpu
+          - memory
+
+---
+# Payments Service VPA
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: payments-vpa
+  namespace: auction-system
+spec:
+  targetRef:
+    apiVersion: 'apps/v1'
+    kind: Deployment
+    name: payments-service
+  updatePolicy:
+    updateMode: 'Off'
+  resourcePolicy:
+    containerPolicies:
+      - containerName: payments-service
+        minAllowed:
+          cpu: 50m
+          memory: 64Mi
+        maxAllowed:
+          cpu: 500m # 0.5 CPU cores
+          memory: 512Mi
+        controlled:
+          - cpu
+          - memory
+
+---
+# Profile Service VPA
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: profile-vpa
+  namespace: auction-system
+spec:
+  targetRef:
+    apiVersion: 'apps/v1'
+    kind: Deployment
+    name: profile-service
+  updatePolicy:
+    updateMode: 'Off'
+  resourcePolicy:
+    containerPolicies:
+      - containerName: profile-service
+        minAllowed:
+          cpu: 50m
+          memory: 64Mi
+        maxAllowed:
+          cpu: 500m # 0.5 CPU cores
+          memory: 512Mi
+        controlled:
+          - cpu
+          - memory
+
+---
+# Email Service VPA
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: email-vpa
+  namespace: auction-system
+spec:
+  targetRef:
+    apiVersion: 'apps/v1'
+    kind: Deployment
+    name: email-service
+  updatePolicy:
+    updateMode: 'Off'
+  resourcePolicy:
+    containerPolicies:
+      - containerName: email-service
+        minAllowed:
+          cpu: 25m
+          memory: 32Mi
+        maxAllowed:
+          cpu: 200m # 0.2 CPU cores
+          memory: 256Mi
+        controlled:
+          - cpu
+          - memory
+
+---
+# Expiration Service VPA
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: expiration-vpa
+  namespace: auction-system
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: expiration
+  updatePolicy:
+    updateMode: 'Off'
+  resourcePolicy:
+    containerPolicies:
+      - containerName: expiration
+        minAllowed:
+          cpu: 50m
+          memory: 64Mi
+        maxAllowed:
+          cpu: 500m
+          memory: 512Mi
+
+---
+# Saga Orchestrator VPA
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: saga-orchestrator-vpa
+  namespace: auction-system
+spec:
+  targetRef:
+    apiVersion: 'apps/v1'
+    kind: Deployment
+    name: saga-orchestrator
+  updatePolicy:
+    updateMode: 'Off'
+  resourcePolicy:
+    containerPolicies:
+      - containerName: saga-orchestrator
+        minAllowed:
+          cpu: 50m
+          memory: 64Mi
+        maxAllowed:
+          cpu: 500m # 0.5 CPU cores
+          memory: 512Mi
+        controlled:
+          - cpu
+          - memory

@@ -1,0 +1,206 @@
+Database Schemas for All Auction Website Services
+
+1. Auth Service (MySQL)
+-- Users table
+CREATE TABLE users (
+  id VARCHAR(36) PRIMARY KEY,
+  email VARCHAR(255) NOT NULL UNIQUE,
+  password VARCHAR(255) NOT NULL,
+  isAdmin BOOLEAN DEFAULT FALSE,
+  displayName VARCHAR(100),
+  firstName VARCHAR(100),
+  lastName VARCHAR(100),
+  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_email (email)
+);
+
+-- Password Reset table
+CREATE TABLE password_resets (
+  id VARCHAR(36) PRIMARY KEY,
+  userId VARCHAR(36) NOT NULL,
+  token VARCHAR(255) NOT NULL,
+  expiresAt TIMESTAMP NOT NULL,
+  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_user_id (userId),
+  INDEX idx_token (token),
+  FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
+);
+
+
+2. Listings Service (MySQL)
+-- Listings table
+CREATE TABLE listings (
+  id VARCHAR(36) PRIMARY KEY,
+  title VARCHAR(255) NOT NULL,
+  description TEXT,
+  price DECIMAL(10,2) NOT NULL,
+  userId VARCHAR(36) NOT NULL,
+  status ENUM('draft', 'active', 'completed', 'cancelled') NOT NULL DEFAULT 'draft',
+  imageId VARCHAR(255),
+  endsAt TIMESTAMP NOT NULL,
+  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_user_id (userId),
+  INDEX idx_status (status),
+  INDEX idx_ends_at (endsAt)
+);
+
+-- Denormalized listings read model
+CREATE TABLE listings_read (
+  id VARCHAR(36) PRIMARY KEY,
+  title VARCHAR(255) NOT NULL,
+  description TEXT,
+  price DECIMAL(10,2) NOT NULL,
+  userId VARCHAR(36) NOT NULL,
+  userName VARCHAR(100),
+  status ENUM('draft', 'active', 'completed', 'cancelled') NOT NULL,
+  imageId VARCHAR(255),
+  smallImage VARCHAR(255),
+  largeImage VARCHAR(255),
+  imageUrl VARCHAR(255),
+  endsAt TIMESTAMP NOT NULL,
+  bidCount INT DEFAULT 0,
+  slug VARCHAR(255),
+  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_user_id (userId),
+  INDEX idx_status (status),
+  INDEX idx_slug (slug),
+  INDEX idx_ends_at (endsAt)
+);
+
+-- Users reference table (for joins/relations)
+CREATE TABLE users_reference (
+  id VARCHAR(36) PRIMARY KEY,
+  email VARCHAR(255) NOT NULL,
+  displayName VARCHAR(100),
+  INDEX idx_email (email)
+);
+
+3. Bid Service (MySQL)
+-- Bids table
+CREATE TABLE bids (
+  id VARCHAR(36) PRIMARY KEY,
+  amount DECIMAL(10,2) NOT NULL,
+  listingId VARCHAR(36) NOT NULL,
+  userId VARCHAR(36) NOT NULL,
+  status ENUM('placed', 'accepted', 'rejected', 'winning', 'outbid') DEFAULT 'placed',
+  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_listing_id (listingId),
+  INDEX idx_user_id (userId),
+  INDEX idx_listing_amount (listingId, amount DESC)
+);
+
+-- Listings reference table (for joins/relations)
+CREATE TABLE listings_reference (
+  id VARCHAR(36) PRIMARY KEY,
+  title VARCHAR(255) NOT NULL,
+  price DECIMAL(10,2) NOT NULL,
+  userId VARCHAR(36) NOT NULL,
+  status ENUM('draft', 'active', 'completed', 'cancelled') NOT NULL,
+  endsAt TIMESTAMP NOT NULL,
+  highestBidId VARCHAR(36),
+  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_user_id (userId),
+  INDEX idx_status (status),
+  INDEX idx_highest_bid (highestBidId)
+);
+
+-- Users reference table (for joins/relations)
+CREATE TABLE users_reference (
+  id VARCHAR(36) PRIMARY KEY,
+  email VARCHAR(255) NOT NULL,
+  displayName VARCHAR(100),
+  INDEX idx_email (email)
+);
+
+
+
+
+
+
+4. Payments Service (MySQL)
+
+
+-- Payments table
+CREATE TABLE payments (
+  id VARCHAR(36) PRIMARY KEY,
+  listingId VARCHAR(36) NOT NULL,
+  bidderId VARCHAR(36) NOT NULL,
+  sellerId VARCHAR(36) NOT NULL,
+  amount DECIMAL(10,2) NOT NULL,
+  stripeId VARCHAR(255),
+  status ENUM('pending', 'completed', 'failed', 'refunded') DEFAULT 'pending',
+  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_listing_id (listingId),
+  INDEX idx_bidder_id (bidderId),
+  INDEX idx_seller_id (sellerId),
+  INDEX idx_stripe_id (stripeId)
+);
+
+-- Listings reference table (for joins/relations)
+CREATE TABLE listings_reference (
+  id VARCHAR(36) PRIMARY KEY,
+  title VARCHAR(255) NOT NULL,
+  price DECIMAL(10,2) NOT NULL,
+  userId VARCHAR(36) NOT NULL,
+  status ENUM('draft', 'active', 'completed', 'cancelled') NOT NULL,
+  highestBidId VARCHAR(36),
+  highestBidderId VARCHAR(36),
+  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_user_id (userId),
+  INDEX idx_highest_bidder_id (highestBidderId)
+);
+
+
+5. Profile Service (MySQL)
+
+-- Profiles table
+CREATE TABLE profiles (
+  userId VARCHAR(36) PRIMARY KEY,
+  bio TEXT,
+  avatar VARCHAR(255),
+  location VARCHAR(255),
+  website VARCHAR(255),
+  socialMedia TEXT,
+  contactEmail VARCHAR(255),
+  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_contact_email (contactEmail)
+);
+
+
+6. Saga Orchestrator Service
+
+Uses Redis instead of a traditional SQL database. The key patterns are:
+
+ Key patterns for Redis:
+saga:{sagaType}:{sagaId}        - JSON string containing full saga state
+saga:active                     - Sorted set of active saga IDs with timestamp scores
+saga:by-type:{sagaType}         - Sorted set of saga IDs for each type
+saga:metrics:daily              - Hash with aggregated metrics
+
+7. Expiration Service
+
+Uses Redis/Bull queue with keys like:
+
+Key patterns for Redis:
+bull:expiration:{jobId}         - Job data for expiration events
+bull:expiration:active          - Active jobs waiting for execution
+bull:expiration:completed       - Completed jobs
+bull:expiration:failed          - Failed jobs
+
+8. Email Service
+
+This service integrates with external email providers and doesn't maintain its own persistent SQL schema, but may have a queue for outgoing emails:
+
+Key patterns for Redis:
+bull:email:{jobId}              - Email job data
+bull:email:active               - Active email jobs
+bull:email:completed            - Completed email jobs
+bull:email:failed               - Failed email jobs

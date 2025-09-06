@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.services.email.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.services.email.name }}
+    {{- include "auction.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.services.email.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.services.email.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.services.email.name }}
+    spec:
+      containers:
+        - name: {{ .Values.services.email.name }}
+          image: "{{ .Values.global.imageRegistry }}/{{ .Values.services.email.image.repository }}:{{ .Values.services.email.image.tag }}"
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: auction-config

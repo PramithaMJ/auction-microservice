@@ -1,0 +1,135 @@
+# Global values
+global:
+  environment: production
+  imageRegistry: ""
+  imagePullPolicy: IfNotPresent
+
+# Common labels
+commonLabels: {}
+
+# Namespace
+namespace: auction-system
+
+# Infrastructure configurations
+infrastructure:
+  mysql:
+    storageClass: standard
+    storage: 1Gi
+    auth:
+      rootPassword: "changeme"
+  redis:
+    enabled: true
+  nats:
+    enabled: true
+  jaeger:
+    enabled: true
+
+# Services configuration
+services:
+  apiGateway:
+    name: api-gateway
+    image:
+      repository: api-gateway
+      tag: latest
+    replicas: 1
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 200m
+        memory: 256Mi
+
+  auth:
+    name: auth
+    image:
+      repository: auth
+      tag: latest
+    replicas: 1
+    database:
+      host: auth-mysql
+      name: auth
+      port: 3306
+
+  bid:
+    name: bid
+    image:
+      repository: bid
+      tag: latest
+    replicas: 1
+    database:
+      host: bid-mysql
+      name: bid
+      port: 3306
+
+  email:
+    name: email
+    image:
+      repository: email
+      tag: latest
+    replicas: 1
+
+  expiration:
+    name: expiration
+    image:
+      repository: expiration
+      tag: latest
+    replicas: 1
+
+  frontend:
+    name: frontend
+    image:
+      repository: frontend
+      tag: latest
+    replicas: 1
+
+  listings:
+    name: listings
+    image:
+      repository: listings
+      tag: latest
+    replicas: 1
+    database:
+      host: listings-mysql
+      name: listings
+      port: 3306
+
+  payments:
+    name: payments
+    image:
+      repository: payments
+      tag: latest
+    replicas: 1
+    database:
+      host: payments-mysql
+      name: payments
+      port: 3306
+
+  profile:
+    name: profile
+    image:
+      repository: profile
+      tag: latest
+    replicas: 1
+    database:
+      host: profile-mysql
+      name: profile
+      port: 3306
+
+  sagaOrchestrator:
+    name: saga-orchestrator
+    image:
+      repository: saga-orchestrator
+      tag: latest
+    replicas: 1
+
+# Ingress configuration
+ingress:
+  enabled: true
+  className: nginx
+  annotations: {}
+  hosts:
+    - host: auction.local
+      paths:
+        - path: /
+          pathType: Prefix

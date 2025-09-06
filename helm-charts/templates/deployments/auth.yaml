@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.services.auth.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.services.auth.name }}
+    {{- include "auction.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.services.auth.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.services.auth.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.services.auth.name }}
+    spec:
+      containers:
+        - name: {{ .Values.services.auth.name }}
+          image: "{{ .Values.global.imageRegistry }}/{{ .Values.services.auth.image.repository }}:{{ .Values.services.auth.image.tag }}"
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          ports:
+            - containerPort: 3000
+          env:
+            - name: MYSQL_HOST
+              value: {{ .Values.services.auth.database.host }}
+            - name: MYSQL_DATABASE
+              value: {{ .Values.services.auth.database.name }}
+            - name: MYSQL_PORT
+              value: "{{ .Values.services.auth.database.port }}"
+            {{- if .Values.infrastructure.nats.enabled }}
+            - name: NATS_URL
+              value: "nats://nats-streaming:4222"
+            {{- end }}
+          envFrom:
+            - configMapRef:
+                name: auction-config

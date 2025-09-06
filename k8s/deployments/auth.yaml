@@ -16,81 +16,84 @@ spec:
       labels:
         app: auth
     spec:
+      imagePullSecrets:
+        - name: dockerhub-secret
       containers:
-      - name: auth
-        image: pramithamj/auction-website-ms-auth:latest
-        imagePullPolicy: IfNotPresent
-        ports:
-        - containerPort: 3101
-        env:
-        - name: PORT
-          value: "3101"
-        - name: NODE_ENV
-          valueFrom:
-            configMapKeyRef:
-              name: auction-config
-              key: NODE_ENV
-        - name: JWT_KEY
-          valueFrom:
-            secretKeyRef:
-              name: auction-secrets
-              key: JWT_KEY
-        - name: AUTH_MYSQL_URI
-          valueFrom:
-            secretKeyRef:
-              name: auction-secrets
-              key: AUTH_MYSQL_URI
-        - name: NATS_URL
-          valueFrom:
-            configMapKeyRef:
-              name: auction-config
-              key: NATS_URL
-        - name: NATS_CLUSTER_ID
-          valueFrom:
-            configMapKeyRef:
-              name: auction-config
-              key: NATS_CLUSTER_ID
-        - name: NATS_CLIENT_ID
-          value: "auth-service"
-        - name: SAGA_ORCHESTRATOR_URL
-          valueFrom:
-            configMapKeyRef:
-              name: auction-config
-              key: SAGA_ORCHESTRATOR_URL
-        # OpenTelemetry/Jaeger Configuration
-        - name: JAEGER_ENDPOINT
-          valueFrom:
-            configMapKeyRef:
-              name: auction-config
-              key: JAEGER_ENDPOINT
-        - name: OTEL_SERVICE_NAME
-          value: "auth-service"
-        - name: OTEL_RESOURCE_ATTRIBUTES
-          valueFrom:
-            configMapKeyRef:
-              name: auction-config
-              key: OTEL_RESOURCE_ATTRIBUTES
-        resources:
-          requests:
-            memory: "512Mi"
-            cpu: "200m"
-          limits:
-            memory: "1Gi"
-            cpu: "1"
-        livenessProbe:
-          httpGet:
-            path: /nats/health
-            port: 3101
-          initialDelaySeconds: 60
-          periodSeconds: 30
-          failureThreshold: 5
-        readinessProbe:
-          httpGet:
-            path: /nats/health
-            port: 3101
-          initialDelaySeconds: 30
-          periodSeconds: 10
-          failureThreshold: 3
+        - name: auth
+          image: pramithamj/auction-website-ms-auth:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3101
+          env:
+            - name: PORT
+              value: '3101'
+            - name: NODE_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: auction-config
+                  key: NODE_ENV
+            - name: JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: auction-secrets
+                  key: JWT_KEY
+            - name: AUTH_MYSQL_URI
+              valueFrom:
+                secretKeyRef:
+                  name: auction-secrets
+                  key: AUTH_MYSQL_URI
+            - name: NATS_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: auction-config
+                  key: NATS_URL
+            - name: NATS_CLUSTER_ID
+              valueFrom:
+                configMapKeyRef:
+                  name: auction-config
+                  key: NATS_CLUSTER_ID
+            - name: NATS_CLIENT_ID
+              value: 'auth-service'
+            - name: SAGA_ORCHESTRATOR_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: auction-config
+                  key: SAGA_ORCHESTRATOR_URL
+            # OpenTelemetry/Jaeger Configuration
+            - name: JAEGER_ENDPOINT
+              valueFrom:
+                configMapKeyRef:
+                  name: auction-config
+                  key: JAEGER_ENDPOINT
+            - name: OTEL_SERVICE_NAME
+              value: 'auth-service'
+            - name: OTEL_RESOURCE_ATTRIBUTES
+              valueFrom:
+                configMapKeyRef:
+                  name: auction-config
+                  key: OTEL_RESOURCE_ATTRIBUTES
+          resources:
+            requests:
+              memory: '256Mi'
+              cpu: '50m'
+            limits:
+              memory: '512Mi'
+              cpu: '200m'
+          # livenessProbe:
+          #   httpGet:
+          #     path: /nats/health
+          #     port: 3101
+          #   initialDelaySeconds: 60
+          #   periodSeconds: 30
+          #   failureThreshold: 5
+          # readinessProbe:
+          #   httpGet:
+          #     path: /nats/health
+          #     port: 3101
+          #   initialDelaySeconds: 60
+          #   periodSeconds: 15
+          #   timeoutSeconds: 5
+          #   failureThreshold: 6
 ---
 apiVersion: v1
 kind: Service
@@ -101,7 +104,7 @@ spec:
   selector:
     app: auth
   ports:
-  - port: 3101
-    targetPort: 3101
-    name: http
+    - port: 3101
+      targetPort: 3101
+      name: http
   type: ClusterIP

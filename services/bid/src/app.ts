@@ -23,6 +23,25 @@ app.use(createBidRouter);
 app.use(getUserBidsRouter);
 app.use(getBidsRouter);
 
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    status: 'healthy',
+    service: 'bid',
+    timestamp: new Date().toISOString()
+  });
+});
+
+// Ready check endpoint
+app.get('/ready', (req, res) => {
+  const natsHealth = natsWrapper.getHealthStatus();
+  if (natsHealth.connected) {
+    res.status(200).json({ status: 'ready' });
+  } else {
+    res.status(503).json({ status: 'not ready', reason: 'NATS not connected' });
+  }
+});
+
 // NATS Circuit Breaker endpoints
 app.get('/nats/health', (req, res) => {
   try {

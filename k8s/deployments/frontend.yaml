@@ -7,7 +7,7 @@ metadata:
   labels:
     app: frontend
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: frontend
@@ -16,74 +16,71 @@ spec:
       labels:
         app: frontend
     spec:
+      imagePullSecrets:
+        - name: dockerhub-secret
       containers:
-      - name: frontend
-        image: pramithamj/auction-website-ms-frontend:latest
-        ports:
-        - containerPort: 3000
-        env:
-        - name: NODE_ENV
-          valueFrom:
-            configMapKeyRef:
-              name: auction-config
-              key: NODE_ENV
-        - name: NEXT_PUBLIC_API_URL
-          valueFrom:
-            configMapKeyRef:
-              name: frontend-config
-              key: NEXT_PUBLIC_API_URL
-        - name: NEXT_PUBLIC_API_GATEWAY_PORT
-          valueFrom:
-            configMapKeyRef:
-              name: frontend-config
-              key: NEXT_PUBLIC_API_GATEWAY_PORT
-        - name: SERVER_API_URL
-          valueFrom:
-            configMapKeyRef:
-              name: frontend-config
-              key: SERVER_API_URL
-        - name: NEXT_PUBLIC_SERVER_IP
-          valueFrom:
-            configMapKeyRef:
-              name: frontend-config
-              key: NEXT_PUBLIC_SERVER_IP
-        - name: NEXT_PUBLIC_LISTINGS_SOCKET_URL
-          valueFrom:
-            configMapKeyRef:
-              name: frontend-config
-              key: NEXT_PUBLIC_LISTINGS_SOCKET_URL
-        - name: WATCHPACK_POLLING
-          valueFrom:
-            configMapKeyRef:
-              name: frontend-config
-              key: WATCHPACK_POLLING
-        - name: NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
-          valueFrom:
-            configMapKeyRef:
-              name: frontend-config
-              key: NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
-        resources:
-          requests:
-            memory: "512Mi"
-            cpu: "200m"
-          limits:
-            memory: "1Gi"
-            cpu: "500m"
-        # Enable health checks for better reliability
-        livenessProbe:
-          httpGet:
-            path: /
-            port: 3000
-          initialDelaySeconds: 60
-          periodSeconds: 30
-          failureThreshold: 5
-        readinessProbe:
-          httpGet:
-            path: /
-            port: 3000
-          initialDelaySeconds: 30
-          periodSeconds: 10
-          failureThreshold: 3
+        - name: frontend
+          image: pramithamj/auction-website-ms-frontend:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
+          env:
+            - name: NODE_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: auction-config
+                  key: NODE_ENV
+            - name: NEXT_PUBLIC_API_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: frontend-config
+                  key: NEXT_PUBLIC_API_URL
+            - name: NEXT_PUBLIC_API_GATEWAY_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: frontend-config
+                  key: NEXT_PUBLIC_API_GATEWAY_PORT
+            - name: SERVER_API_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: frontend-config
+                  key: SERVER_API_URL
+            - name: NEXT_PUBLIC_SERVER_IP
+              valueFrom:
+                configMapKeyRef:
+                  name: frontend-config
+                  key: NEXT_PUBLIC_SERVER_IP
+            - name: NEXT_PUBLIC_LISTINGS_SOCKET_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: frontend-config
+                  key: NEXT_PUBLIC_LISTINGS_SOCKET_URL
+            - name: WATCHPACK_POLLING
+              valueFrom:
+                configMapKeyRef:
+                  name: frontend-config
+                  key: WATCHPACK_POLLING
+            - name: NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+              valueFrom:
+                configMapKeyRef:
+                  name: frontend-config
+                  key: NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+
+          # Disable health checks temporarily
+          # livenessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: 3000
+          #   initialDelaySeconds: 60
+          #   periodSeconds: 10
+          #   failureThreshold: 3
+          # readinessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: 3000
+          #   initialDelaySeconds: 30
+          #   periodSeconds: 5
+          #   failureThreshold: 3
 ---
 apiVersion: v1
 kind: Service
@@ -94,7 +91,7 @@ spec:
   selector:
     app: frontend
   ports:
-  - port: 3000
-    targetPort: 3000
-    name: http
+    - port: 3000
+      targetPort: 3000
+      name: http
   type: LoadBalancer
