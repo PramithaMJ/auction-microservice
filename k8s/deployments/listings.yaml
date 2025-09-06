@@ -17,124 +17,125 @@ spec:
         app: listings
     spec:
       imagePullSecrets:
-      - name: dockerhub-secret
+        - name: dockerhub-secret
       containers:
-      - name: listings
-        image: pramithamj/auction-website-ms-listing:latest
-        ports:
-        - containerPort: 3103
-        env:
-        - name: PORT
-          value: "3103"
-        - name: NODE_ENV
-          valueFrom:
-            configMapKeyRef:
-              name: auction-config
-              key: NODE_ENV
-        - name: JWT_KEY
-          valueFrom:
-            secretKeyRef:
-              name: auction-secrets
-              key: JWT_KEY
-        - name: LISTINGS_MYSQL_URI
-          valueFrom:
-            secretKeyRef:
-              name: auction-secrets
-              key: LISTINGS_MYSQL_URI
-        - name: NATS_URL
-          valueFrom:
-            configMapKeyRef:
-              name: auction-config
-              key: NATS_URL
-        - name: NATS_CLUSTER_ID
-          valueFrom:
-            configMapKeyRef:
-              name: auction-config
-              key: NATS_CLUSTER_ID
-        - name: NATS_CLIENT_ID
-          value: "listings-service"
-        - name: AWS_ACCESS_KEY_ID
-          valueFrom:
-            secretKeyRef:
-              name: auction-secrets
-              key: AWS_ACCESS_KEY_ID
-        - name: AWS_SECRET_ACCESS_KEY
-          valueFrom:
-            secretKeyRef:
-              name: auction-secrets
-              key: AWS_SECRET_ACCESS_KEY
-        - name: AWS_REGION
-          valueFrom:
-            configMapKeyRef:
-              name: auction-config
-              key: AWS_REGION
-        - name: AWS_S3_BUCKET_NAME
-          valueFrom:
-            secretKeyRef:
-              name: auction-secrets
-              key: AWS_S3_BUCKET_NAME
-        # OpenTelemetry/Jaeger Configuration
-        - name: JAEGER_ENDPOINT
-          valueFrom:
-            configMapKeyRef:
-              name: auction-config
-              key: JAEGER_ENDPOINT
-        - name: OTEL_SERVICE_NAME
-          value: "listings-service"
-        - name: OTEL_RESOURCE_ATTRIBUTES
-          valueFrom:
-            configMapKeyRef:
-              name: auction-config
-              key: OTEL_RESOURCE_ATTRIBUTES
-        - name: OTEL_EXPORTER_JAEGER_ENDPOINT
-          valueFrom:
-            configMapKeyRef:
-              name: auction-config
-              key: OTEL_EXPORTER_JAEGER_ENDPOINT
-        - name: OTEL_TRACES_EXPORTER
-          valueFrom:
-            configMapKeyRef:
-              name: auction-config
-              key: OTEL_TRACES_EXPORTER
-        - name: OTEL_PROPAGATORS
-          valueFrom:
-            configMapKeyRef:
-              name: auction-config
-              key: OTEL_PROPAGATORS
-        - name: OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED
-          valueFrom:
-            configMapKeyRef:
-              name: auction-config
-              key: OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED
-        resources:
-          requests:
-            memory: "256Mi"
-            cpu: "100m"
-          limits:
-            memory: "512Mi"
-            cpu: "250m"
-        startupProbe:
-          httpGet:
-            path: /healthcheck
-            port: 3103
-          failureThreshold: 30
-          periodSeconds: 10
-        livenessProbe:
-          httpGet:
-            path: /healthcheck
-            port: 3103
-          initialDelaySeconds: 60
-          periodSeconds: 15
-          timeoutSeconds: 5
-          failureThreshold: 5
-        readinessProbe:
-          httpGet:
-            path: /healthcheck
-            port: 3103
-          initialDelaySeconds: 45
-          periodSeconds: 10
-          timeoutSeconds: 5
-          failureThreshold: 6
+        - name: listings
+          image: pramithamj/auction-website-ms-listing:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3103
+          env:
+            - name: PORT
+              value: '3103'
+            - name: NODE_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: auction-config
+                  key: NODE_ENV
+            - name: JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: auction-secrets
+                  key: JWT_KEY
+            - name: LISTINGS_MYSQL_URI
+              valueFrom:
+                secretKeyRef:
+                  name: auction-secrets
+                  key: LISTINGS_MYSQL_URI
+            - name: NATS_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: auction-config
+                  key: NATS_URL
+            - name: NATS_CLUSTER_ID
+              valueFrom:
+                configMapKeyRef:
+                  name: auction-config
+                  key: NATS_CLUSTER_ID
+            - name: NATS_CLIENT_ID
+              value: 'listings-service'
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: auction-secrets
+                  key: AWS_ACCESS_KEY_ID
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: auction-secrets
+                  key: AWS_SECRET_ACCESS_KEY
+            - name: AWS_REGION
+              valueFrom:
+                configMapKeyRef:
+                  name: auction-config
+                  key: AWS_REGION
+            - name: AWS_S3_BUCKET_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: auction-secrets
+                  key: AWS_S3_BUCKET_NAME
+            # OpenTelemetry/Jaeger Configuration
+            - name: JAEGER_ENDPOINT
+              valueFrom:
+                configMapKeyRef:
+                  name: auction-config
+                  key: JAEGER_ENDPOINT
+            - name: OTEL_SERVICE_NAME
+              value: 'listings-service'
+            - name: OTEL_RESOURCE_ATTRIBUTES
+              valueFrom:
+                configMapKeyRef:
+                  name: auction-config
+                  key: OTEL_RESOURCE_ATTRIBUTES
+            - name: OTEL_EXPORTER_JAEGER_ENDPOINT
+              valueFrom:
+                configMapKeyRef:
+                  name: auction-config
+                  key: OTEL_EXPORTER_JAEGER_ENDPOINT
+            - name: OTEL_TRACES_EXPORTER
+              valueFrom:
+                configMapKeyRef:
+                  name: auction-config
+                  key: OTEL_TRACES_EXPORTER
+            - name: OTEL_PROPAGATORS
+              valueFrom:
+                configMapKeyRef:
+                  name: auction-config
+                  key: OTEL_PROPAGATORS
+            - name: OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED
+              valueFrom:
+                configMapKeyRef:
+                  name: auction-config
+                  key: OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED
+          resources:
+            requests:
+              memory: '256Mi'
+              cpu: '100m'
+            limits:
+              memory: '512Mi'
+              cpu: '250m'
+          startupProbe:
+            httpGet:
+              path: /healthcheck
+              port: 3103
+            failureThreshold: 30
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthcheck
+              port: 3103
+            initialDelaySeconds: 60
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              path: /healthcheck
+              port: 3103
+            initialDelaySeconds: 45
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
 ---
 apiVersion: v1
 kind: Service
@@ -145,7 +146,7 @@ spec:
   selector:
     app: listings
   ports:
-  - port: 3103
-    targetPort: 3103
-    name: http
+    - port: 3103
+      targetPort: 3103
+      name: http
   type: ClusterIP

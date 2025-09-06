@@ -17,95 +17,96 @@ spec:
         app: saga-orchestrator
     spec:
       imagePullSecrets:
-      - name: dockerhub-secret
+        - name: dockerhub-secret
       containers:
-      - name: saga-orchestrator
-        image: pramithamj/auction-website-ms-saga-orchestrator:latest
-        ports:
-        - containerPort: 3108
-        env:
-        - name: PORT
-          value: "3108"
-        - name: NODE_ENV
-          valueFrom:
-            configMapKeyRef:
-              name: auction-config
-              key: NODE_ENV
-        - name: JWT_KEY
-          valueFrom:
-            secretKeyRef:
-              name: auction-secrets
-              key: JWT_KEY
-        - name: NATS_URL
-          valueFrom:
-            configMapKeyRef:
-              name: auction-config
-              key: NATS_URL
-        - name: NATS_CLUSTER_ID
-          valueFrom:
-            configMapKeyRef:
-              name: auction-config
-              key: NATS_CLUSTER_ID
-        - name: NATS_CLIENT_ID
-          value: "saga-orchestrator-service"
-        - name: REDIS_HOST
-          valueFrom:
-            configMapKeyRef:
-              name: auction-config
-              key: REDIS_HOST
-        - name: REDIS_PORT
-          valueFrom:
-            configMapKeyRef:
-              name: auction-config
-              key: REDIS_PORT
-        - name: REDIS_URL
-          valueFrom:
-            configMapKeyRef:
-              name: auction-config
-              key: REDIS_URL
-        # OpenTelemetry/Jaeger Configuration
-        - name: JAEGER_ENDPOINT
-          valueFrom:
-            configMapKeyRef:
-              name: auction-config
-              key: JAEGER_ENDPOINT
-        - name: OTEL_SERVICE_NAME
-          value: "saga-orchestrator-service"
-        - name: OTEL_RESOURCE_ATTRIBUTES
-          valueFrom:
-            configMapKeyRef:
-              name: auction-config
-              key: OTEL_RESOURCE_ATTRIBUTES
-        resources:
-          requests:
-            memory: "512Mi"
-            cpu: "100m"
-          limits:
-            memory: "1Gi"
-            cpu: "250m"
-        # startupProbe:
-        #   httpGet:
-        #     path: /health
-        #     port: 3108
-        #   failureThreshold: 60
-        #   periodSeconds: 5
-        #   timeoutSeconds: 10
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 3108
-          initialDelaySeconds: 90
-          periodSeconds: 15
-          timeoutSeconds: 10
-          failureThreshold: 6
-        # readinessProbe:
-        #   httpGet:
-        #     path: /ready
-        #     port: 3108
-        #   initialDelaySeconds: 60
-        #   periodSeconds: 10
-        #   timeoutSeconds: 10
-        #   failureThreshold: 8
+        - name: saga-orchestrator
+          image: pramithamj/auction-website-ms-saga-orchestrator:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3108
+          env:
+            - name: PORT
+              value: '3108'
+            - name: NODE_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: auction-config
+                  key: NODE_ENV
+            - name: JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: auction-secrets
+                  key: JWT_KEY
+            - name: NATS_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: auction-config
+                  key: NATS_URL
+            - name: NATS_CLUSTER_ID
+              valueFrom:
+                configMapKeyRef:
+                  name: auction-config
+                  key: NATS_CLUSTER_ID
+            - name: NATS_CLIENT_ID
+              value: 'saga-orchestrator-service'
+            - name: REDIS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: auction-config
+                  key: REDIS_HOST
+            - name: REDIS_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: auction-config
+                  key: REDIS_PORT
+            - name: REDIS_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: auction-config
+                  key: REDIS_URL
+            # OpenTelemetry/Jaeger Configuration
+            - name: JAEGER_ENDPOINT
+              valueFrom:
+                configMapKeyRef:
+                  name: auction-config
+                  key: JAEGER_ENDPOINT
+            - name: OTEL_SERVICE_NAME
+              value: 'saga-orchestrator-service'
+            - name: OTEL_RESOURCE_ATTRIBUTES
+              valueFrom:
+                configMapKeyRef:
+                  name: auction-config
+                  key: OTEL_RESOURCE_ATTRIBUTES
+          resources:
+            requests:
+              memory: '512Mi'
+              cpu: '100m'
+            limits:
+              memory: '1Gi'
+              cpu: '250m'
+          # startupProbe:
+          #   httpGet:
+          #     path: /health
+          #     port: 3108
+          #   failureThreshold: 60
+          #   periodSeconds: 5
+          #   timeoutSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3108
+            initialDelaySeconds: 90
+            periodSeconds: 15
+            timeoutSeconds: 10
+            failureThreshold: 6
+          # readinessProbe:
+          #   httpGet:
+          #     path: /ready
+          #     port: 3108
+          #   initialDelaySeconds: 60
+          #   periodSeconds: 10
+          #   timeoutSeconds: 10
+          #   failureThreshold: 8
 ---
 apiVersion: v1
 kind: Service
@@ -116,7 +117,7 @@ spec:
   selector:
     app: saga-orchestrator
   ports:
-  - port: 3108
-    targetPort: 3108
-    name: http
+    - port: 3108
+      targetPort: 3108
+      name: http
   type: ClusterIP
