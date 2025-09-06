@@ -15,33 +15,33 @@ kind: ClusterRole
 metadata:
   name: prometheus
 rules:
-- apiGroups: [""]
-  resources:
-  - nodes
-  - nodes/proxy
-  - services
-  - endpoints
-  - pods
-  verbs: ["get", "list", "watch"]
-- apiGroups: [""]
-  resources:
-  - configmaps
-  verbs: ["get"]
-- apiGroups: ["networking.k8s.io"]
-  resources:
-  - ingresses
-  verbs: ["get", "list", "watch"]
-- apiGroups: ["autoscaling.k8s.io"]
-  resources:
-  - verticalpodautoscalers
-  verbs: ["get", "list", "watch"]
-- apiGroups: ["metrics.k8s.io"]
-  resources:
-  - nodes
-  - pods
-  verbs: ["get", "list"]
-- nonResourceURLs: ["/metrics"]
-  verbs: ["get"]
+  - apiGroups: ['']
+    resources:
+      - nodes
+      - nodes/proxy
+      - services
+      - endpoints
+      - pods
+    verbs: ['get', 'list', 'watch']
+  - apiGroups: ['']
+    resources:
+      - configmaps
+    verbs: ['get']
+  - apiGroups: ['networking.k8s.io']
+    resources:
+      - ingresses
+    verbs: ['get', 'list', 'watch']
+  - apiGroups: ['autoscaling.k8s.io']
+    resources:
+      - verticalpodautoscalers
+    verbs: ['get', 'list', 'watch']
+  - apiGroups: ['metrics.k8s.io']
+    resources:
+      - nodes
+      - pods
+    verbs: ['get', 'list']
+  - nonResourceURLs: ['/metrics']
+    verbs: ['get']
 ---
 # Prometheus ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
@@ -53,9 +53,9 @@ roleRef:
   kind: ClusterRole
   name: prometheus
 subjects:
-- kind: ServiceAccount
-  name: prometheus
-  namespace: auction-infrastructure
+  - kind: ServiceAccount
+    name: prometheus
+    namespace: auction-infrastructure
 ---
 # Prometheus ConfigMap
 apiVersion: v1
@@ -68,16 +68,16 @@ data:
     global:
       scrape_interval: 15s
       evaluation_interval: 15s
-    
+
     rule_files:
       - "vpa_rules.yml"
-    
+
     alerting:
       alertmanagers:
       - static_configs:
         - targets:
           - alertmanager:9093
-    
+
     scrape_configs:
     - job_name: 'kubernetes-pods'
       kubernetes_sd_configs:
@@ -103,7 +103,7 @@ data:
       - source_labels: [__meta_kubernetes_pod_name]
         action: replace
         target_label: kubernetes_pod_name
-    
+
     - job_name: 'kubernetes-nodes'
       kubernetes_sd_configs:
       - role: node
@@ -116,7 +116,7 @@ data:
         regex: (.+)
         target_label: __metrics_path__
         replacement: /api/v1/nodes/${1}/proxy/metrics
-    
+
     - job_name: 'kubernetes-cadvisor'
       kubernetes_sd_configs:
       - role: node
@@ -281,50 +281,50 @@ spec:
     spec:
       serviceAccountName: prometheus
       containers:
-      - name: prometheus
-        image: prom/prometheus:v2.40.0
-        args:
-        - '--config.file=/etc/prometheus/prometheus.yml'
-        - '--storage.tsdb.path=/prometheus/'
-        - '--web.console.libraries=/etc/prometheus/console_libraries'
-        - '--web.console.templates=/etc/prometheus/consoles'
-        - '--storage.tsdb.retention.time=15d'
-        - '--web.enable-lifecycle'
-        - '--web.enable-admin-api'
-        ports:
-        - containerPort: 9090
-        resources:
-          requests:
-            cpu: 200m
-            memory: 512Mi
-          limits:
-            cpu: 1000m
-            memory: 2Gi
-        volumeMounts:
-        - name: prometheus-config-volume
-          mountPath: /etc/prometheus/
-        - name: prometheus-storage-volume
-          mountPath: /prometheus/
-        readinessProbe:
-          httpGet:
-            path: /-/ready
-            port: 9090
-          initialDelaySeconds: 30
-          timeoutSeconds: 30
-        livenessProbe:
-          httpGet:
-            path: /-/healthy
-            port: 9090
-          initialDelaySeconds: 30
-          timeoutSeconds: 30
+        - name: prometheus
+          image: prom/prometheus:v2.40.0
+          args:
+            - '--config.file=/etc/prometheus/prometheus.yml'
+            - '--storage.tsdb.path=/prometheus/'
+            - '--web.console.libraries=/etc/prometheus/console_libraries'
+            - '--web.console.templates=/etc/prometheus/consoles'
+            - '--storage.tsdb.retention.time=15d'
+            - '--web.enable-lifecycle'
+            - '--web.enable-admin-api'
+          ports:
+            - containerPort: 9090
+          resources:
+            requests:
+              cpu: 200m
+              memory: 512Mi
+            limits:
+              cpu: 1000m
+              memory: 2Gi
+          volumeMounts:
+            - name: prometheus-config-volume
+              mountPath: /etc/prometheus/
+            - name: prometheus-storage-volume
+              mountPath: /prometheus/
+          readinessProbe:
+            httpGet:
+              path: /-/ready
+              port: 9090
+            initialDelaySeconds: 30
+            timeoutSeconds: 30
+          livenessProbe:
+            httpGet:
+              path: /-/healthy
+              port: 9090
+            initialDelaySeconds: 30
+            timeoutSeconds: 30
       volumes:
-      - name: prometheus-config-volume
-        configMap:
-          defaultMode: 420
-          name: prometheus-config
-      - name: prometheus-storage-volume
-        persistentVolumeClaim:
-          claimName: prometheus-storage
+        - name: prometheus-config-volume
+          configMap:
+            defaultMode: 420
+            name: prometheus-config
+        - name: prometheus-storage-volume
+          persistentVolumeClaim:
+            claimName: prometheus-storage
 ---
 # Prometheus Service
 apiVersion: v1
@@ -342,6 +342,6 @@ spec:
     app: prometheus
   type: ClusterIP
   ports:
-  - port: 9090
-    targetPort: 9090
-    protocol: TCP
+    - port: 9090
+      targetPort: 9090
+      protocol: TCP

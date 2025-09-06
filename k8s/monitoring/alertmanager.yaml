@@ -148,11 +148,11 @@ spec:
   selector:
     app: alertmanager
   ports:
-  - name: web
-    port: 9093
-    targetPort: 9093
-    protocol: TCP
-  - name: cluster
-    port: 9094
-    targetPort: 9094
-    protocol: TCP
+    - name: web
+      port: 9093
+      targetPort: 9093
+      protocol: TCP
+    - name: cluster
+      port: 9094
+      targetPort: 9094
+      protocol: TCP
