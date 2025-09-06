@@ -21,7 +21,7 @@ spec:
         name: cpu
         target:
           type: Utilization
-          averageUtilization: 70
+          averageUtilization: 90
 
 ---
 # Frontend HPA
@@ -43,7 +43,7 @@ spec:
         name: cpu
         target:
           type: Utilization
-          averageUtilization: 60
+          averageUtilization: 90
 
 ---
 # Auth Service HPA
@@ -65,7 +65,7 @@ spec:
         name: cpu
         target:
           type: Utilization
-          averageUtilization: 70
+          averageUtilization: 90
 
 ---
 # Bid Service HPA
@@ -87,7 +87,7 @@ spec:
         name: cpu
         target:
           type: Utilization
-          averageUtilization: 60
+          averageUtilization: 90
 
 ---
 # Listings Service HPA
@@ -109,7 +109,7 @@ spec:
         name: cpu
         target:
           type: Utilization
-          averageUtilization: 65
+          averageUtilization: 90
 
 ---
 # Payments Service HPA
@@ -131,7 +131,7 @@ spec:
         name: cpu
         target:
           type: Utilization
-          averageUtilization: 70
+          averageUtilization: 90
 
 ---
 # Profile Service HPA
@@ -153,7 +153,7 @@ spec:
         name: cpu
         target:
           type: Utilization
-          averageUtilization: 75
+          averageUtilization: 90
 
 ---
 # Email Service HPA
@@ -175,7 +175,7 @@ spec:
         name: cpu
         target:
           type: Utilization
-          averageUtilization: 80
+          averageUtilization: 90
 
 ---
 # Expiration Service HPA
@@ -197,7 +197,7 @@ spec:
         name: cpu
         target:
           type: Utilization
-          averageUtilization: 75
+          averageUtilization: 90
 
 ---
 # Saga Orchestrator HPA
@@ -219,4 +219,4 @@ spec:
         name: cpu
         target:
           type: Utilization
-          averageUtilization: 70
+          averageUtilization: 90
