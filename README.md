@@ -22,7 +22,7 @@ This repository contains a full-featured auction platform built with a microserv
 
 ## Full Details Report
 
-For the complete architecture overview, see the [Full Details Report](https://docs.google.com/document/d/...).
+For the complete architecture overview, see the [Full Details Report](https://docs.google.com/document/d/1UYyl8108_DiwMPATsKPjy4ZLSBdR1XJFj7f1TXNvNMo/edit?usp=sharing).
 
 ## Configuration
 
