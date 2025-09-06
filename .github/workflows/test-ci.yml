@@ -31,10 +31,8 @@ jobs:
           cd argocd/k8s
 
           # Update deployment files (adjust paths if needed)
-          sed -i "s#image: .*/auction-website-ms-common:.*#image: $DOCKER_USERNAME/auction-website-ms-common:${FULL_TAG}#" ./deployments/common-deployment.yaml
-          sed -i "s#image: .*/auction-website-ms-auth:.*#image: $DOCKER_USERNAME/auction-website-ms-auth:${FULL_TAG}#" ./deployments/auth-deployment.yaml
-          sed -i "s#image: .*/auction-website-ms-frontend:.*#image: $DOCKER_USERNAME/auction-website-ms-frontend:${FULL_TAG}#" ./deployments/frontend-deployment.yaml
-
+          sed -i "s#image: .*/auction-website-ms-payment:.*#image: $DOCKER_USERNAME/auction-website-ms-payment:${FULL_TAG}#" ./deployments/payments.yaml
+          
           # Configure Git
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
