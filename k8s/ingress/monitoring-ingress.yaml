@@ -1,0 +1,58 @@
+# Monitoring Ingress for Grafana and Prometheus access
+# Provides external access to monitoring dashboards
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: monitoring-ingress
+  namespace: auction-infrastructure
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: 'true'
+    nginx.ingress.kubernetes.io/proxy-body-size: '10m'
+    nginx.ingress.kubernetes.io/proxy-read-timeout: '3600'
+    nginx.ingress.kubernetes.io/proxy-send-timeout: '3600'
+    nginx.ingress.kubernetes.io/cors-allow-origin: '*'
+    nginx.ingress.kubernetes.io/cors-allow-methods: 'GET, POST, PUT, DELETE, OPTIONS'
+    nginx.ingress.kubernetes.io/cors-allow-headers: 'DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization'
+    nginx.ingress.kubernetes.io/cors-allow-credentials: 'true'
+    nginx.ingress.kubernetes.io/enable-cors: 'true'
+    # Basic auth for security (optional)
+    # nginx.ingress.kubernetes.io/auth-type: basic
+    # nginx.ingress.kubernetes.io/auth-secret: monitoring-auth
+    # nginx.ingress.kubernetes.io/auth-realm: 'Authentication Required - Monitoring'
+spec:
+  ingressClassName: nginx
+  rules:
+    # Grafana Dashboard Access
+    - host: a7503495282ca40048d4d48a88dc59cb-616686098.us-east-2.elb.amazonaws.com
+      http:
+        paths:
+          - path: /grafana(/|$)(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: grafana
+                port:
+                  number: 3000
+    # Prometheus Access (for debugging)
+    - host: a7503495282ca40048d4d48a88dc59cb-616686098.us-east-2.elb.amazonaws.com
+      http:
+        paths:
+          - path: /prometheus(/|$)(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: prometheus
+                port:
+                  number: 9090
+---
+# Optional: Basic auth secret for monitoring services
+# apiVersion: v1
+# kind: Secret
+# metadata:
+#   name: monitoring-auth
+#   namespace: auction-infrastructure
+# type: Opaque
+# data:
+#   auth: YWRtaW46JGFwcjEkSDY5bkEwMWYkL1c4N3ZrUE9QdTZoSENUbWJsTW8w  # admin:admin123

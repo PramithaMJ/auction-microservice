@@ -1,0 +1,487 @@
+# Additional Grafana dashboards for comprehensive VPA monitoring
+---
+# Resource Utilization Dashboard
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-resource-dashboard
+  namespace: auction-infrastructure
+data:
+  resource-utilization.json: |
+    {
+      "annotations": {
+        "list": [
+          {
+            "builtIn": 1,
+            "datasource": "-- Grafana --",
+            "enable": true,
+            "hide": true,
+            "iconColor": "rgba(0, 211, 255, 1)",
+            "name": "Annotations & Alerts",
+            "type": "dashboard"
+          }
+        ]
+      },
+      "editable": true,
+      "gnetId": null,
+      "graphTooltip": 0,
+      "id": null,
+      "links": [],
+      "panels": [
+        {
+          "datasource": "Prometheus",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "vis": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "percentunit"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 0
+          },
+          "id": 6,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom"
+            },
+            "tooltip": {
+              "mode": "single"
+            }
+          },
+          "targets": [
+            {
+              "expr": "(kube_verticalpodautoscaler_status_recommendation{resource=\"cpu\", unit=\"core\", namespace=\"auction-system\"} - on(target_name) kube_deployment_spec_replicas * on(target_name) kube_pod_container_resource_requests{resource=\"cpu\", unit=\"core\", namespace=\"auction-system\"}) / on(target_name) kube_pod_container_resource_requests{resource=\"cpu\", unit=\"core\", namespace=\"auction-system\"}",
+              "interval": "",
+              "legendFormat": "{{target_name}} - CPU Recommendation vs Request Ratio",
+              "refId": "A"
+            }
+          ],
+          "title": "VPA CPU Recommendation vs Current Requests Ratio",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "vis": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "percentunit"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 0
+          },
+          "id": 7,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom"
+            },
+            "tooltip": {
+              "mode": "single"
+            }
+          },
+          "targets": [
+            {
+              "expr": "(kube_verticalpodautoscaler_status_recommendation{resource=\"memory\", unit=\"byte\", namespace=\"auction-system\"} - on(target_name) kube_deployment_spec_replicas * on(target_name) kube_pod_container_resource_requests{resource=\"memory\", unit=\"byte\", namespace=\"auction-system\"}) / on(target_name) kube_pod_container_resource_requests{resource=\"memory\", unit=\"byte\", namespace=\"auction-system\"}",
+              "interval": "",
+              "legendFormat": "{{target_name}} - Memory Recommendation vs Request Ratio",
+              "refId": "A"
+            }
+          ],
+          "title": "VPA Memory Recommendation vs Current Requests Ratio",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "center",
+                "displayMode": "color-background"
+              },
+              "mappings": [
+                {
+                  "options": {
+                    "0": {
+                      "color": "red",
+                      "index": 0,
+                      "text": "Over-provisioned"
+                    },
+                    "1": {
+                      "color": "green",
+                      "index": 1,
+                      "text": "Well-provisioned"
+                    },
+                    "2": {
+                      "color": "orange",
+                      "index": 2,
+                      "text": "Under-provisioned"
+                    }
+                  },
+                  "type": "value"
+                }
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 8
+          },
+          "id": 8,
+          "options": {
+            "showHeader": true
+          },
+          "targets": [
+            {
+              "expr": "clamp_max(clamp_min((kube_verticalpodautoscaler_status_recommendation{namespace=\"auction-system\"} / kube_pod_container_resource_requests{namespace=\"auction-system\"} > 1.5) * 2 + (kube_verticalpodautoscaler_status_recommendation{namespace=\"auction-system\"} / kube_pod_container_resource_requests{namespace=\"auction-system\"} >= 0.8 and kube_verticalpodautoscaler_status_recommendation{namespace=\"auction-system\"} / kube_pod_container_resource_requests{namespace=\"auction-system\"} <= 1.5) * 1 + (kube_verticalpodautoscaler_status_recommendation{namespace=\"auction-system\"} / kube_pod_container_resource_requests{namespace=\"auction-system\"} < 0.8) * 0, 0), 2)",
+              "format": "table",
+              "instant": true,
+              "interval": "",
+              "legendFormat": "",
+              "refId": "A"
+            }
+          ],
+          "title": "Resource Provisioning Status",
+          "type": "table"
+        }
+      ],
+      "schemaVersion": 27,
+      "style": "dark",
+      "tags": ["resources", "optimization"],
+      "templating": {
+        "list": []
+      },
+      "time": {
+        "from": "now-1h",
+        "to": "now"
+      },
+      "timepicker": {},
+      "timezone": "",
+      "title": "Resource Utilization & Optimization",
+      "uid": "resource-optimization",
+      "version": 1
+    }
+---
+# Auction Services Performance Dashboard
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-services-dashboard
+  namespace: auction-infrastructure
+data:
+  auction-services.json: |
+    {
+      "annotations": {
+        "list": []
+      },
+      "editable": true,
+      "gnetId": null,
+      "graphTooltip": 0,
+      "id": null,
+      "links": [],
+      "panels": [
+        {
+          "datasource": "Prometheus",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "vis": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 0
+          },
+          "id": 9,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom"
+            },
+            "tooltip": {
+              "mode": "single"
+            }
+          },
+          "targets": [
+            {
+              "expr": "rate(container_cpu_usage_seconds_total{namespace=\"auction-system\", container=~\"api-gateway|auth|bid|listings|payments|profile|email|expiration|saga-orchestrator|frontend\"}[5m])",
+              "interval": "",
+              "legendFormat": "{{container}} - CPU Usage",
+              "refId": "A"
+            },
+            {
+              "expr": "kube_verticalpodautoscaler_status_recommendation{resource=\"cpu\", unit=\"core\", namespace=\"auction-system\"}",
+              "interval": "",
+              "legendFormat": "{{target_name}} - VPA CPU Recommendation",
+              "refId": "B"
+            }
+          ],
+          "title": "Auction Services - CPU Usage vs VPA Recommendations",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "Prometheus",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "vis": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "bytes"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 8
+          },
+          "id": 10,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom"
+            },
+            "tooltip": {
+              "mode": "single"
+            }
+          },
+          "targets": [
+            {
+              "expr": "container_memory_usage_bytes{namespace=\"auction-system\", container=~\"api-gateway|auth|bid|listings|payments|profile|email|expiration|saga-orchestrator|frontend\"}",
+              "interval": "",
+              "legendFormat": "{{container}} - Memory Usage",
+              "refId": "A"
+            },
+            {
+              "expr": "kube_verticalpodautoscaler_status_recommendation{resource=\"memory\", unit=\"byte\", namespace=\"auction-system\"}",
+              "interval": "",
+              "legendFormat": "{{target_name}} - VPA Memory Recommendation",
+              "refId": "B"
+            }
+          ],
+          "title": "Auction Services - Memory Usage vs VPA Recommendations",
+          "type": "timeseries"
+        }
+      ],
+      "schemaVersion": 27,
+      "style": "dark",
+      "tags": ["auction", "microservices"],
+      "templating": {
+        "list": []
+      },
+      "time": {
+        "from": "now-1h",
+        "to": "now"
+      },
+      "timepicker": {},
+      "timezone": "",
+      "title": "Auction Services Performance",
+      "uid": "auction-services",
+      "version": 1
+    }

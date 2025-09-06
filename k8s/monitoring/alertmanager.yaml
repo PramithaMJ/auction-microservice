@@ -1,0 +1,237 @@
+# AlertManager for VPA monitoring alerts
+# Provides notification and alert routing for VPA recommendations
+
+---
+# AlertManager ConfigMap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: alertmanager-config
+  namespace: auction-infrastructure
+data:
+  alertmanager.yml: |
+    global:
+      smtp_smarthost: 'localhost:587'
+      smtp_from: 'alertmanager@auction-system.local'
+
+    route:
+      group_by: ['alertname', 'cluster', 'service']
+      group_wait: 10s
+      group_interval: 10s
+      repeat_interval: 1h
+      receiver: 'web.hook'
+      routes:
+      - match:
+          alertname: VPARecommendationHighCPU
+        receiver: 'vpa-alerts'
+      - match:
+          alertname: VPARecommendationHighMemory
+        receiver: 'vpa-alerts'
+      - match:
+          alertname: VPAUnderProvisioned
+        receiver: 'critical-alerts'
+
+    receivers:
+    - name: 'web.hook'
+      webhook_configs:
+      - url: 'http://127.0.0.1:5001/'
+
+    - name: 'vpa-alerts'
+      webhook_configs:
+      - url: 'http://127.0.0.1:5001/vpa-alert'
+        send_resolved: true
+        title: 'VPA Recommendation Alert'
+        text: |
+          {{ range .Alerts }}
+          Alert: {{ .Annotations.summary }}
+          Description: {{ .Annotations.description }}
+          {{ end }}
+
+    - name: 'critical-alerts'
+      webhook_configs:
+      - url: 'http://127.0.0.1:5001/critical-alert'
+        send_resolved: true
+        title: 'Critical VPA Alert'
+        text: |
+          {{ range .Alerts }}
+          CRITICAL: {{ .Annotations.summary }}
+          Description: {{ .Annotations.description }}
+          {{ end }}
+
+    inhibit_rules:
+    - source_match:
+        severity: 'critical'
+      target_match:
+        severity: 'warning'
+      equal: ['alertname', 'cluster', 'service']
+---
+# AlertManager Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alertmanager
+  namespace: auction-infrastructure
+  labels:
+    app: alertmanager
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: alertmanager
+  template:
+    metadata:
+      labels:
+        app: alertmanager
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '9093'
+    spec:
+      containers:
+        - name: alertmanager
+          image: prom/alertmanager:v0.25.0
+          args:
+            - '--config.file=/etc/alertmanager/alertmanager.yml'
+            - '--storage.path=/alertmanager'
+            - '--data.retention=120h'
+            - '--web.external-url=http://localhost:9093'
+            - '--web.route-prefix=/'
+            - '--cluster.listen-address=0.0.0.0:9094'
+            - '--log.level=info'
+          ports:
+            - containerPort: 9093
+              name: web
+            - containerPort: 9094
+              name: cluster
+          resources:
+            requests:
+              cpu: 50m
+              memory: 100Mi
+            limits:
+              cpu: 200m
+              memory: 500Mi
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/alertmanager
+            - name: storage-volume
+              mountPath: /alertmanager
+          readinessProbe:
+            httpGet:
+              path: /-/ready
+              port: 9093
+            initialDelaySeconds: 30
+            timeoutSeconds: 30
+          livenessProbe:
+            httpGet:
+              path: /-/healthy
+              port: 9093
+            initialDelaySeconds: 30
+            timeoutSeconds: 30
+      volumes:
+        - name: config-volume
+          configMap:
+            name: alertmanager-config
+        - name: storage-volume
+          emptyDir: {}
+---
+# AlertManager Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: alertmanager
+  namespace: auction-infrastructure
+  labels:
+    app: alertmanager
+  annotations:
+    prometheus.io/scrape: 'true'
+    prometheus.io/port: '9093'
+spec:
+  selector:
+    app: alertmanager
+  ports:
+    - name: web
+      port: 9093
+      targetPort: 9093
+      protocol: TCP
+    - name: cluster
+      port: 9094
+      targetPort: 9094
+      protocol: TCP
+---
+# PrometheusRule for VPA alerts
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: vpa-alerts
+  namespace: auction-infrastructure
+  labels:
+    app: prometheus
+    role: alert-rules
+spec:
+  groups:
+    - name: vpa.rules
+      rules:
+        - alert: VPAHighCPURecommendation
+          expr: kube_verticalpodautoscaler_status_recommendation{resource="cpu", unit="core", namespace="auction-system"} > 1
+          for: 5m
+          labels:
+            severity: warning
+            service: '{{ $labels.target_name }}'
+          annotations:
+            summary: 'High CPU recommendation for {{ $labels.target_name }}'
+            description: 'VPA recommends {{ $value }} CPU cores for {{ $labels.target_name }} in namespace {{ $labels.namespace }}'
+            runbook_url: 'https://kubernetes.io/docs/tasks/run-application/vertical-pod-autoscale/'
+
+        - alert: VPAHighMemoryRecommendation
+          expr: kube_verticalpodautoscaler_status_recommendation{resource="memory", unit="byte", namespace="auction-system"} / 1024 / 1024 / 1024 > 2
+          for: 5m
+          labels:
+            severity: warning
+            service: '{{ $labels.target_name }}'
+          annotations:
+            summary: 'High memory recommendation for {{ $labels.target_name }}'
+            description: 'VPA recommends {{ $value | humanize1024 }}B memory for {{ $labels.target_name }} in namespace {{ $labels.namespace }}'
+            runbook_url: 'https://kubernetes.io/docs/tasks/run-application/vertical-pod-autoscale/'
+
+        - alert: VPAUnderProvisionedCPU
+          expr: (kube_verticalpodautoscaler_status_recommendation{resource="cpu", unit="core", namespace="auction-system"} / on(target_name) kube_pod_container_resource_requests{resource="cpu", unit="core", namespace="auction-system"}) > 1.5
+          for: 10m
+          labels:
+            severity: critical
+            service: '{{ $labels.target_name }}'
+          annotations:
+            summary: 'Pod {{ $labels.target_name }} severely under-provisioned for CPU'
+            description: 'VPA CPU recommendation is {{ $value | humanizePercentage }} higher than current allocation for {{ $labels.target_name }}'
+            runbook_url: 'https://kubernetes.io/docs/tasks/run-application/vertical-pod-autoscale/'
+
+        - alert: VPAUnderProvisionedMemory
+          expr: (kube_verticalpodautoscaler_status_recommendation{resource="memory", unit="byte", namespace="auction-system"} / on(target_name) kube_pod_container_resource_requests{resource="memory", unit="byte", namespace="auction-system"}) > 1.5
+          for: 10m
+          labels:
+            severity: critical
+            service: '{{ $labels.target_name }}'
+          annotations:
+            summary: 'Pod {{ $labels.target_name }} severely under-provisioned for Memory'
+            description: 'VPA Memory recommendation is {{ $value | humanizePercentage }} higher than current allocation for {{ $labels.target_name }}'
+            runbook_url: 'https://kubernetes.io/docs/tasks/run-application/vertical-pod-autoscale/'
+
+        - alert: VPAOverProvisionedCPU
+          expr: (kube_verticalpodautoscaler_status_recommendation{resource="cpu", unit="core", namespace="auction-system"} / on(target_name) kube_pod_container_resource_requests{resource="cpu", unit="core", namespace="auction-system"}) < 0.5
+          for: 15m
+          labels:
+            severity: info
+            service: '{{ $labels.target_name }}'
+          annotations:
+            summary: 'Pod {{ $labels.target_name }} over-provisioned for CPU'
+            description: 'VPA CPU recommendation is {{ $value | humanizePercentage }} lower than current allocation for {{ $labels.target_name }}'
+            runbook_url: 'https://kubernetes.io/docs/tasks/run-application/vertical-pod-autoscale/'
+
+        - alert: VPAOverProvisionedMemory
+          expr: (kube_verticalpodautoscaler_status_recommendation{resource="memory", unit="byte", namespace="auction-system"} / on(target_name) kube_pod_container_resource_requests{resource="memory", unit="byte", namespace="auction-system"}) < 0.5
+          for: 15m
+          labels:
+            severity: info
+            service: '{{ $labels.target_name }}'
+          annotations:
+            summary: 'Pod {{ $labels.target_name }} over-provisioned for Memory'
+            description: 'VPA Memory recommendation is {{ $value | humanizePercentage }} lower than current allocation for {{ $labels.target_name }}'
+            runbook_url: 'https://kubernetes.io/docs/tasks/run-application/vertical-pod-autoscale/'

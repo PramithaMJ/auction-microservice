@@ -1,0 +1,104 @@
+# Node Exporter for comprehensive node-level metrics
+# Required for complete resource monitoring in conjunction with VPA
+
+---
+# Node Exporter DaemonSet
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: node-exporter
+  namespace: auction-infrastructure
+  labels:
+    app: node-exporter
+spec:
+  selector:
+    matchLabels:
+      app: node-exporter
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        app: node-exporter
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '9100'
+        prometheus.io/path: '/metrics'
+    spec:
+      hostNetwork: true
+      hostPID: true
+      hostIPC: true
+      tolerations:
+        - operator: Exists
+          effect: NoSchedule
+      containers:
+        - name: node-exporter
+          image: prom/node-exporter:v1.5.0
+          args:
+            - '--path.procfs=/host/proc'
+            - '--path.sysfs=/host/sys'
+            - '--path.rootfs=/host/root'
+            - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+            - '--collector.netclass.ignored-devices=^(veth|cali|tunl|dummy|kube|flannel|cni|docker|virbr|lo|.*-ns|lxc).*'
+            - '--collector.netdev.device-exclude=^(veth|cali|tunl|dummy|kube|flannel|cni|docker|virbr|lo|.*-ns|lxc).*'
+            - '--web.listen-address=0.0.0.0:9100'
+          ports:
+            - containerPort: 9100
+              hostPort: 9100
+              name: metrics
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 50m
+              memory: 50Mi
+            limits:
+              cpu: 200m
+              memory: 200Mi
+          volumeMounts:
+            - name: proc
+              mountPath: /host/proc
+              readOnly: true
+            - name: sys
+              mountPath: /host/sys
+              readOnly: true
+            - name: root
+              mountPath: /host/root
+              mountPropagation: HostToContainer
+              readOnly: true
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 65534
+      volumes:
+        - name: proc
+          hostPath:
+            path: /proc
+        - name: sys
+          hostPath:
+            path: /sys
+        - name: root
+          hostPath:
+            path: /
+---
+# Node Exporter Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: node-exporter
+  namespace: auction-infrastructure
+  labels:
+    app: node-exporter
+  annotations:
+    prometheus.io/scrape: 'true'
+    prometheus.io/port: '9100'
+spec:
+  type: ClusterIP
+  clusterIP: None
+  selector:
+    app: node-exporter
+  ports:
+    - name: metrics
+      port: 9100
+      targetPort: 9100
+      protocol: TCP
