@@ -17,8 +17,11 @@ This repository contains a full-featured auction platform built with a microserv
 | EG/2020/3996 | Jayawardhana M.V.T.I. | [![GitHub](https://img.shields.io/badge/GitHub-Profile-blue?style=flat&logo=github)](https://github.com/TheTharz) |
 | EG/2020/4040 | Lakpahana A.G.S.      | [![GitHub](https://img.shields.io/badge/GitHub-Profile-blue?style=flat&logo=github)](https://github.com/lakpahana) |
 
+## GitOps Deployment
+- **[ArgoCD Configuration](https://github.com/PramithaMJ/argocd-auctionhub)** - GitOps continuous deployment setup
 
-Configuration
+
+## Configuration
 
 ### Environment Variables
 
