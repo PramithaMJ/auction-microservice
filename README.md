@@ -1,4 +1,4 @@
-# AuctionHub Website - Microservice (Monorepo)
+# AuctionHub Website - Microservice
 
 [![CI Pipeline](https://github.com/PramithaMJ/auction-microservice/actions/workflows/ci.yml/badge.svg)](https://github.com/PramithaMJ/auction-microservice/actions/workflows/ci.yml)
 
