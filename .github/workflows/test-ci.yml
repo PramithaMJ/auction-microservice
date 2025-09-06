@@ -28,7 +28,7 @@ jobs:
         run: |
           # Clone the ArgoCD repo
           git clone --branch $ARGOCD_BRANCH $ARGOCD_REPO argocd
-          cd argocd
+          cd argocd/k8s
 
           # Update deployment files (adjust paths if needed)
           sed -i "s#image: .*/auction-website-ms-common:.*#image: $DOCKER_USERNAME/auction-website-ms-common:${FULL_TAG}#" ./deployments/common-deployment.yaml
