@@ -389,7 +389,7 @@ echo " Deploying secrets..."
 kubectl apply -f secrets/
 
 # Deploy external access ConfigMaps
-echo "⚙️ Deploying external access configuration..."
+echo " Deploying external access configuration..."
 kubectl apply -f configmaps/auction-configmap-external.yaml
 
 # Deploy services

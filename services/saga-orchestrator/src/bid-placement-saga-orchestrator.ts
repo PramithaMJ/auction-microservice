@@ -185,7 +185,7 @@ export class BidPlacementSagaOrchestrator implements BaseSagaOrchestrator<BidPla
     };
 
     await natsWrapper.client.publish('validate-bid', JSON.stringify(event));
-    console.log(`📤 Published bid validation event for saga: ${sagaId}`);
+    console.log(` Published bid validation event for saga: ${sagaId}`);
   }
 
   private async handleBidValidated(data: BidValidatedEvent): Promise<void> {
@@ -214,7 +214,7 @@ export class BidPlacementSagaOrchestrator implements BaseSagaOrchestrator<BidPla
     };
 
     await natsWrapper.client.publish('reserve-funds', JSON.stringify(event));
-    console.log(`📤 Published funds reservation event for saga: ${saga.sagaId}`);
+    console.log(` Published funds reservation event for saga: ${saga.sagaId}`);
   }
 
   private async handleFundsReserved(data: FundsReservedEvent): Promise<void> {
@@ -241,7 +241,7 @@ export class BidPlacementSagaOrchestrator implements BaseSagaOrchestrator<BidPla
     };
 
     await natsWrapper.client.publish('place-bid', JSON.stringify(event));
-    console.log(`📤 Published bid placement event for saga: ${saga.sagaId}`);
+    console.log(` Published bid placement event for saga: ${saga.sagaId}`);
   }
 
   private async handleBidPlaced(data: BidPlacedEvent): Promise<void> {
@@ -266,7 +266,7 @@ export class BidPlacementSagaOrchestrator implements BaseSagaOrchestrator<BidPla
     };
 
     await natsWrapper.client.publish('update-auction', JSON.stringify(event));
-    console.log(`📤 Published auction update event for saga: ${saga.sagaId}`);
+    console.log(` Published auction update event for saga: ${saga.sagaId}`);
   }
 
   private async handleAuctionUpdated(data: AuctionUpdatedEvent): Promise<void> {
@@ -294,7 +294,7 @@ export class BidPlacementSagaOrchestrator implements BaseSagaOrchestrator<BidPla
     };
 
     await natsWrapper.client.publish('send-notification', JSON.stringify(event));
-    console.log(`📤 Published notification event for saga: ${saga.sagaId}`);
+    console.log(` Published notification event for saga: ${saga.sagaId}`);
   }
 
   private async completeSaga(saga: SagaState): Promise<void> {
